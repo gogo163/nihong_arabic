@@ -589,7 +589,125 @@ function escHtml(t) {
   return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-async function sendMsg() {
+function smartReply(text) {
+  const t = text.trim().toLowerCase();
+  const DB = [
+    // تحيات
+    {k:['صباح','good morning','ohayo'],r:'صباح الخير! 🌸
+بالياباني: おはようございます (Ohayou gozaimasu)
+قولها كل صباح مع ابتسامة!'},
+    {k:['مساء','good evening','konban'],r:'مساء الخير! 🌙
+بالياباني: こんばんは (Konbanwa)
+تُستخدم بعد غروب الشمس.'},
+    {k:['مرحب','هاي','اهلا','hello','konnichiwa','كونيتشيوا'],r:'مرحباً! 😊
+بالياباني: こんにちは (Konnichiwa)
+معناها السلام عليكم أو مرحباً وتستخدم نهار.'},
+    {k:['شكر','arigatou','اريجاتو'],r:'شكراً 🙏
+بالياباني: ありがとうございます (Arigatou gozaimasu)
+أو بشكل بسيط: ありがとう (Arigatou)'},
+    {k:['وداع','باي','sayonara','ساينارا'],r:'وداعاً! 👋
+بالياباني: さようなら (Sayounara)
+أو بشكل غير رسمي: またね (Mata ne) = أراك لاحقاً'},
+    {k:['تصبح','ليل','oyasumi','اوياسومي'],r:'تصبح على خير! 🌙
+بالياباني: おやすみなさい (Oyasuminasai)
+أو: おやすみ (Oyasumi) بشكل عائلي'},
+    {k:['عفو','اسف','sumimasen','سوميماسن'],r:'عفواً / آسف 🙇
+بالياباني: すみません (Sumimasen)
+تستخدم للاعتذار أو لجذب الانتباه في المطعم مثلاً!'},
+    // أرقام
+    {k:['واحد','1','ichi','ايتشي'],r:'العدد 1 بالياباني: 一 (ichi - إيتشي)
+مثال: واحد كوب قهوة = コーヒー一杯 (Koohii ippai)'},
+    {k:['اثنين','2','ni','ني'],r:'العدد 2 بالياباني: 二 (ni - ني)
+مثال: اثنين شخص = 二人 (futari)'},
+    {k:['ثلاثة','3','san','سان'],r:'العدد 3 بالياباني: 三 (san - سان)
+نفس نطق san بالإنجليزي!'},
+    {k:['اربعة','4','yon','يون','shi'],r:'العدد 4 بالياباني: 四 (yon أو shi)
+اليابانيون بيتجنبوا shi لأنها زي كلمة الموت!'},
+    {k:['خمسة','5','go','جو'],r:'العدد 5 بالياباني: 五 (go - جو)'},
+    {k:['عشرة','10','juu','جو','عشره'],r:'العدد 10 بالياباني: 十 (juu - جو)
+زي لعبة الجودو!'},
+    // طعام
+    {k:['سوشي','sushi'],r:'سوشي بالياباني: すし (Sushi) 🍣
+أشهر أكلة يابانية في العالم!
+أنواعها: نيجيري، ماكي، ساشيمي'},
+    {k:['رامن','ramen'],r:'رامن بالياباني: ラーメン (Raamen) 🍜
+شعرية يابانية بمرق لذيذ
+أنواعها: شويو، ميسو، شيو، تونكوتسو'},
+    {k:['ماء','مية','water','mizu','ميزو'],r:'ماء بالياباني: 水 (mizu - ميزو) 💧
+في المطعم قول: お水をください (Omizu wo kudasai) = من فضلك ماء'},
+    {k:['اكل','طعام','food','gohan','جوهان'],r:'طعام/أكل بالياباني: 食べ物 (Tabemono)
+أو: ご飯 (Gohan) = أرز أو وجبة
+قبل الأكل قول: いただきます (Itadakimasu)!'},
+    // ألوان
+    {k:['احمر','اسود','ابيض','ازرق','لون','color'],r:'الألوان بالياباني 🎨
+🔴 أحمر: 赤 (Aka)
+⚫ أسود: 黒 (Kuro)
+⚪ أبيض: 白 (Shiro)
+🔵 أزرق: 青 (Ao)
+🟡 أصفر: 黄色 (Kiiro)
+🟢 أخضر: 緑 (Midori)'},
+    // حروف
+    {k:['هيراغانا','hiragana','حروف'],r:'الهيراغانا أبجدية يابانية 📝
+أهم حروف:
+あ (a-أ) い (i-إي) う (u-أو)
+え (e-إي) お (o-أو)
+كل حرف يمثل مقطع صوتي واحد'},
+    {k:['كاتاكانا','katakana'],r:'الكاتاكانا تُستخدم للكلمات الأجنبية 🌍
+مثال: عربي = アラビア (Arabia)
+مصر = エジプト (Ejiputo)'},
+    {k:['كانجي','kanji'],r:'الكانجي رموز مستوحاة من الصينية 📖
+أمثلة:
+🌸 花 = زهرة
+🌊 海 = بحر
+⛰️ 山 = جبل
+☀️ 日 = شمس/يوم'},
+    // أسئلة عامة
+    {k:['اسمك','name','namae','ناماي'],r:'اسمك بالياباني: お名前は？(Onamae wa?)
+للرد: 私の名前は___ (Watashi no namae wa ___)
+مثال: اسمي سارة = 私の名前はサラです'},
+    {k:['كيف حالك','genki','جنكي'],r:'كيف حالك بالياباني: お元気ですか？(Ogenki desu ka?)
+الرد: 元気です！(Genki desu!) = بخير!
+أو: まあまあ (Maa maa) = تمام تمام'},
+    {k:['نعم','hai','هاي'],r:'نعم بالياباني: はい (Hai) ✅
+لا بالياباني: いいえ (Iie) ❌
+أو بشكل عامي: うん (Un) = أيوه'},
+    {k:['بحبك','احبك','love','suki','سوكي'],r:'أحبك بالياباني 💕
+للصديق/الصديقة: 好きです (Suki desu) = بحبك
+للحبيب: 愛してる (Aishiteru) = بحبك جداً'},
+    {k:['جميل','كيوت','kawaii','كاواي'],r:'جميل/لطيف بالياباني: かわいい (Kawaii) 🌸
+أشهر كلمة يابانية في العالم!
+تُقال للأطفال والحيوانات والأشياء الجميلة'},
+    {k:['ياباني','japan','nihon','نيهون'],r:'اليابان بالياباني: 日本 (Nihon أو Nippon) 🗾
+معناها "أصل الشمس"
+واليابانيين: 日本人 (Nihonjin)'},
+  ];
+  
+  for(const item of DB) {
+    if(item.k.some(k => t.includes(k))) return item.r;
+  }
+  
+  // رد افتراضي ذكي
+  const defaults = [
+    'سؤال رائع! 🌸
+للإجابة عليه بشكل أفضل، جرب تسألي عن:
+• كلمة يابانية محددة
+• كيف تقولي جملة معينة
+• أرقام أو ألوان أو حروف',
+    'ممتاز! 🎌
+أنا متخصص في اللغة اليابانية.
+جربي تسأليني:
+• معنى كلمة يابانية
+• كيف أقول [أي جملة] بالياباني؟
+• أرقام، ألوان، تحيات',
+    'سؤالك جميل! 🌸
+جربي تسأليني بشكل مباشر مثل:
+"كيف أقول مرحبا بالياباني؟"
+أو "ما معنى ありがとう؟"',
+  ];
+  return defaults[Math.floor(Math.random()*defaults.length)];
+}
+
+function sendMsg() {
   const inp = document.getElementById('chat-input');
   const text = inp.value.trim();
   if (!text) return;
@@ -598,29 +716,13 @@ async function sendMsg() {
   renderChat();
   state.msgsCount++; saveState(); updateBadges();
 
-  // loading
-  chatHistory.push({role:'assistant', content:'⏳ جاري التفكير...'});
-  renderChat();
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:SYSTEM,
-        messages: chatHistory.slice(0,-1).map(m=>({role:m.role,content:m.content}))
-      })
-    });
-    const data = await res.json();
-    const reply = data.content?.[0]?.text || 'حدث خطأ، حاول مرة أخرى!';
-    chatHistory[chatHistory.length-1] = {role:'assistant', content:reply};
+  // thinking effect
+  setTimeout(() => {
+    const reply = smartReply(text);
+    chatHistory.push({role:'assistant', content:reply});
     state.xp += 5; saveState(); updateBadges();
-  } catch(e) {
-    chatHistory[chatHistory.length-1] = {role:'assistant', content:'❌ في مشكلة في الاتصال، تأكد من الإنترنت وحاول تاني.'};
-  }
-  renderChat();
+    renderChat();
+  }, 600);
 }
 
 init();
