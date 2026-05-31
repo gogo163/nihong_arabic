@@ -1,731 +1,449 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>日本語 بالعربي</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
-
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-  :root {
-    --bg: #0a0a1a;
-    --bg2: #1a0a2e;
-    --pink: #ff6b9d;
-    --purple: #c44dff;
-    --cyan: #4dc8ff;
-    --green: #2A9D8F;
-    --red: #E63946;
-    --orange: #F4A261;
-    --card: rgba(255,255,255,0.06);
-    --border: rgba(255,255,255,0.12);
-  }
-
-  body {
-    background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, #0a1a0a 100%);
-    font-family: 'Cairo', sans-serif;
-    color: #fff;
-    min-height: 100vh;
-    overflow-x: hidden;
-    padding-bottom: 80px;
-  }
-
-  /* HEADER */
-  .header {
-    background: rgba(10,10,26,0.9);
-    backdrop-filter: blur(20px);
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo {
-    font-size: 18px; font-weight: 800;
-    background: linear-gradient(90deg, var(--pink), var(--purple), var(--cyan));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .badges { display:flex; gap:8px; }
-  .badge {
-    background: rgba(255,107,107,0.2);
-    border: 1px solid rgba(255,107,107,0.4);
-    border-radius: 20px; padding: 3px 10px; font-size: 12px;
-    display:flex; align-items:center; gap:3px;
-  }
-  .badge.xp { background:rgba(77,200,255,0.2); border-color:rgba(77,200,255,0.4); }
-
-  /* NAV BAR */
-  .navbar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: rgba(10,10,26,0.97);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border);
-    display: flex; z-index: 100;
-  }
-  .nav-item {
-    flex: 1; display:flex; flex-direction:column; align-items:center;
-    padding: 10px 0 16px; cursor:pointer; opacity:0.4; transition:opacity 0.2s;
-  }
-  .nav-item.active { opacity:1; }
-  .nav-icon { font-size:22px; }
-  .nav-label { font-size:10px; font-weight:700; margin-top:2px; }
-
-  /* SCREENS */
-  .screen { display:none; padding: 16px; }
-  .screen.active { display:block; }
-
-  /* HOME */
-  .hero-card {
-    background: linear-gradient(135deg, rgba(196,77,255,0.25), rgba(77,200,255,0.15));
-    border: 1px solid rgba(196,77,255,0.35);
-    border-radius: 20px; padding: 24px 16px;
-    text-align:center; margin-bottom:18px;
-  }
-  .hero-emoji { font-size:52px; }
-  .hero-title { font-size:21px; font-weight:800; margin:8px 0 6px; }
-  .hero-sub { font-size:13px; opacity:0.7; line-height:1.6; }
-
-  .ai-btn {
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    border-radius: 16px; padding:16px; display:flex; align-items:center;
-    gap:12px; cursor:pointer; margin-bottom:18px;
-    border:none; color:#fff; width:100%; text-align:right;
-    font-family:'Cairo',sans-serif;
-  }
-  .ai-btn-icon { font-size:28px; }
-  .ai-btn-title { font-size:15px; font-weight:700; }
-  .ai-btn-sub { font-size:12px; opacity:0.8; }
-
-  .section-title { font-size:15px; font-weight:700; margin-bottom:12px; }
-
-  .lessons-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
-  .lesson-card {
-    border-radius:16px; padding:16px 14px; cursor:pointer;
-    transition:transform 0.15s; border:1px solid;
-  }
-  .lesson-card:active { transform:scale(0.97); }
-  .lesson-icon { font-size:30px; margin-bottom:6px; }
-  .lesson-title { font-size:14px; font-weight:700; }
-  .lesson-desc { font-size:11px; opacity:0.6; margin-top:2px; }
-  .lesson-count { font-size:11px; opacity:0.4; margin-top:5px; }
-
-  .tip-card {
-    background: var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:14px; font-size:13px; line-height:1.8;
-  }
-
-  /* CHAT */
-  #screen-chat { padding:0; display:flex; flex-direction:column; height:calc(100vh - 130px); }
-  #screen-chat.active { display:flex; }
-  .msg-list {
-    flex:1; overflow-y:auto; padding:14px;
-    display:flex; flex-direction:column; gap:10px;
-  }
-  .msg {
-    max-width:84%; padding:10px 14px; border-radius:16px;
-    font-size:14px; line-height:1.65; white-space:pre-wrap;
-    border:1px solid;
-  }
-  .msg.user {
-    align-self:flex-start;
-    background: linear-gradient(135deg,rgba(196,77,255,0.25),rgba(77,200,255,0.15));
-    border-color:rgba(196,77,255,0.4);
-    border-radius:16px 16px 16px 4px;
-  }
-  .msg.bot {
-    align-self:flex-end;
-    background:rgba(255,255,255,0.08);
-    border-color:rgba(255,255,255,0.15);
-    border-radius:16px 16px 4px 16px;
-  }
-  .input-row {
-    display:flex; gap:8px; padding:10px 14px 24px;
-    border-top:1px solid var(--border);
-    background: rgba(10,10,26,0.9);
-  }
-  #chat-input {
-    flex:1; background:rgba(255,255,255,0.08);
-    border:1px solid rgba(255,255,255,0.2); border-radius:12px;
-    padding:10px 14px; color:#fff; font-size:14px;
-    font-family:'Cairo',sans-serif; outline:none;
-  }
-  #chat-input::placeholder { opacity:0.4; }
-  .send-btn {
-    background: linear-gradient(135deg, var(--purple), var(--cyan));
-    border:none; border-radius:12px; width:44px; height:44px;
-    cursor:pointer; font-size:18px; color:#fff;
-    display:flex; align-items:center; justify-content:center;
-  }
-
-  /* FLASHCARD */
-  .flash-header { text-align:center; margin-bottom:14px; }
-  .flash-lesson-title { font-size:16px; font-weight:700; margin-bottom:10px; }
-  .progress-bar {
-    background:rgba(255,255,255,0.1); border-radius:8px; height:7px; margin-bottom:8px;
-  }
-  .progress-fill { height:100%; border-radius:8px; transition:width 0.3s; }
-  .progress-text { font-size:12px; opacity:0.5; text-align:center; margin-bottom:16px; }
-
-  .card-scene { width:100%; height:200px; perspective:1000px; cursor:pointer; margin-bottom:20px; }
-  .card-inner {
-    width:100%; height:100%; position:relative;
-    transform-style:preserve-3d; transition:transform 0.5s;
-  }
-  .card-inner.flipped { transform:rotateY(180deg); }
-  .card-face {
-    position:absolute; width:100%; height:100%;
-    backface-visibility:hidden; border-radius:20px;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:8px;
-  }
-  .card-front {
-    background:linear-gradient(135deg,rgba(230,57,70,0.25),rgba(230,57,70,0.15));
-    border:1px solid rgba(230,57,70,0.45);
-  }
-  .card-back {
-    background:linear-gradient(135deg,rgba(42,157,143,0.25),rgba(42,157,143,0.15));
-    border:1px solid rgba(42,157,143,0.45);
-    transform:rotateY(180deg);
-  }
-  .card-jp { font-size:60px; line-height:1; }
-  .card-romaji { font-size:16px; opacity:0.65; }
-  .card-ar { font-size:26px; font-weight:800; }
-  .card-hint { font-size:11px; opacity:0.35; margin-top:6px; }
-
-  .flash-btns { display:flex; gap:10px; justify-content:center; }
-  .flash-btn {
-    border:none; border-radius:12px; padding:11px 22px;
-    color:#fff; font-size:14px; font-weight:700;
-    cursor:pointer; font-family:'Cairo',sans-serif;
-    transition:transform 0.1s;
-  }
-  .flash-btn:active { transform:scale(0.96); }
-  .flash-btn.prev { background:rgba(255,255,255,0.15); }
-
-  /* PROGRESS SCREEN */
-  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
-  .stat-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:16px; text-align:center;
-  }
-  .stat-num { font-size:32px; font-weight:800; }
-  .stat-label { font-size:12px; opacity:0.6; margin-top:4px; }
-  .lesson-progress { margin-bottom:12px; }
-  .lp-row { display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>にほんご مع العربي – تعلم اليابانية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Tajawal', sans-serif; }
+    @keyframes fall {
+      0% { transform: translateY(-60px) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    .card-flip { transition: transform 0.5s; transform-style: preserve-3d; }
+    .card-flip.flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .card-back { transform: rotateY(180deg); }
+    .lesson-btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 12px 32px rgba(0,0,0,0.18); }
+    .lesson-btn { transition: all 0.25s ease; cursor: pointer; }
+    .flip-card:hover { transform: scale(1.04); }
+    .flip-card { transition: transform 0.2s ease; cursor: pointer; }
+    .shimmer-text {
+      background: linear-gradient(90deg, #DC2626, #e85d9a, #7c3aed, #DC2626);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 4s linear infinite;
+    }
+  </style>
 </head>
 <body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
 
-<!-- HEADER -->
-<div class="header">
-  <span class="logo">🌸 اليابانية بالعربي</span>
-  <div class="badges">
-    <div class="badge" id="streak-badge">🔥 <span id="streak-val">0</span></div>
-    <div class="badge xp" id="xp-badge">⚡ <span id="xp-val">0</span></div>
-  </div>
-</div>
+    const SUPABASE_URL = "https://orqbhwoalwwyxckgdyus.supabase.co/functions/v1/nihongo-ai";
 
-<!-- SCREENS -->
+    const lessons = [
+      {
+        id: "intro", title: "مقدمة عن اللغة اليابانية", icon: "🌸", color: "#FF6B9D", isIntro: true,
+        content: `اللغة اليابانية (日本語 – نيهونغو) هي لغة رائعة وفريدة من نوعها، يتحدث بها أكثر من 125 مليون شخص حول العالم.
 
-<!-- HOME -->
-<div class="screen active" id="screen-home">
-  <div class="hero-card">
-    <div class="hero-emoji">🗾</div>
-    <div class="hero-title">تعلم اليابانية بسهولة!</div>
-    <div class="hero-sub">دروس تفاعلية + مساعد ذكاء اصطناعي<br>يشرح بالعربي الفصيح</div>
-  </div>
+تتميز اللغة اليابانية بثلاثة أنظمة كتابة مختلفة:
 
-  <button class="ai-btn" onclick="gotoChat()">
-    <span class="ai-btn-icon">🤖</span>
-    <div>
-      <div class="ai-btn-title">اسأل المساعد الذكي</div>
-      <div class="ai-btn-sub">اسأل عن أي كلمة أو جملة يابانية</div>
-    </div>
-  </button>
+🔤 هيراغانا (ひらがな): الأبجدية الأساسية وتضم 46 حرفاً، تُستخدم في الكلمات اليابانية الأصلية.
 
-  <div class="section-title">📚 الدروس التفاعلية</div>
-  <div class="lessons-grid" id="lessons-grid"></div>
+🔤 كاتاكانا (カタカナ): تُستخدم للكلمات الأجنبية المُعرَّبة، مثل كلمة "كوهي" (قهوة) من الإنجليزية.
 
-  <div class="section-title">💡 نصيحة اليوم</div>
-  <div class="tip-card" id="daily-tip"></div>
-</div>
+🀄 كانجي (漢字): رموز مستعارة من الصينية، ولها معانٍ كاملة. يتعلم الطالب عادةً 2,136 كانجي أساسي.
 
-<!-- CHAT -->
-<div class="screen" id="screen-chat">
-  <div class="msg-list" id="msg-list"></div>
-  <div class="input-row">
-    <input id="chat-input" placeholder="اسأل عن أي كلمة يابانية..." onkeydown="if(event.key==='Enter')sendMsg()">
-    <button class="send-btn" onclick="sendMsg()">➤</button>
-  </div>
-</div>
+✨ لماذا تتعلم اليابانية؟
+- عالم الأنيمي والمانغا بلا ترجمة!
+- فرص عمل ضخمة في الشركات اليابانية
+- تجربة السفر إلى اليابان بعمق حقيقي
+- ثقافة وأدب وتاريخ ساحر
 
-<!-- FLASHCARD -->
-<div class="screen" id="screen-flash">
-  <div class="flash-header">
-    <div class="flash-lesson-title" id="flash-title"></div>
-    <div class="progress-bar"><div class="progress-fill" id="flash-progress"></div></div>
-    <div class="progress-text" id="flash-count"></div>
-  </div>
-  <div class="card-scene" onclick="flipCard()">
-    <div class="card-inner" id="card-inner">
-      <div class="card-face card-front">
-        <div class="card-jp" id="card-jp"></div>
-        <div class="card-romaji" id="card-romaji"></div>
-        <div class="card-hint">اضغط لتقلب البطاقة 👆</div>
-      </div>
-      <div class="card-face card-back">
-        <div class="card-ar" id="card-ar"></div>
-        <div class="card-jp" id="card-jp2"></div>
-        <div class="card-romaji" id="card-romaji2"></div>
-      </div>
-    </div>
-  </div>
-  <div class="flash-btns">
-    <button class="flash-btn prev" onclick="prevCard()">◀ السابق</button>
-    <button class="flash-btn" id="next-btn" onclick="nextCard()" style="background:var(--red)">التالي ▶</button>
-  </div>
-</div>
+اليابانية ليست صعبة كما تبدو — ابدأ بهيراغانا وستفاجأ كيف ستتقدم بسرعة! 🎌`,
+      },
+      {
+        id: "hiragana", title: "هيراغانا – الحروف الأساسية (46)", icon: "🌺", color: "#FF8C42",
+        groups: [
+          { label: "أ – صوت العلة", items: [{jp:"あ",rom:"a",ar:"آ"},{jp:"い",rom:"i",ar:"إي"},{jp:"う",rom:"u",ar:"أُو"},{jp:"え",rom:"e",ar:"إِه"},{jp:"お",rom:"o",ar:"أُو (قصير)"}] },
+          { label: "ك – Ka", items: [{jp:"か",rom:"ka",ar:"كا"},{jp:"き",rom:"ki",ar:"كي"},{jp:"く",rom:"ku",ar:"كو"},{jp:"け",rom:"ke",ar:"كيه"},{jp:"こ",rom:"ko",ar:"كو"}] },
+          { label: "س – Sa", items: [{jp:"さ",rom:"sa",ar:"سا"},{jp:"し",rom:"shi",ar:"شي"},{jp:"す",rom:"su",ar:"سو"},{jp:"せ",rom:"se",ar:"سيه"},{jp:"そ",rom:"so",ar:"سو"}] },
+          { label: "ت – Ta", items: [{jp:"た",rom:"ta",ar:"تا"},{jp:"ち",rom:"chi",ar:"تشي"},{jp:"つ",rom:"tsu",ar:"تسو"},{jp:"て",rom:"te",ar:"تيه"},{jp:"と",rom:"to",ar:"تو"}] },
+          { label: "ن – Na", items: [{jp:"な",rom:"na",ar:"نا"},{jp:"に",rom:"ni",ar:"ني"},{jp:"ぬ",rom:"nu",ar:"نو"},{jp:"ね",rom:"ne",ar:"نيه"},{jp:"の",rom:"no",ar:"نو"}] },
+          { label: "هـ – Ha", items: [{jp:"は",rom:"ha",ar:"ها"},{jp:"ひ",rom:"hi",ar:"هي"},{jp:"ふ",rom:"fu",ar:"فو"},{jp:"へ",rom:"he",ar:"هيه"},{jp:"ほ",rom:"ho",ar:"هو"}] },
+          { label: "م – Ma", items: [{jp:"ま",rom:"ma",ar:"ما"},{jp:"み",rom:"mi",ar:"مي"},{jp:"む",rom:"mu",ar:"مو"},{jp:"め",rom:"me",ar:"ميه"},{jp:"も",rom:"mo",ar:"مو"}] },
+          { label: "ي – Ya", items: [{jp:"や",rom:"ya",ar:"يا"},{jp:"ゆ",rom:"yu",ar:"يو"},{jp:"よ",rom:"yo",ar:"يو"}] },
+          { label: "ر – Ra", items: [{jp:"ら",rom:"ra",ar:"را"},{jp:"り",rom:"ri",ar:"ري"},{jp:"る",rom:"ru",ar:"رو"},{jp:"れ",rom:"re",ar:"ريه"},{jp:"ろ",rom:"ro",ar:"رو"}] },
+          { label: "و – Wa / N", items: [{jp:"わ",rom:"wa",ar:"وا"},{jp:"を",rom:"wo",ar:"وو (أداة نحوية)"},{jp:"ん",rom:"n",ar:"ن (صامت)"}] },
+          { label: "داكوتين ﹅﹅ (مجهورة)", items: [
+            {jp:"が",rom:"ga",ar:"غا"},{jp:"ぎ",rom:"gi",ar:"غي"},{jp:"ぐ",rom:"gu",ar:"غو"},{jp:"げ",rom:"ge",ar:"غيه"},{jp:"ご",rom:"go",ar:"غو"},
+            {jp:"ざ",rom:"za",ar:"زا"},{jp:"じ",rom:"ji",ar:"جي"},{jp:"ず",rom:"zu",ar:"زو"},{jp:"ぜ",rom:"ze",ar:"زيه"},{jp:"ぞ",rom:"zo",ar:"زو"},
+            {jp:"だ",rom:"da",ar:"دا"},{jp:"ぢ",rom:"di",ar:"جي"},{jp:"づ",rom:"du",ar:"زو"},{jp:"で",rom:"de",ar:"ديه"},{jp:"ど",rom:"do",ar:"دو"},
+            {jp:"ば",rom:"ba",ar:"با"},{jp:"び",rom:"bi",ar:"بي"},{jp:"ぶ",rom:"bu",ar:"بو"},{jp:"べ",rom:"be",ar:"بيه"},{jp:"ぼ",rom:"bo",ar:"بو"},
+          ]},
+          { label: "هانداكوتين ﹆ (P)", items: [{jp:"ぱ",rom:"pa",ar:"با (p)"},{jp:"ぴ",rom:"pi",ar:"بي (p)"},{jp:"ぷ",rom:"pu",ar:"بو (p)"},{jp:"ぺ",rom:"pe",ar:"بيه (p)"},{jp:"ぽ",rom:"po",ar:"بو (p)"}] },
+        ],
+      },
+      {
+        id: "katakana", title: "كاتاكانا – الحروف الكاملة (46)", icon: "🔷", color: "#4E9CFF",
+        groups: [
+          { label: "أ – صوت العلة", items: [{jp:"ア",rom:"a",ar:"آ"},{jp:"イ",rom:"i",ar:"إي"},{jp:"ウ",rom:"u",ar:"أُو"},{jp:"エ",rom:"e",ar:"إِه"},{jp:"オ",rom:"o",ar:"أُو (قصير)"}] },
+          { label: "ك – Ka", items: [{jp:"カ",rom:"ka",ar:"كا"},{jp:"キ",rom:"ki",ar:"كي"},{jp:"ク",rom:"ku",ar:"كو"},{jp:"ケ",rom:"ke",ar:"كيه"},{jp:"コ",rom:"ko",ar:"كو"}] },
+          { label: "س – Sa", items: [{jp:"サ",rom:"sa",ar:"سا"},{jp:"シ",rom:"shi",ar:"شي"},{jp:"ス",rom:"su",ar:"سو"},{jp:"セ",rom:"se",ar:"سيه"},{jp:"ソ",rom:"so",ar:"سو"}] },
+          { label: "ت – Ta", items: [{jp:"タ",rom:"ta",ar:"تا"},{jp:"チ",rom:"chi",ar:"تشي"},{jp:"ツ",rom:"tsu",ar:"تسو"},{jp:"テ",rom:"te",ar:"تيه"},{jp:"ト",rom:"to",ar:"تو"}] },
+          { label: "ن – Na", items: [{jp:"ナ",rom:"na",ar:"نا"},{jp:"ニ",rom:"ni",ar:"ني"},{jp:"ヌ",rom:"nu",ar:"نو"},{jp:"ネ",rom:"ne",ar:"نيه"},{jp:"ノ",rom:"no",ar:"نو"}] },
+          { label: "هـ – Ha", items: [{jp:"ハ",rom:"ha",ar:"ها"},{jp:"ヒ",rom:"hi",ar:"هي"},{jp:"フ",rom:"fu",ar:"فو"},{jp:"ヘ",rom:"he",ar:"هيه"},{jp:"ホ",rom:"ho",ar:"هو"}] },
+          { label: "م – Ma", items: [{jp:"マ",rom:"ma",ar:"ما"},{jp:"ミ",rom:"mi",ar:"مي"},{jp:"ム",rom:"mu",ar:"مو"},{jp:"メ",rom:"me",ar:"ميه"},{jp:"モ",rom:"mo",ar:"مو"}] },
+          { label: "ي – Ya", items: [{jp:"ヤ",rom:"ya",ar:"يا"},{jp:"ユ",rom:"yu",ar:"يو"},{jp:"ヨ",rom:"yo",ar:"يو"}] },
+          { label: "ر – Ra", items: [{jp:"ラ",rom:"ra",ar:"را"},{jp:"リ",rom:"ri",ar:"ري"},{jp:"ル",rom:"ru",ar:"رو"},{jp:"レ",rom:"re",ar:"ريه"},{jp:"ロ",rom:"ro",ar:"رو"}] },
+          { label: "و – Wa / N", items: [{jp:"ワ",rom:"wa",ar:"وا"},{jp:"ヲ",rom:"wo",ar:"وو (أداة نحوية)"},{jp:"ン",rom:"n",ar:"ن (صامت)"}] },
+          { label: "داكوتين ﹅﹅ (مجهورة)", items: [
+            {jp:"ガ",rom:"ga",ar:"غا"},{jp:"ギ",rom:"gi",ar:"غي"},{jp:"グ",rom:"gu",ar:"غو"},{jp:"ゲ",rom:"ge",ar:"غيه"},{jp:"ゴ",rom:"go",ar:"غو"},
+            {jp:"ザ",rom:"za",ar:"زا"},{jp:"ジ",rom:"ji",ar:"جي"},{jp:"ズ",rom:"zu",ar:"زو"},{jp:"ゼ",rom:"ze",ar:"زيه"},{jp:"ゾ",rom:"zo",ar:"زو"},
+            {jp:"ダ",rom:"da",ar:"دا"},{jp:"ヂ",rom:"di",ar:"جي"},{jp:"ヅ",rom:"du",ar:"زو"},{jp:"デ",rom:"de",ar:"ديه"},{jp:"ド",rom:"do",ar:"دو"},
+            {jp:"バ",rom:"ba",ar:"با"},{jp:"ビ",rom:"bi",ar:"بي"},{jp:"ブ",rom:"bu",ar:"بو"},{jp:"ベ",rom:"be",ar:"بيه"},{jp:"ボ",rom:"bo",ar:"بو"},
+          ]},
+          { label: "هانداكوتين ﹆ (P)", items: [{jp:"パ",rom:"pa",ar:"با (p)"},{jp:"ピ",rom:"pi",ar:"بي (p)"},{jp:"プ",rom:"pu",ar:"بو (p)"},{jp:"ペ",rom:"pe",ar:"بيه (p)"},{jp:"ポ",rom:"po",ar:"بو (p)"}] },
+          { label: "كلمات أجنبية شائعة", items: [
+            {jp:"コーヒー",rom:"Koohii",ar:"قهوة (Coffee)"},{jp:"テレビ",rom:"Terebi",ar:"تلفزيون (TV)"},
+            {jp:"パン",rom:"Pan",ar:"خبز"},{jp:"アイスクリーム",rom:"Aisukuriimu",ar:"آيس كريم"},
+            {jp:"バス",rom:"Basu",ar:"أوتوبيس"},{jp:"タクシー",rom:"Takushii",ar:"تاكسي"},
+            {jp:"ホテル",rom:"Hoteru",ar:"فندق"},{jp:"スーパー",rom:"Suupaa",ar:"سوبر ماركت"},
+          ]},
+        ],
+      },
+      {
+        id: "greetings", title: "التحيات اليومية", icon: "👋", color: "#4ECDC4",
+        items: [
+          {jp:"おはようございます",rom:"Ohayou gozaimasu",ar:"صباح الخير (رسمي)"},
+          {jp:"おはよう",rom:"Ohayou",ar:"صباح الخير (عادي)"},
+          {jp:"こんにちは",rom:"Konnichiwa",ar:"مرحباً / السلام"},
+          {jp:"こんばんは",rom:"Konbanwa",ar:"مساء الخير"},
+          {jp:"さようなら",rom:"Sayounara",ar:"مع السلامة"},
+          {jp:"ありがとう",rom:"Arigatou",ar:"شكراً"},
+          {jp:"すみません",rom:"Sumimasen",ar:"عفواً / آسف"},
+          {jp:"はい",rom:"Hai",ar:"نعم"},
+          {jp:"いいえ",rom:"Iie",ar:"لا"},
+        ],
+      },
+      {
+        id: "numbers", title: "الأرقام 1-10", icon: "🔢", color: "#A55EEA",
+        items: [
+          {jp:"一 (いち)",rom:"Ichi",ar:"١"},{jp:"二 (に)",rom:"Ni",ar:"٢"},{jp:"三 (さん)",rom:"San",ar:"٣"},
+          {jp:"四 (し/よん)",rom:"Shi / Yon",ar:"٤"},{jp:"五 (ご)",rom:"Go",ar:"٥"},{jp:"六 (ろく)",rom:"Roku",ar:"٦"},
+          {jp:"七 (しち/なな)",rom:"Shichi / Nana",ar:"٧"},{jp:"八 (はち)",rom:"Hachi",ar:"٨"},
+          {jp:"九 (く/きゅう)",rom:"Ku / Kyuu",ar:"٩"},{jp:"十 (じゅう)",rom:"Juu",ar:"١٠"},
+        ],
+      },
+      {
+        id: "food", title: "الطعام والمشروبات", icon: "🍜", color: "#F7931E",
+        items: [
+          {jp:"すし",rom:"Sushi",ar:"سوشي"},{jp:"ラーメン",rom:"Raamen",ar:"رامن (شوربة نودلز)"},
+          {jp:"てんぷら",rom:"Tenpura",ar:"تمبورا (مقلي بعجينة)"},{jp:"おにぎり",rom:"Onigiri",ar:"كرة أرز"},
+          {jp:"みず",rom:"Mizu",ar:"ماء"},{jp:"おちゃ",rom:"Ocha",ar:"شاي أخضر"},
+          {jp:"コーヒー",rom:"Koohii",ar:"قهوة"},{jp:"おいしい",rom:"Oishii",ar:"لذيذ!"},
+        ],
+      },
+      {
+        id: "grammar", title: "جملة بسيطة", icon: "📝", color: "#26DE81",
+        items: [
+          {jp:"わたしは [اسم] です",rom:"Watashi wa [naam] desu",ar:"أنا [اسمك]"},
+          {jp:"これは なんですか？",rom:"Kore wa nan desu ka?",ar:"ما هذا؟"},
+          {jp:"どこですか？",rom:"Doko desu ka?",ar:"أين هو؟"},
+          {jp:"いくらですか？",rom:"Ikura desu ka?",ar:"بكام؟"},
+          {jp:"わかりません",rom:"Wakarimasen",ar:"لا أفهم"},
+          {jp:"もう一度お願いします",rom:"Mou ichido onegaishimasu",ar:"من فضلك كرر"},
+        ],
+      },
+      {
+        id: "kanji", title: "كانجي – أشهر الرموز", icon: "🀄", color: "#E53E3E",
+        groups: [
+          { label: "الطبيعة والكون", items: [
+            {jp:"日",rom:"Nichi / Hi",ar:"شمس / يوم"},{jp:"月",rom:"Tsuki / Gatsu",ar:"قمر / شهر"},
+            {jp:"山",rom:"Yama / San",ar:"جبل"},{jp:"川",rom:"Kawa / Sen",ar:"نهر"},
+            {jp:"火",rom:"Hi / Ka",ar:"نار"},{jp:"水",rom:"Mizu / Sui",ar:"ماء"},
+            {jp:"木",rom:"Ki / Moku",ar:"شجرة / خشب"},{jp:"土",rom:"Tsuchi / Do",ar:"تراب / أرض"},
+          ]},
+          { label: "الإنسان والجسم", items: [
+            {jp:"人",rom:"Hito / Jin",ar:"إنسان / شخص"},{jp:"口",rom:"Kuchi / Ko",ar:"فم"},
+            {jp:"手",rom:"Te / Shu",ar:"يد"},{jp:"目",rom:"Me / Moku",ar:"عين"},
+            {jp:"耳",rom:"Mimi / Ji",ar:"أذن"},{jp:"心",rom:"Kokoro / Shin",ar:"قلب / روح"},
+          ]},
+          { label: "الأرقام بالكانجي", items: [
+            {jp:"一",rom:"Ichi",ar:"١"},{jp:"二",rom:"Ni",ar:"٢"},{jp:"三",rom:"San",ar:"٣"},
+            {jp:"四",rom:"Shi / Yon",ar:"٤"},{jp:"五",rom:"Go",ar:"٥"},{jp:"十",rom:"Juu",ar:"١٠"},
+            {jp:"百",rom:"Hyaku",ar:"١٠٠"},{jp:"千",rom:"Sen",ar:"١٠٠٠"},
+          ]},
+          { label: "الحياة اليومية", items: [
+            {jp:"食",rom:"Shoku / Ta",ar:"طعام / أكل"},{jp:"飲",rom:"In / No",ar:"شرب"},
+            {jp:"学",rom:"Gaku / Mana",ar:"دراسة / تعلم"},{jp:"語",rom:"Go / Kata",ar:"لغة / كلام"},
+            {jp:"車",rom:"Kuruma / Sha",ar:"سيارة"},{jp:"電",rom:"Den",ar:"كهرباء"},
+            {jp:"金",rom:"Kin / Kana",ar:"ذهب / مال"},{jp:"店",rom:"Mise / Ten",ar:"محل / دكان"},
+          ]},
+          { label: "المشاعر والصفات", items: [
+            {jp:"愛",rom:"Ai",ar:"حب"},{jp:"友",rom:"Tomo / Yuu",ar:"صديق"},
+            {jp:"力",rom:"Chikara / Ryoku",ar:"قوة"},{jp:"夢",rom:"Yume / Mu",ar:"حلم"},
+            {jp:"美",rom:"Bi / Utsuku",ar:"جمال"},{jp:"幸",rom:"Shiawase / Ko",ar:"سعادة"},
+          ]},
+        ],
+      },
+    ];
 
-<!-- PROGRESS -->
-<div class="screen" id="screen-progress">
-  <div class="section-title" style="margin-top:4px">📊 تقدمك</div>
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-num" id="stat-xp" style="color:var(--cyan)">0</div>
-      <div class="stat-label">نقاط XP</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-streak" style="color:var(--orange)">0</div>
-      <div class="stat-label">أيام متتالية 🔥</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-cards" style="color:var(--green)">0</div>
-      <div class="stat-label">بطاقات تعلمتها</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-msgs" style="color:var(--pink)">0</div>
-      <div class="stat-label">أسئلة للـ AI</div>
-    </div>
-  </div>
-  <div class="section-title">تقدم الدروس</div>
-  <div id="lesson-progress-list"></div>
-</div>
+    const petals = Array.from({length:18},(_,i)=>({
+      id:i, left:`${Math.random()*100}%`,
+      delay:`${Math.random()*8}s`, dur:`${6+Math.random()*6}s`,
+      size:`${10+Math.random()*14}px`
+    }));
 
-<!-- NAV BAR -->
-<div class="navbar">
-  <div class="nav-item active" id="nav-home" onclick="showScreen('home')">
-    <div class="nav-icon">🏠</div>
-    <div class="nav-label">الرئيسية</div>
-  </div>
-  <div class="nav-item" id="nav-chat" onclick="showScreen('chat')">
-    <div class="nav-icon">🤖</div>
-    <div class="nav-label">المساعد</div>
-  </div>
-  <div class="nav-item" id="nav-flash" onclick="showScreen('flash')">
-    <div class="nav-icon">🃏</div>
-    <div class="nav-label">البطاقات</div>
-  </div>
-  <div class="nav-item" id="nav-progress" onclick="showScreen('progress')">
-    <div class="nav-icon">📊</div>
-    <div class="nav-label">تقدمي</div>
-  </div>
-</div>
+    function FlipCard({item, cardKey, color, flipped, toggleFlip}) {
+      const isFlipped = flipped[cardKey];
+      return (
+        <div className="flip-card" onClick={()=>toggleFlip(cardKey)}
+          style={{height:130,perspective:600,cursor:"pointer",borderRadius:16,overflow:"hidden",boxShadow:"0 3px 14px rgba(0,0,0,0.10)"}}>
+          <div className={`card-flip${isFlipped?" flipped":""}`} style={{position:"relative",width:"100%",height:"100%"}}>
+            <div className="card-front" style={{position:"absolute",inset:0,borderRadius:16,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6,padding:12,background:`linear-gradient(135deg,#fff 60%,${color}18)`,border:`2px solid ${color}55`}}>
+              <div style={{fontSize:22,fontFamily:"'Noto Sans JP',sans-serif",color:"#1a0a12",fontWeight:700,textAlign:"center"}}>{item.jp}</div>
+              <div style={{fontSize:12,color:"#7a4060",fontStyle:"italic",textAlign:"center"}}>{item.rom}</div>
+              <div style={{fontSize:10,color:"#b07090",marginTop:4}}>اضغط 👆</div>
+            </div>
+            <div className="card-back" style={{position:"absolute",inset:0,borderRadius:16,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6,padding:12,background:`linear-gradient(135deg,${color}99,${color}cc)`}}>
+              <div style={{fontSize:18,fontWeight:900,color:"#fff",textAlign:"center",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>{item.ar}</div>
+              <div style={{fontSize:13,fontFamily:"'Noto Sans JP',sans-serif",color:"rgba(255,255,255,0.9)",textAlign:"center"}}>{item.jp}</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
-<script>
-// ── DATA ──
-const LESSONS = [
-  {
-    id:"hiragana", title:"الهيراغانا", icon:"あ", color:"#E63946",
-    desc:"الحروف الأساسية",
-    cards:[
-      {jp:"あ",romaji:"a",ar:"أ"},{jp:"い",romaji:"i",ar:"إي"},
-      {jp:"う",romaji:"u",ar:"أو"},{jp:"え",romaji:"e",ar:"إي (e)"},
-      {jp:"お",romaji:"o",ar:"أو (o)"},{jp:"か",romaji:"ka",ar:"كا"},
-      {jp:"き",romaji:"ki",ar:"كي"},{jp:"く",romaji:"ku",ar:"كو"},
-      {jp:"さ",romaji:"sa",ar:"سا"},{jp:"し",romaji:"shi",ar:"شي"},
-      {jp:"な",romaji:"na",ar:"نا"},{jp:"に",romaji:"ni",ar:"ني"},
-      {jp:"は",romaji:"ha",ar:"ها"},{jp:"ま",romaji:"ma",ar:"ما"},
-      {jp:"や",romaji:"ya",ar:"يا"},{jp:"ら",romaji:"ra",ar:"را"},
-    ]
-  },
-  {
-    id:"katakana", title:"الكاتاكانا", icon:"ア", color:"#c44dff",
-    desc:"حروف الكلمات الأجنبية",
-    cards:[
-      {jp:"ア",romaji:"a",ar:"أ"},{jp:"イ",romaji:"i",ar:"إي"},
-      {jp:"ウ",romaji:"u",ar:"أو"},{jp:"エ",romaji:"e",ar:"إي (e)"},
-      {jp:"オ",romaji:"o",ar:"أو (o)"},{jp:"カ",romaji:"ka",ar:"كا"},
-      {jp:"キ",romaji:"ki",ar:"كي"},{jp:"ク",romaji:"ku",ar:"كو"},
-      {jp:"テ",romaji:"te",ar:"تي"},{jp:"ト",romaji:"to",ar:"تو"},
-    ]
-  },
-  {
-    id:"numbers", title:"الأرقام", icon:"１", color:"#2A9D8F",
-    desc:"من ١ إلى ١٠",
-    cards:[
-      {jp:"一",romaji:"ichi",ar:"واحد"},{jp:"二",romaji:"ni",ar:"اثنان"},
-      {jp:"三",romaji:"san",ar:"ثلاثة"},{jp:"四",romaji:"yon",ar:"أربعة"},
-      {jp:"五",romaji:"go",ar:"خمسة"},{jp:"六",romaji:"roku",ar:"ستة"},
-      {jp:"七",romaji:"nana",ar:"سبعة"},{jp:"八",romaji:"hachi",ar:"ثمانية"},
-      {jp:"九",romaji:"kyuu",ar:"تسعة"},{jp:"十",romaji:"juu",ar:"عشرة"},
-    ]
-  },
-  {
-    id:"greetings", title:"التحيات", icon:"👋", color:"#F4A261",
-    desc:"جمل يومية أساسية",
-    cards:[
-      {jp:"おはようございます",romaji:"Ohayou gozaimasu",ar:"صباح الخير"},
-      {jp:"こんにちは",romaji:"Konnichiwa",ar:"مرحباً"},
-      {jp:"こんばんは",romaji:"Konbanwa",ar:"مساء الخير"},
-      {jp:"ありがとう",romaji:"Arigatou",ar:"شكراً"},
-      {jp:"すみません",romaji:"Sumimasen",ar:"عفواً / آسف"},
-      {jp:"はい",romaji:"Hai",ar:"نعم"},
-      {jp:"いいえ",romaji:"Iie",ar:"لا"},
-      {jp:"さようなら",romaji:"Sayounara",ar:"وداعاً"},
-      {jp:"どうぞ",romaji:"Douzo",ar:"تفضل"},
-      {jp:"おやすみ",romaji:"Oyasumi",ar:"تصبح على خير"},
-    ]
-  },
-  {
-    id:"food", title:"الطعام", icon:"🍜", color:"#ff6b9d",
-    desc:"أسماء الأطعمة",
-    cards:[
-      {jp:"すし",romaji:"Sushi",ar:"سوشي"},
-      {jp:"ラーメン",romaji:"Raamen",ar:"رامن (شعرية)"},
-      {jp:"てんぷら",romaji:"Tenpura",ar:"تمبورا"},
-      {jp:"みず",romaji:"Mizu",ar:"ماء"},
-      {jp:"ごはん",romaji:"Gohan",ar:"أرز / وجبة"},
-      {jp:"おちゃ",romaji:"Ocha",ar:"شاي"},
-      {jp:"さかな",romaji:"Sakana",ar:"سمك"},
-      {jp:"にく",romaji:"Niku",ar:"لحم"},
-    ]
-  },
-  {
-    id:"colors", title:"الألوان", icon:"🎨", color:"#4dc8ff",
-    desc:"أسماء الألوان",
-    cards:[
-      {jp:"あか",romaji:"Aka",ar:"أحمر"},
-      {jp:"あお",romaji:"Ao",ar:"أزرق / أخضر"},
-      {jp:"しろ",romaji:"Shiro",ar:"أبيض"},
-      {jp:"くろ",romaji:"Kuro",ar:"أسود"},
-      {jp:"き",romaji:"Ki",ar:"أصفر"},
-      {jp:"みどり",romaji:"Midori",ar:"أخضر"},
-      {jp:"ピンク",romaji:"Pinku",ar:"وردي"},
-      {jp:"むらさき",romaji:"Murasaki",ar:"بنفسجي"},
-    ]
-  },
-];
+    function App() {
+      const [activeLesson, setActiveLesson] = useState(null);
+      const [flipped, setFlipped] = useState({});
+      const [showAI, setShowAI] = useState(false);
+      const [aiMessages, setAiMessages] = useState([
+        {role:"assistant", text:"مرحباً! 🌸 أنا مساعدك الذكي لتعلم اليابانية. اسألني أي سؤال عن اللغة اليابانية وهرد عليك بالعربي!"}
+      ]);
+      const [aiInput, setAiInput] = useState("");
+      const [aiLoading, setAiLoading] = useState(false);
 
-const TIPS = [
-  "كلمة 「ありがとう」(أريغاتو) تعني شكراً. قولها مع انحناءة خفيفة دليل احترام! 🙏",
-  "اليابانية فيها ٣ أبجديات: هيراغانا، كاتاكانا، وكانجي. ابدأ بالهيراغانا! 📝",
-  "كلمة 「かわいい」(كاوايي) تعني 'لطيف/جميل' وهي من أشهر الكلمات اليابانية! 🌸",
-  "الكاتاكانا تُستخدم لكتابة الكلمات الأجنبية زي アラビア (عربي)! 🌍",
-  "في اليابان، تقول 「いただきます」(إيتاداكيماس) قبل الأكل = بسم الله! 🍱",
-];
+      const toggleFlip = (key) => setFlipped(prev=>({...prev,[key]:!prev[key]}));
 
-const SYSTEM = `أنت مدرس متخصص في تعليم اللغة اليابانية للناطقين بالعربية.
-- اشرح دائماً بالعربية البسيطة والواضحة
-- اكتب الكلمات اليابانية بالحروف اليابانية ثم بالنطق (romaji) ثم المعنى
-- قدم أمثلة عملية وجمل قصيرة مفيدة
-- كن مشجعاً وإيجابياً دائماً
-- ردودك مختصرة ومفيدة (٣-٦ أسطر كافية)`;
+      const sendAIMessage = async () => {
+        const text = aiInput.trim();
+        if (!text || aiLoading) return;
+        const userMsg = {role:"user", text};
+        setAiMessages(prev=>[...prev, userMsg]);
+        setAiInput("");
+        setAiLoading(true);
+        try {
+          const history = [...aiMessages, userMsg].map(m=>({role: m.role==="assistant"?"assistant":"user", content:m.text}));
+          const res = await fetch(SUPABASE_URL, {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({messages: history}),
+          });
+          const data = await res.json();
+          const reply = data.content?.map(c=>c.text||"").join("") || "عذراً، حدث خطأ.";
+          setAiMessages(prev=>[...prev,{role:"assistant",text:reply}]);
+        } catch {
+          setAiMessages(prev=>[...prev,{role:"assistant",text:"عذراً، في مشكلة في الاتصال. جرب تاني!"}]);
+        }
+        setAiLoading(false);
+      };
 
-// ── STATE ──
-let state = JSON.parse(localStorage.getItem('nihongo_state') || '{}');
-state.xp = state.xp || 0;
-state.streak = state.streak || 1;
-state.cardsLearned = state.cardsLearned || 0;
-state.msgsCount = state.msgsCount || 0;
-state.lessonProgress = state.lessonProgress || {};
+      const lesson = lessons.find(l=>l.id===activeLesson);
 
-let currentScreen = 'home';
-let activeLesson = null;
-let cardIndex = 0;
-let cardFlipped = false;
-let chatHistory = [
-  {role:'assistant', content:'مرحباً! 🌸 أنا مساعدك لتعليم اللغة اليابانية.\nاسألني عن أي كلمة أو جملة وهشرحهالك بالعربي!\n\nمثلاً: «إيه معنى ありがとう؟» أو «عايز أتعلم أقول صباح الخير»'}
-];
+      const rootStyle = {
+        minHeight:"100vh",
+        background:"linear-gradient(160deg,#fff8f8 0%,#fff0f5 40%,#f5f0ff 70%,#f0f8ff 100%)",
+        fontFamily:"'Tajawal',sans-serif",
+        direction:"rtl",
+        position:"relative",
+        overflow:"hidden",
+      };
 
-function saveState() { localStorage.setItem('nihongo_state', JSON.stringify(state)); }
+      return (
+        <div style={rootStyle}>
+          {petals.map(p=>(
+            <div key={p.id} style={{position:"fixed",top:"-40px",left:p.left,pointerEvents:"none",
+              animation:`fall ${p.dur} ${p.delay} linear infinite`,zIndex:0,opacity:0.75,fontSize:p.size}}>🌸</div>
+          ))}
 
-// ── INIT ──
-function init() {
-  updateBadges();
-  renderLessons();
-  renderTip();
-  renderChat();
-  renderProgress();
-}
+          <div style={{maxWidth:700,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
+            {/* Header */}
+            <div style={{textAlign:"center",padding:"36px 20px 28px",position:"relative",marginBottom:8}}>
+              <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:320,height:320,
+                background:"radial-gradient(circle,rgba(220,38,38,0.08) 0%,transparent 70%)",borderRadius:"50%",pointerEvents:"none"}}/>
+              <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:12,marginBottom:12}}>
+                <span style={{fontSize:36}}>🇯🇵</span>
+                <span style={{color:"#DC2626",fontSize:22,fontWeight:"bold"}}>⟷</span>
+                <span style={{fontSize:36}}>🇪🇬</span>
+              </div>
+              <h1 className="shimmer-text" style={{fontSize:36,fontWeight:900,marginBottom:8,fontFamily:"'Noto Sans JP','Tajawal',sans-serif"}}>
+                にほんご مع العربي
+              </h1>
+              <p style={{color:"#6b3a5a",fontSize:16,fontWeight:600}}>تعلّم اليابانية بسهولة وبالعربي الفصيح 🌸</p>
+            </div>
 
-function updateBadges() {
-  document.getElementById('streak-val').textContent = state.streak;
-  document.getElementById('xp-val').textContent = state.xp;
-  document.getElementById('stat-xp').textContent = state.xp;
-  document.getElementById('stat-streak').textContent = state.streak;
-  document.getElementById('stat-cards').textContent = state.cardsLearned;
-  document.getElementById('stat-msgs').textContent = state.msgsCount;
-}
+            {/* Lesson List */}
+            {!activeLesson && (
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:8}}>
+                {lessons.map((l,i)=>(
+                  <button key={l.id} className="lesson-btn" onClick={()=>setActiveLesson(l.id)}
+                    style={{border:"none",borderRadius:18,padding:"20px 16px",display:"flex",flexDirection:"column",
+                      alignItems:"center",gap:8,color:"#fff",textShadow:"0 1px 4px rgba(0,0,0,0.2)",
+                      boxShadow:"0 4px 18px rgba(0,0,0,0.10)",
+                      background:`linear-gradient(135deg,${l.color}dd,${l.color}88)`,
+                      animation:`fadeUp 0.5s ${i*0.08}s ease forwards`,opacity:0}}>
+                    <span style={{fontSize:36}}>{l.icon}</span>
+                    <span style={{fontSize:15,fontWeight:700,textAlign:"center"}}>{l.title}</span>
+                    <span style={{fontSize:18,opacity:0.85}}>←</span>
+                  </button>
+                ))}
+                <button className="lesson-btn" onClick={()=>setShowAI(true)}
+                  style={{border:"none",borderRadius:18,padding:"20px 16px",display:"flex",flexDirection:"row",
+                    justifyContent:"center",alignItems:"center",gap:12,color:"#fff",
+                    background:"linear-gradient(135deg,#7C3AED,#A855F7)",
+                    gridColumn:"1 / -1",boxShadow:"0 6px 24px rgba(124,58,237,0.3)",
+                    animation:`fadeUp 0.5s ${lessons.length*0.08}s ease forwards`,opacity:0}}>
+                  <span style={{fontSize:28}}>🤖</span>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontSize:16,fontWeight:900}}>المساعد الذكي</div>
+                    <div style={{fontSize:12,opacity:0.85}}>اسألني أي سؤال عن اليابانية</div>
+                  </div>
+                  <span style={{fontSize:22}}>✨</span>
+                </button>
+              </div>
+            )}
 
-function renderTip() {
-  const t = TIPS[Math.floor(Math.random() * TIPS.length)];
-  document.getElementById('daily-tip').innerHTML = '🌸 ' + t;
-}
+            {/* Lesson Detail */}
+            {lesson && (
+              <div style={{animation:"fadeUp 0.4s ease"}}>
+                <button onClick={()=>{setActiveLesson(null);setFlipped({});}}
+                  style={{background:"#fff",border:"2px solid #DC2626",color:"#DC2626",borderRadius:12,
+                    padding:"10px 20px",cursor:"pointer",fontSize:15,marginBottom:16,
+                    fontFamily:"'Tajawal',sans-serif",fontWeight:700,boxShadow:"0 2px 8px rgba(220,38,38,0.10)"}}>
+                  ← العودة للقائمة
+                </button>
 
-function renderLessons() {
-  const grid = document.getElementById('lessons-grid');
-  grid.innerHTML = LESSONS.map(l => {
-    const prog = state.lessonProgress[l.id] || 0;
-    const pct = Math.round((prog / l.cards.length) * 100);
-    return `<div class="lesson-card" style="background:linear-gradient(135deg,${l.color}22,${l.color}11);border-color:${l.color}44"
-      onclick="startLesson('${l.id}')">
-      <div class="lesson-icon">${l.icon}</div>
-      <div class="lesson-title">${l.title}</div>
-      <div class="lesson-desc">${l.desc}</div>
-      <div style="margin-top:8px;background:rgba(255,255,255,0.1);border-radius:4px;height:4px">
-        <div style="width:${pct}%;height:100%;background:${l.color};border-radius:4px"></div>
-      </div>
-      <div class="lesson-count">${l.cards.length} بطاقة • ${pct}%</div>
-    </div>`;
-  }).join('');
-}
+                <div style={{borderRadius:18,padding:"20px",display:"flex",alignItems:"center",gap:16,marginBottom:20,
+                  color:"#fff",boxShadow:"0 6px 24px rgba(0,0,0,0.12)",
+                  background:`linear-gradient(135deg,${lesson.color},${lesson.color}88)`}}>
+                  <span style={{fontSize:40}}>{lesson.icon}</span>
+                  <h2 style={{fontSize:22,fontWeight:900,color:"#fff",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>{lesson.title}</h2>
+                </div>
 
-function renderProgress() {
-  const list = document.getElementById('lesson-progress-list');
-  list.innerHTML = LESSONS.map(l => {
-    const prog = state.lessonProgress[l.id] || 0;
-    const pct = Math.round((prog / l.cards.length) * 100);
-    return `<div class="lesson-progress">
-      <div class="lp-row"><span>${l.icon} ${l.title}</span><span style="opacity:0.6">${prog}/${l.cards.length}</span></div>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width:${pct}%;background:${l.color}"></div>
-      </div>
-    </div>`;
-  }).join('');
-}
+                {lesson.isIntro && (
+                  <div style={{background:"#fff",borderRadius:18,padding:"24px 20px",border:"2px solid #ffd6e0",
+                    marginBottom:20,boxShadow:"0 4px 20px rgba(220,38,38,0.07)"}}>
+                    {lesson.content.trim().split("\n\n").map((para,i)=>(
+                      <p key={i} style={{color:"#3d1f2f",fontSize:15,lineHeight:2,marginBottom:16,whiteSpace:"pre-line"}}>{para.trim()}</p>
+                    ))}
+                  </div>
+                )}
 
-// ── SCREEN NAV ──
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const s = document.getElementById('screen-' + name);
-  const n = document.getElementById('nav-' + name);
-  if (s) s.classList.add('active');
-  if (n) n.classList.add('active');
-  currentScreen = name;
-  if (name === 'progress') { updateBadges(); renderProgress(); }
-}
+                {lesson.items && (
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+                    {lesson.items.map((item,i)=>{
+                      const key=`${lesson.id}-${i}`;
+                      return <FlipCard key={key} item={item} cardKey={key} color={lesson.color} flipped={flipped} toggleFlip={toggleFlip}/>;
+                    })}
+                  </div>
+                )}
 
-function gotoChat() { showScreen('chat'); }
+                {lesson.groups && lesson.groups.map((group,gi)=>(
+                  <div key={gi} style={{marginBottom:24}}>
+                    <div style={{fontSize:13,fontWeight:700,borderRight:`4px solid ${lesson.color}88`,
+                      paddingRight:10,marginBottom:10,textAlign:"right",color:lesson.color}}>
+                      {group.label}
+                    </div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+                      {group.items.map((item,i)=>{
+                        const key=`${lesson.id}-g${gi}-${i}`;
+                        return <FlipCard key={key} item={item} cardKey={key} color={lesson.color} flipped={flipped} toggleFlip={toggleFlip}/>;
+                      })}
+                    </div>
+                  </div>
+                ))}
 
-// ── LESSONS ──
-function startLesson(id) {
-  activeLesson = LESSONS.find(l => l.id === id);
-  cardIndex = 0; cardFlipped = false;
-  renderCard();
-  showScreen('flash');
-  document.getElementById('nav-flash').classList.add('active');
-  document.getElementById('nav-home').classList.remove('active');
-}
+                <p style={{textAlign:"center",color:"#a0607a",fontSize:13,marginTop:8,marginBottom:20}}>
+                  💡 اضغط على أي بطاقة لتقلبها وترى المعنى بالعربي
+                </p>
+              </div>
+            )}
 
-function renderCard() {
-  if (!activeLesson) return;
-  const card = activeLesson.cards[cardIndex];
-  const total = activeLesson.cards.length;
-  document.getElementById('flash-title').textContent = activeLesson.icon + ' ' + activeLesson.title;
-  document.getElementById('flash-progress').style.width = ((cardIndex+1)/total*100) + '%';
-  document.getElementById('flash-progress').style.background = activeLesson.color;
-  document.getElementById('flash-count').textContent = (cardIndex+1) + ' / ' + total;
-  document.getElementById('card-jp').textContent = card.jp;
-  document.getElementById('card-jp2').textContent = card.jp;
-  document.getElementById('card-romaji').textContent = card.romaji;
-  document.getElementById('card-romaji2').textContent = card.romaji;
-  document.getElementById('card-ar').textContent = card.ar;
-  document.getElementById('card-inner').classList.remove('flipped');
-  cardFlipped = false;
-  const isLast = cardIndex === total - 1;
-  const nextBtn = document.getElementById('next-btn');
-  nextBtn.textContent = isLast ? '✅ أنهيت الدرس!' : 'التالي ▶';
-  nextBtn.style.background = isLast ? 'var(--green)' : activeLesson.color;
-}
+            <div style={{textAlign:"center",color:"#c09aaa",fontSize:12,marginTop:32}}>
+              🌸 にほんごアラビア語 • تعلم اليابانية بالعربي 🌸
+            </div>
+          </div>
 
-function flipCard() {
-  cardFlipped = !cardFlipped;
-  document.getElementById('card-inner').classList.toggle('flipped', cardFlipped);
-}
+          {/* AI Modal */}
+          {showAI && (
+            <div onClick={e=>e.target===e.currentTarget&&setShowAI(false)}
+              style={{position:"fixed",inset:0,background:"rgba(30,10,50,0.45)",backdropFilter:"blur(4px)",
+                zIndex:100,display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+              <div style={{background:"linear-gradient(160deg,#fdf8ff,#fff0f8)",borderRadius:"24px 24px 0 0",
+                width:"100%",maxWidth:700,height:"80vh",display:"flex",flexDirection:"column",
+                boxShadow:"0 -8px 40px rgba(124,58,237,0.18)",border:"2px solid #e8d0f8",borderBottom:"none",overflow:"hidden"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px",
+                  background:"linear-gradient(135deg,#7C3AED,#A855F7)",color:"#fff",fontWeight:900,fontSize:17,direction:"rtl"}}>
+                  <span>🤖 المساعد الذكي</span>
+                  <button onClick={()=>setShowAI(false)}
+                    style={{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",borderRadius:8,width:32,height:32,cursor:"pointer",fontSize:16,fontWeight:700}}>✕</button>
+                </div>
+                <div style={{flex:1,overflowY:"auto",padding:"16px 14px",display:"flex",flexDirection:"column"}}>
+                  {aiMessages.map((m,i)=>(
+                    <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-start":"flex-end",marginBottom:10}}>
+                      <div style={{maxWidth:"82%",padding:"10px 14px",
+                        borderRadius:m.role==="user"?"18px 18px 18px 4px":"18px 18px 4px 18px",
+                        background:m.role==="user"?"linear-gradient(135deg,#7C3AED,#A855F7)":"#fff",
+                        color:m.role==="user"?"#fff":"#2d1a3d",fontSize:14,lineHeight:1.7,
+                        boxShadow:"0 2px 8px rgba(0,0,0,0.10)",
+                        border:m.role==="assistant"?"1px solid #e8d5f0":"none",
+                        whiteSpace:"pre-wrap",textAlign:"right",direction:"rtl",fontFamily:"'Tajawal',sans-serif"}}>
+                        {m.text}
+                      </div>
+                    </div>
+                  ))}
+                  {aiLoading && (
+                    <div style={{display:"flex",justifyContent:"flex-end",marginBottom:10}}>
+                      <div style={{background:"#fff",border:"1px solid #e8d5f0",borderRadius:"18px 18px 4px 18px",
+                        padding:"10px 18px",fontSize:20,boxShadow:"0 2px 8px rgba(0,0,0,0.08)"}}>💬</div>
+                    </div>
+                  )}
+                </div>
+                <div style={{display:"flex",gap:8,padding:"12px 14px 16px",borderTop:"1px solid #f0d8f8",background:"#fff",direction:"rtl"}}>
+                  <button onClick={sendAIMessage} disabled={aiLoading||!aiInput.trim()}
+                    style={{background:"linear-gradient(135deg,#7C3AED,#A855F7)",border:"none",borderRadius:12,
+                      color:"#fff",padding:"10px 18px",fontWeight:700,fontSize:14,cursor:"pointer",
+                      fontFamily:"'Tajawal',sans-serif",whiteSpace:"nowrap",
+                      opacity:aiLoading||!aiInput.trim()?0.5:1}}>إرسال</button>
+                  <input value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                    onKeyDown={e=>e.key==="Enter"&&sendAIMessage()}
+                    placeholder="اكتب سؤالك عن اليابانية..."
+                    dir="rtl"
+                    style={{flex:1,border:"2px solid #d8b8f0",borderRadius:12,padding:"10px 14px",
+                      fontSize:14,fontFamily:"'Tajawal',sans-serif",outline:"none",
+                      background:"#fdf8ff",color:"#2d1a3d",direction:"rtl"}}/>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
 
-function nextCard() {
-  const total = activeLesson.cards.length;
-  state.xp += 2; state.cardsLearned++;
-  if (!state.lessonProgress[activeLesson.id] || state.lessonProgress[activeLesson.id] < cardIndex + 1) {
-    state.lessonProgress[activeLesson.id] = cardIndex + 1;
-  }
-  saveState(); updateBadges();
-  if (cardIndex < total - 1) {
-    cardIndex++; renderCard();
-  } else {
-    state.xp += 20; saveState(); updateBadges(); renderLessons();
-    alert('🎉 أحسنت! أنهيت درس ' + activeLesson.title + '!\nحصلت على +20 XP');
-    showScreen('home');
-  }
-}
-
-function prevCard() {
-  if (cardIndex > 0) { cardIndex--; renderCard(); }
-}
-
-// ── CHAT ──
-function renderChat() {
-  const list = document.getElementById('msg-list');
-  list.innerHTML = chatHistory.map(m =>
-    `<div class="msg ${m.role === 'user' ? 'user' : 'bot'}">${m.role==='assistant'?'🌸 ':''}${escHtml(m.content)}</div>`
-  ).join('');
-  list.scrollTop = list.scrollHeight;
-}
-
-function escHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function smartReply(text) {
-  const t = text.trim().toLowerCase();
-  const DB = [
-    // تحيات
-    {k:['صباح','good morning','ohayo'],r:'صباح الخير! 🌸
-بالياباني: おはようございます (Ohayou gozaimasu)
-قولها كل صباح مع ابتسامة!'},
-    {k:['مساء','good evening','konban'],r:'مساء الخير! 🌙
-بالياباني: こんばんは (Konbanwa)
-تُستخدم بعد غروب الشمس.'},
-    {k:['مرحب','هاي','اهلا','hello','konnichiwa','كونيتشيوا'],r:'مرحباً! 😊
-بالياباني: こんにちは (Konnichiwa)
-معناها السلام عليكم أو مرحباً وتستخدم نهار.'},
-    {k:['شكر','arigatou','اريجاتو'],r:'شكراً 🙏
-بالياباني: ありがとうございます (Arigatou gozaimasu)
-أو بشكل بسيط: ありがとう (Arigatou)'},
-    {k:['وداع','باي','sayonara','ساينارا'],r:'وداعاً! 👋
-بالياباني: さようなら (Sayounara)
-أو بشكل غير رسمي: またね (Mata ne) = أراك لاحقاً'},
-    {k:['تصبح','ليل','oyasumi','اوياسومي'],r:'تصبح على خير! 🌙
-بالياباني: おやすみなさい (Oyasuminasai)
-أو: おやすみ (Oyasumi) بشكل عائلي'},
-    {k:['عفو','اسف','sumimasen','سوميماسن'],r:'عفواً / آسف 🙇
-بالياباني: すみません (Sumimasen)
-تستخدم للاعتذار أو لجذب الانتباه في المطعم مثلاً!'},
-    // أرقام
-    {k:['واحد','1','ichi','ايتشي'],r:'العدد 1 بالياباني: 一 (ichi - إيتشي)
-مثال: واحد كوب قهوة = コーヒー一杯 (Koohii ippai)'},
-    {k:['اثنين','2','ni','ني'],r:'العدد 2 بالياباني: 二 (ni - ني)
-مثال: اثنين شخص = 二人 (futari)'},
-    {k:['ثلاثة','3','san','سان'],r:'العدد 3 بالياباني: 三 (san - سان)
-نفس نطق san بالإنجليزي!'},
-    {k:['اربعة','4','yon','يون','shi'],r:'العدد 4 بالياباني: 四 (yon أو shi)
-اليابانيون بيتجنبوا shi لأنها زي كلمة الموت!'},
-    {k:['خمسة','5','go','جو'],r:'العدد 5 بالياباني: 五 (go - جو)'},
-    {k:['عشرة','10','juu','جو','عشره'],r:'العدد 10 بالياباني: 十 (juu - جو)
-زي لعبة الجودو!'},
-    // طعام
-    {k:['سوشي','sushi'],r:'سوشي بالياباني: すし (Sushi) 🍣
-أشهر أكلة يابانية في العالم!
-أنواعها: نيجيري، ماكي، ساشيمي'},
-    {k:['رامن','ramen'],r:'رامن بالياباني: ラーメン (Raamen) 🍜
-شعرية يابانية بمرق لذيذ
-أنواعها: شويو، ميسو، شيو، تونكوتسو'},
-    {k:['ماء','مية','water','mizu','ميزو'],r:'ماء بالياباني: 水 (mizu - ميزو) 💧
-في المطعم قول: お水をください (Omizu wo kudasai) = من فضلك ماء'},
-    {k:['اكل','طعام','food','gohan','جوهان'],r:'طعام/أكل بالياباني: 食べ物 (Tabemono)
-أو: ご飯 (Gohan) = أرز أو وجبة
-قبل الأكل قول: いただきます (Itadakimasu)!'},
-    // ألوان
-    {k:['احمر','اسود','ابيض','ازرق','لون','color'],r:'الألوان بالياباني 🎨
-🔴 أحمر: 赤 (Aka)
-⚫ أسود: 黒 (Kuro)
-⚪ أبيض: 白 (Shiro)
-🔵 أزرق: 青 (Ao)
-🟡 أصفر: 黄色 (Kiiro)
-🟢 أخضر: 緑 (Midori)'},
-    // حروف
-    {k:['هيراغانا','hiragana','حروف'],r:'الهيراغانا أبجدية يابانية 📝
-أهم حروف:
-あ (a-أ) い (i-إي) う (u-أو)
-え (e-إي) お (o-أو)
-كل حرف يمثل مقطع صوتي واحد'},
-    {k:['كاتاكانا','katakana'],r:'الكاتاكانا تُستخدم للكلمات الأجنبية 🌍
-مثال: عربي = アラビア (Arabia)
-مصر = エジプト (Ejiputo)'},
-    {k:['كانجي','kanji'],r:'الكانجي رموز مستوحاة من الصينية 📖
-أمثلة:
-🌸 花 = زهرة
-🌊 海 = بحر
-⛰️ 山 = جبل
-☀️ 日 = شمس/يوم'},
-    // أسئلة عامة
-    {k:['اسمك','name','namae','ناماي'],r:'اسمك بالياباني: お名前は？(Onamae wa?)
-للرد: 私の名前は___ (Watashi no namae wa ___)
-مثال: اسمي سارة = 私の名前はサラです'},
-    {k:['كيف حالك','genki','جنكي'],r:'كيف حالك بالياباني: お元気ですか？(Ogenki desu ka?)
-الرد: 元気です！(Genki desu!) = بخير!
-أو: まあまあ (Maa maa) = تمام تمام'},
-    {k:['نعم','hai','هاي'],r:'نعم بالياباني: はい (Hai) ✅
-لا بالياباني: いいえ (Iie) ❌
-أو بشكل عامي: うん (Un) = أيوه'},
-    {k:['بحبك','احبك','love','suki','سوكي'],r:'أحبك بالياباني 💕
-للصديق/الصديقة: 好きです (Suki desu) = بحبك
-للحبيب: 愛してる (Aishiteru) = بحبك جداً'},
-    {k:['جميل','كيوت','kawaii','كاواي'],r:'جميل/لطيف بالياباني: かわいい (Kawaii) 🌸
-أشهر كلمة يابانية في العالم!
-تُقال للأطفال والحيوانات والأشياء الجميلة'},
-    {k:['ياباني','japan','nihon','نيهون'],r:'اليابان بالياباني: 日本 (Nihon أو Nippon) 🗾
-معناها "أصل الشمس"
-واليابانيين: 日本人 (Nihonjin)'},
-  ];
-  
-  for(const item of DB) {
-    if(item.k.some(k => t.includes(k))) return item.r;
-  }
-  
-  // رد افتراضي ذكي
-  const defaults = [
-    'سؤال رائع! 🌸
-للإجابة عليه بشكل أفضل، جرب تسألي عن:
-• كلمة يابانية محددة
-• كيف تقولي جملة معينة
-• أرقام أو ألوان أو حروف',
-    'ممتاز! 🎌
-أنا متخصص في اللغة اليابانية.
-جربي تسأليني:
-• معنى كلمة يابانية
-• كيف أقول [أي جملة] بالياباني؟
-• أرقام، ألوان، تحيات',
-    'سؤالك جميل! 🌸
-جربي تسأليني بشكل مباشر مثل:
-"كيف أقول مرحبا بالياباني؟"
-أو "ما معنى ありがとう؟"',
-  ];
-  return defaults[Math.floor(Math.random()*defaults.length)];
-}
-
-function sendMsg() {
-  const inp = document.getElementById('chat-input');
-  const text = inp.value.trim();
-  if (!text) return;
-  chatHistory.push({role:'user', content:text});
-  inp.value = '';
-  renderChat();
-  state.msgsCount++; saveState(); updateBadges();
-
-  // thinking effect
-  setTimeout(() => {
-    const reply = smartReply(text);
-    chatHistory.push({role:'assistant', content:reply});
-    state.xp += 5; saveState(); updateBadges();
-    renderChat();
-  }, 600);
-}
-
-init();
-</script>
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
 </body>
 </html>
