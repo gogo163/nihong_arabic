@@ -50,7 +50,7 @@
   <script type="text/babel">
     const { useState } = React;
 
-    const SUPABASE_URL = "https://orqbhwoalwwyxckgdyus.supabase.co/functions/v1/nihongo-ai";
+    const GEMINI_KEY = "AIzaSyBb1wddhzjcL4qfo_AmbD8CaW0Dcv-OV1o";
 
     const lessons = [
       {
@@ -246,14 +246,21 @@
         setAiInput("");
         setAiLoading(true);
         try {
-          const history = [...aiMessages, userMsg].map(m=>({role: m.role==="assistant"?"assistant":"user", content:m.text}));
-          const res = await fetch(SUPABASE_URL, {
+          const history = [...aiMessages, userMsg].map(m=>({
+            role: m.role==="assistant"?"model":"user",
+            parts:[{text:m.text}]
+          }));
+          const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_KEY;
+          const res = await fetch(url, {
             method:"POST",
             headers:{"Content-Type":"application/json"},
-            body: JSON.stringify({messages: history}),
+            body: JSON.stringify({
+              contents: history,
+              systemInstruction:{parts:[{text:"أنت مساعد ذكي لتعليم اليابانية للعرب. اشرح بالعربي ببساطة مع أمثلة يابانية."}]}
+            }),
           });
           const data = await res.json();
-          const reply = data.content?.map(c=>c.text||"").join("") || "عذراً، حدث خطأ.";
+          const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، حدث خطأ.";
           setAiMessages(prev=>[...prev,{role:"assistant",text:reply}]);
         } catch(err) {
           setAiMessages(prev=>[...prev,{role:"assistant",text:"خطأ: " + err.message}]);
