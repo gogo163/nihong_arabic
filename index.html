@@ -50,7 +50,7 @@
   <script type="text/babel">
     const { useState } = React;
 
-    const GEMINI_KEY ="AQ.Ab8RN6JyWUniPS0dkUK7WHrWVOE1btGVsCaaKdIdRlqj6gQxHA";
+    const GEMINI_KEY = "AIzaSyBb1wddhzjcL4qfo_AmbD8CaW0Dcv-OV1o";
 
     const lessons = [
       {
@@ -247,20 +247,27 @@
         setAiLoading(true);
         try {
           const history = [...aiMessages, userMsg].map(m=>({
-            role: m.role==="assistant"?"model":"user",
-            parts:[{text:m.text}]
+            role: m.role==="assistant"?"assistant":"user",
+            content: m.text
           }));
-          const url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-exp:generateContent?key=" + GEMINI_KEY;
-          const res = await fetch(url, {
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method:"POST",
-            headers:{"Content-Type":"application/json"},
+            headers:{
+              "Content-Type":"application/json",
+              "Authorization":"Bearer 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",
+              "HTTP-Referer":"https://gogo163.github.io",
+              "X-Title":"Nihongo Arabic"
+            },
             body: JSON.stringify({
-              contents: history,
-              systemInstruction:{parts:[{text:"أنت مساعد ذكي لتعليم اليابانية للعرب. اشرح بالعربي ببساطة مع أمثلة يابانية."}]}
+              model: "meta-llama/llama-3.1-8b-instruct:free",
+              messages: [
+                {role:"system", content:"أنت مساعد ذكي لتعليم اليابانية للعرب. اشرح بالعربي ببساطة مع أمثلة يابانية."},
+                ...history
+              ],
             }),
           });
           const data = await res.json();
-          const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، حدث خطأ.";
+          const reply = data.choices?.[0]?.message?.content || "عذراً، حدث خطأ.";
           setAiMessages(prev=>[...prev,{role:"assistant",text:reply}]);
         } catch(err) {
           setAiMessages(prev=>[...prev,{role:"assistant",text:"خطأ: " + err.message}]);
