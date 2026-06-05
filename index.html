@@ -238,41 +238,78 @@
 
       const toggleFlip = (key) => setFlipped(prev=>({...prev,[key]:!prev[key]}));
 
-      const sendAIMessage = async () => {
+      const japaneseKnowledge = {
+        "صباح الخير": "صباح الخير باليابانية: おはようございます (Ohayou gozaimasu) للرسمي، أو おはよう (Ohayou) للأصدقاء 🌸",
+        "مساء الخير": "مساء الخير باليابانية: こんばんは (Konbanwa) 🌙",
+        "مرحبا": "مرحباً باليابانية: こんにちは (Konnichiwa) — تُستخدم خلال النهار 😊",
+        "شكرا": "شكراً باليابانية: ありがとう (Arigatou) أو بشكل رسمي ありがとうございます (Arigatou gozaimasu) 🙏",
+        "اللقاء": "إلى اللقاء باليابانية: さようなら (Sayounara) للوداع الرسمي، أو じゃね (Ja ne) للأصدقاء 👋",
+        "نعم": "نعم باليابانية: はい (Hai) ✅",
+        "لا": "لا باليابانية: いいえ (Iie) ❌",
+        "اسمي": "اسمي ... باليابانية: わたしは [اسمك] です (Watashi wa [ismak] desu) 😊",
+        "كيف حالك": "كيف حالك باليابانية: おげんきですか (Ogenki desu ka؟) والجواب: げんきです (Genki desu) — أنا بخير 💚",
+        "ماء": "ماء باليابانية: みず (Mizu) 💧",
+        "طعام": "طعام باليابانية: たべもの (Tabemono) 🍱",
+        "سوشي": "سوشي باليابانية: すし (Sushi) 🍣 — من أشهر الأطعمة اليابانية!",
+        "رامن": "رامن باليابانية: ラーメン (Raamen) 🍜 — شوربة نودلز لذيذة!",
+        "ياباني": "الياباني/اليابانية: にほんじん (Nihonjin) للشخص، و にほんご (Nihongo) للغة 🇯🇵",
+        "يابان": "اليابان باليابانية: にほん أو にっぽん (Nihon / Nippon) 🗾",
+        "أحبك": "أحبك باليابانية: すきです (Suki desu) — خفيفة، أو あいしてる (Aishiteru) — للحب العميق ❤️",
+        "عفوا": "عفواً / آسف باليابانية: すみません (Sumimasen) للاعتذار العام، أو ごめんなさい (Gomen nasai) للاعتذار الشخصي 🙇",
+        "واحد": "الأرقام: 一(いち) واحد، 二(に) اثنان، 三(さん) ثلاثة، 四(し/よん) أربعة، 五(ご) خمسة 🔢",
+        "هيراغانا": "هيراغانا (ひらがな) هي الأبجدية الأساسية في اليابانية وتضم 46 حرفاً. تُستخدم للكلمات اليابانية الأصلية. ابدئي بتعلمها أولاً! 📝",
+        "كاتاكانا": "كاتاكانا (カタカナ) هي الأبجدية الثانية وتضم 46 حرفاً أيضاً. تُستخدم للكلمات الأجنبية مثل コーヒー (Koohii = قهوة) ☕",
+        "كانجي": "كانجي (漢字) هي الرموز المستعارة من الصينية. كل رمز له معنى كامل مثل 日(يوم/شمس)، 山(جبل)، 水(ماء). يتعلم الطالب عادةً 2136 كانجي أساسي 📖",
+        "انيمي": "الأنيمي (アニメ) كلمة يابانية مشتقة من Animation. لو بتحب الأنيمي، تعلم اليابانية هيخليك تفهمه بدون ترجمة! 🎌",
+        "بكم": "بكم؟ باليابانية: いくらですか (Ikura desu ka؟) 💰",
+        "فين": "أين؟ باليابانية: どこですか (Doko desu ka؟) 📍",
+        "متى": "متى؟ باليابانية: いつですか (Itsu desu ka؟) ⏰",
+        "من": "من؟ باليابانية: だれですか (Dare desu ka؟) 👤",
+        "ماذا": "ماذا/ما هذا؟ باليابانية: なんですか (Nan desu ka؟) ❓",
+        "لا افهم": "لا أفهم باليابانية: わかりません (Wakarimasen) — جملة مفيدة جداً للمبتدئين! 😅",
+        "كرر": "من فضلك كرر باليابانية: もう一度お願いします (Mou ichido onegaishimasu) 🔄",
+        "قهوة": "قهوة باليابانية: コーヒー (Koohii) — مكتوبة بالكاتاكانا لأنها كلمة أجنبية ☕",
+        "مدرسة": "مدرسة باليابانية: がっこう (Gakkou) 🏫",
+        "بيت": "بيت/منزل باليابانية: いえ (Ie) أو うち (Uchi) 🏠",
+        "سيارة": "سيارة باليابانية: くるま (Kuruma) 🚗",
+        "قطار": "قطار باليابانية: でんしゃ (Densha) 🚃 — اليابان مشهورة بقطاراتها السريعة شينكانسن!",
+        "جبل": "جبل باليابانية: やま (Yama) ⛰️ — أشهر جبل في اليابان جبل فوجي: ふじさん (Fujisan)",
+        "حب": "حب باليابانية: あい (Ai) ❤️ — رمز الكانجي: 愛",
+        "حلم": "حلم باليابانية: ゆめ (Yume) 💭 — رمز الكانجي: 夢",
+        "جميل": "جميل باليابانية: きれい (Kirei) أو うつくしい (Utsukushii) ✨",
+        "سعيد": "سعيد/سعادة باليابانية: しあわせ (Shiawase) 😊 — رمز الكانجي: 幸",
+      };
+
+      const getSmartReply = (question) => {
+        const q = question.toLowerCase();
+        for (const [keyword, answer] of Object.entries(japaneseKnowledge)) {
+          if (q.includes(keyword)) return answer;
+        }
+        // Default helpful responses
+        if (q.includes("كيف") && q.includes("تعلم")) {
+          return "أفضل طريقة لتعلم اليابانية:\n1️⃣ ابدئي بهيراغانا (أسبوع)\n2️⃣ ثم كاتاكانا (أسبوع)\n3️⃣ تعلمي 10 كلمات يومياً\n4️⃣ استمعي لأغاني وأنيمي ياباني\n5️⃣ تدربي على المحادثة 🌸";
+        }
+        if (q.includes("مستوى") || q.includes("jlpt")) {
+          return "مستويات اليابانية JLPT:\n🥉 N5 - مبتدئ (أسهل)\n🥈 N4 - مبتدئ متقدم\n🥇 N3 - متوسط\n⭐ N2 - متقدم\n🏆 N1 - متقدم جداً (أصعب)\nابدئي بـ N5! 💪";
+        }
+        if (q.includes("انيمي") || q.includes("أنيمي")) {
+          return "أنيمي مناسب للمبتدئين في اليابانية:\n🌸 Shirokuma Cafe - سهل جداً\n🏃 Doraemon - لغة بسيطة\n⚔️ Demon Slayer - ممتع\n🍳 Food Wars - تعلم مفردات الطعام!\nاستمعي بدون ترجمة وستتعلمين بسرعة 🎌";
+        }
+        return `سؤال ممتاز! 🌸\n\nللإجابة على سؤالك عن "${question}"، إليك نصيحة:\n\nاليابانية لغة رائعة وممتعة. استمري في التعلم خطوة خطوة!\n\nجربي تسأليني عن:\n• معنى كلمة بالعربي\n• كيف تقولي جملة باليابانية\n• الفرق بين هيراغانا وكاتاكانا\n• أرقام أو تحيات يابانية 🎌`;
+      };
+
+      const sendAIMessage = () => {
         const text = aiInput.trim();
         if (!text || aiLoading) return;
         const userMsg = {role:"user", text};
         setAiMessages(prev=>[...prev, userMsg]);
         setAiInput("");
         setAiLoading(true);
-        try {
-          const history = [...aiMessages, userMsg].map(m=>({
-            role: m.role==="assistant"?"assistant":"user",
-            content: m.text
-          }));
-          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method:"POST",
-            headers:{
-              "Content-Type":"application/json",
-              "Authorization":"Bearer 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",
-              "HTTP-Referer":"https://gogo163.github.io",
-              "X-Title":"Nihongo Arabic"
-            },
-            body: JSON.stringify({
-              model: "meta-llama/llama-3.1-8b-instruct:free",
-              messages: [
-                {role:"system", content:"أنت مساعد ذكي لتعليم اليابانية للعرب. اشرح بالعربي ببساطة مع أمثلة يابانية."},
-                ...history
-              ],
-            }),
-          });
-          const data = await res.json();
-          const reply = data.choices?.[0]?.message?.content || "عذراً، حدث خطأ.";
+        setTimeout(() => {
+          const reply = getSmartReply(text);
           setAiMessages(prev=>[...prev,{role:"assistant",text:reply}]);
-        } catch(err) {
-          setAiMessages(prev=>[...prev,{role:"assistant",text:"خطأ: " + err.message}]);
-        }
-        setAiLoading(false);
+          setAiLoading(false);
+        }, 800);
       };
 
       const lesson = lessons.find(l=>l.id===activeLesson);
