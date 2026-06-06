@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دروس اليابانية - NihongoArabic</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #e91e8c;
+    --light-pink: #fce4f3;
+    --dark-pink: #c0166e;
+    --white: #ffffff;
+    --soft-gray: #f8f0f5;
+    --text: #2d1a26;
+    --accent: #ff6eb4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Naskh Arabic', serif;
+    background: var(--soft-gray);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--pink), var(--dark-pink));
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 3px 15px rgba(233,30,140,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header .logo { font-size: 28px; }
+  .header h1 { color: white; font-size: 20px; font-weight: 700; }
+  .header p { color: rgba(255,255,255,0.85); font-size: 13px; }
+
+  /* Tab Navigation */
+  .tabs {
+    display: flex;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 2px solid var(--light-pink);
+    padding: 0 8px;
+    gap: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    padding: 12px 18px;
+    border: none;
+    background: none;
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    color: var(--pink);
+    border-bottom-color: var(--pink);
+    font-weight: 700;
+  }
+
+  .tab:hover { color: var(--dark-pink); }
+
+  /* Content */
+  .content { padding: 16px; max-width: 800px; margin: 0 auto; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Category Cards */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .category-card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px 14px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.25s;
+    box-shadow: 0 2px 10px rgba(233,30,140,0.08);
+  }
+
+  .category-card:hover, .category-card.active {
+    border-color: var(--pink);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233,30,140,0.2);
+  }
+
+  .category-card .icon { font-size: 36px; margin-bottom: 8px; }
+  .category-card h3 { font-size: 15px; font-weight: 700; color: var(--text); }
+  .category-card p { font-size: 11px; color: #999; margin-top: 3px; }
+
+  /* Word Cards */
+  .words-container { display: none; }
+  .words-container.active { display: block; }
+
+  .words-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--light-pink), white);
+    border-radius: 12px;
+  }
+
+  .words-title .back-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .words-title h2 { font-size: 17px; font-weight: 700; }
+
+  .word-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .word-card {
+    background: white;
+    border-radius: 14px;
+    padding: 14px;
+    border: 1.5px solid var(--light-pink);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .word-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--pink);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .word-card:hover::before, .word-card.flipped::before { opacity: 1; }
+
+  .word-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(233,30,140,0.15);
+  }
+
+  .word-card .japanese {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--pink);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .word-card .reading {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    color: #aaa;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .word-card .arabic {
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--text);
+  }
+
+  .word-card .example {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--light-pink);
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+  }
+
+  .word-card.flipped .example { display: block; }
+
+  /* Grammar Section */
+  .grammar-card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 14px;
+    border: 1.5px solid var(--light-pink);
+    box-shadow: 0 2px 10px rgba(233,30,140,0.07);
+  }
+
+  .grammar-card .rule-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .rule-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--pink), var(--dark-pink));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .rule-title { font-size: 16px; font-weight: 700; }
+  .rule-desc { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 10px; }
+
+  .example-box {
+    background: var(--soft-gray);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 8px;
+  }
+
+  .example-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 18px;
+    color: var(--pink);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .example-reading { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .example-ar { font-size: 14px; color: var(--text); font-weight: 600; }
+
+  /* Phrases */
+  .phrase-card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    border: 1.5px solid var(--light-pink);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .phrase-card:hover {
+    border-color: var(--pink);
+    box-shadow: 0 4px 15px rgba(233,30,140,0.12);
+  }
+
+  .phrase-icon {
+    width: 44px; height: 44px;
+    background: var(--light-pink);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .phrase-content { flex: 1; }
+  .phrase-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--pink);
+    margin-bottom: 2px;
+  }
+
+  .phrase-reading { font-size: 11px; color: #aaa; margin-bottom: 3px; }
+  .phrase-ar { font-size: 14px; font-weight: 600; }
+
+  /* Quiz */
+  .quiz-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1.5px solid var(--light-pink);
+  }
+
+  .quiz-question {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .quiz-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--pink);
+    margin-bottom: 6px;
+  }
+
+  .quiz-hint { font-size: 13px; color: #aaa; }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .quiz-opt {
+    padding: 14px;
+    border: 2px solid var(--light-pink);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 15px;
+    font-weight: 600;
+    background: white;
+    transition: all 0.2s;
+  }
+
+  .quiz-opt:hover { border-color: var(--pink); background: var(--light-pink); }
+  .quiz-opt.correct { border-color: #22c55e; background: #f0fdf4; color: #16a34a; }
+  .quiz-opt.wrong { border-color: #ef4444; background: #fef2f2; color: #dc2626; }
+
+  .quiz-score {
+    text-align: center;
+    padding: 10px;
+    background: var(--soft-gray);
+    border-radius: 10px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .quiz-next {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--pink), var(--dark-pink));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: opacity 0.2s;
+  }
+
+  .quiz-next:hover { opacity: 0.9; }
+
+  /* Section Title */
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to left, transparent, var(--pink));
+    border-radius: 2px;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 6px;
+    background: var(--light-pink);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--pink), var(--accent));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section.active { animation: fadeIn 0.3s ease; }
+
+  /* Correct answer pop */
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .quiz-opt.correct { animation: pop 0.3s ease; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">🌸</div>
+  <div>
+    <h1>دروس اليابانية</h1>
+    <p>NihongoArabic · にほんごアラビック</p>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('vocab')">📚 مفردات</button>
+  <button class="tab" onclick="showTab('phrases')">💬 جمل شائعة</button>
+  <button class="tab" onclick="showTab('grammar')">📖 قواعد</button>
+  <button class="tab" onclick="showTab('quiz')">🎯 اختبار</button>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <!-- VOCABULARY SECTION -->
+  <div class="section active" id="section-vocab">
+
+    <!-- Category Selection -->
+    <div id="vocab-categories">
+      <p class="section-title">📚 اختاري الموضوع</p>
+      <div class="category-grid">
+        <div class="category-card" onclick="showVocab('food')">
+          <div class="icon">🍱</div>
+          <h3>الأكل والشرب</h3>
+          <p>١٢ كلمة</p>
+        </div>
+        <div class="category-card" onclick="showVocab('colors')">
+          <div class="icon">🎨</div>
+          <h3>الألوان</h3>
+          <p>١٠ كلمات</p>
+        </div>
+        <div class="category-card" onclick="showVocab('numbers')">
+          <div class="icon">🔢</div>
+          <h3>الأرقام</h3>
+          <p>١٠ أرقام</p>
+        </div>
+        <div class="category-card" onclick="showVocab('family')">
+          <div class="icon">👨‍👩‍👧</div>
+          <h3>العيلة</h3>
+          <p>١٠ كلمات</p>
+        </div>
+        <div class="category-card" onclick="showVocab('time')">
+          <div class="icon">⏰</div>
+          <h3>الوقت والأيام</h3>
+          <p>١٤ كلمة</p>
+        </div>
+        <div class="category-card" onclick="showVocab('body')">
+          <div class="icon">🧍</div>
+          <h3>أعضاء الجسم</h3>
+          <p>١٠ كلمات</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Word Display -->
+    <div class="words-container" id="vocab-words">
+      <div class="words-title">
+        <button class="back-btn" onclick="backToCategories()">◀</button>
+        <h2 id="vocab-words-title">الأكل والشرب</h2>
+        <span id="vocab-words-icon" style="font-size:20px;">🍱</span>
+      </div>
+      <p style="font-size:12px;color:#aaa;margin-bottom:12px;text-align:center;">اضغطي على الكارت لتشوفي مثال ✨</p>
+      <div class="word-grid" id="word-grid"></div>
+    </div>
+  </div>
+
+  <!-- PHRASES SECTION -->
+  <div class="section" id="section-phrases">
+    <p class="section-title">💬 جمل وتعبيرات شائعة</p>
+
+    <div id="phrases-list">
+      <p style="font-size:13px;color:#999;margin-bottom:14px;text-align:center;">اضغطي على أي جملة للتفاصيل</p>
+
+      <div class="phrase-card" onclick="this.classList.toggle('expanded')">
+        <div class="phrase-icon">🙏</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">よろしくおねがいします</div>
+          <div class="phrase-reading">Yoroshiku onegaishimasu</div>
+          <div class="phrase-ar">يسعدني التعرف بك / أرجو تعاونك</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">👋</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">おはようございます</div>
+          <div class="phrase-reading">Ohayou gozaimasu</div>
+          <div class="phrase-ar">صباح الخير (رسمي)</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">🌙</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">おやすみなさい</div>
+          <div class="phrase-reading">Oyasuminasai</div>
+          <div class="phrase-ar">تصبح على خير</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">😋</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">いただきます</div>
+          <div class="phrase-reading">Itadakimasu</div>
+          <div class="phrase-ar">بسم الله (قبل الأكل)</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">🙌</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">ごちそうさまでした</div>
+          <div class="phrase-reading">Gochisousama deshita</div>
+          <div class="phrase-ar">الحمد لله (بعد الأكل)</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">❓</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">わかりません</div>
+          <div class="phrase-reading">Wakarimasen</div>
+          <div class="phrase-ar">مش فاهم / مش عارف</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">🔄</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">もう一度言ってください</div>
+          <div class="phrase-reading">Mou ichido itte kudasai</div>
+          <div class="phrase-ar">ممكن تكرر تاني؟</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">💰</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">いくらですか</div>
+          <div class="phrase-reading">Ikura desu ka</div>
+          <div class="phrase-ar">بكام ده؟</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">📍</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">どこですか</div>
+          <div class="phrase-reading">Doko desu ka</div>
+          <div class="phrase-ar">فين ده؟</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">🚃</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">電車はどこですか</div>
+          <div class="phrase-reading">Densha wa doko desu ka</div>
+          <div class="phrase-ar">المترو / القطار فين؟</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">🏥</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">助けてください</div>
+          <div class="phrase-reading">Tasukete kudasai</div>
+          <div class="phrase-ar">ساعدني من فضلك!</div>
+        </div>
+      </div>
+
+      <div class="phrase-card">
+        <div class="phrase-icon">😊</div>
+        <div class="phrase-content">
+          <div class="phrase-jp">大丈夫ですか</div>
+          <div class="phrase-reading">Daijoubu desu ka</div>
+          <div class="phrase-ar">عامل إيه؟ / كل حاجة تمام؟</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRAMMAR SECTION -->
+  <div class="section" id="section-grammar">
+    <p class="section-title">📖 قواعد اللغة الأساسية</p>
+
+    <div class="grammar-card">
+      <div class="rule-header">
+        <div class="rule-num">١</div>
+        <div class="rule-title">جملة: الاسم + です (desu)</div>
+      </div>
+      <p class="rule-desc">
+        أبسط جملة في اليابانية هي "الاسم + です". معناها "أنا/ده/هي هو [الاسم]". الجملة بتبدأ بالموضوع وبتنتهي بالفعل - عكس العربي!
+      </p>
+      <div class="example-box">
+        <div class="example-jp">わたしは がはدです。</div>
+        <div class="example-reading">Watashi wa Gehad desu.</div>
+        <div class="example-ar">أنا اسمي غهاد.</div>
+      </div>
+      <div class="example-box">
+        <div class="example-jp">これは ほんです。</div>
+        <div class="example-reading">Kore wa hon desu.</div>
+        <div class="example-ar">ده كتاب.</div>
+      </div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="rule-header">
+        <div class="rule-num">٢</div>
+        <div class="rule-title">السؤال: الجملة + か (ka)</div>
+      </div>
+      <p class="rule-desc">
+        عشان تعمل سؤال في اليابانية، بس حطّي か في الآخر. مفيش حاجة زي علامة استفهام أو تقليب الجملة!
+      </p>
+      <div class="example-box">
+        <div class="example-jp">にほんごが わかりますか？</div>
+        <div class="example-reading">Nihongo ga wakarimasu ka?</div>
+        <div class="example-ar">بتفهم ياباني؟</div>
+      </div>
+      <div class="example-box">
+        <div class="example-jp">がくせいですか？</div>
+        <div class="example-reading">Gakusei desu ka?</div>
+        <div class="example-ar">إنت/إنتي طالب/طالبة؟</div>
+      </div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="rule-header">
+        <div class="rule-num">٣</div>
+        <div class="rule-title">الحروف الجارة: は、が、を、に</div>
+      </div>
+      <p class="rule-desc">
+        في اليابانية في حروف صغيرة بتجي بعد الكلمة بتحدد دورها في الجملة:
+        <br>• は (wa) = موضوع الجملة
+        <br>• が (ga) = الفاعل
+        <br>• を (wo) = المفعول به
+        <br>• に (ni) = المكان أو الاتجاه
+      </p>
+      <div class="example-box">
+        <div class="example-jp">わたしは すしを たべます。</div>
+        <div class="example-reading">Watashi wa sushi wo tabemasu.</div>
+        <div class="example-ar">أنا باكل سوشي.</div>
+      </div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="rule-header">
+        <div class="rule-num">٤</div>
+        <div class="rule-title">النفي: ではありません</div>
+      </div>
+      <p class="rule-desc">
+        عشان تنفي جملة اسمية، بدل ما تقول です قولي ではありません (dewa arimasen). وهي أكثر رسمية من じゃない (ja nai) اللي بتتقال في الكلام العادي.
+      </p>
+      <div class="example-box">
+        <div class="example-jp">これは ほんでは ありません。</div>
+        <div class="example-reading">Kore wa hon dewa arimasen.</div>
+        <div class="example-ar">ده مش كتاب.</div>
+      </div>
+      <div class="example-box">
+        <div class="example-jp">にほんじんじゃない。</div>
+        <div class="example-reading">Nihonjin ja nai.</div>
+        <div class="example-ar">مش ياباني (كلام عادي).</div>
+      </div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="rule-header">
+        <div class="rule-num">٥</div>
+        <div class="rule-title">الأفعال: الحاضر والمستقبل</div>
+      </div>
+      <p class="rule-desc">
+        معظم الأفعال بتنتهي بـ ます (masu) في الجمل الرسمية. وده بيفيد الحاضر والمستقبل في نفس الوقت!
+      </p>
+      <div class="example-box">
+        <div class="example-jp">まいにち べんきょうします。</div>
+        <div class="example-reading">Mainichi benkyou shimasu.</div>
+        <div class="example-ar">بذاكر كل يوم. / هذاكر كل يوم.</div>
+      </div>
+      <div class="example-box">
+        <div class="example-jp">あした えいがを みます。</div>
+        <div class="example-reading">Ashita eiga wo mimasu.</div>
+        <div class="example-ar">هشوف فيلم بكرة.</div>
+      </div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="rule-header">
+        <div class="rule-num">٦</div>
+        <div class="rule-title">الصفات: い و な</div>
+      </div>
+      <p class="rule-desc">
+        في نوعين من الصفات في اليابانية:
+        <br>• صفات い: بتنتهي بـ い وبتجي قبل الاسم مباشرة
+        <br>• صفات な: بتحتاج な لما تيجي قبل الاسم
+      </p>
+      <div class="example-box">
+        <div class="example-jp">おおきい いえ (صفة い)</div>
+        <div class="example-reading">Ookii ie</div>
+        <div class="example-ar">بيت كبير</div>
+      </div>
+      <div class="example-box">
+        <div class="example-jp">きれいな はな (صفة な)</div>
+        <div class="example-reading">Kirei na hana</div>
+        <div class="example-ar">زهرة جميلة</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- QUIZ SECTION -->
+  <div class="section" id="section-quiz">
+    <p class="section-title">🎯 اختبر نفسك</p>
+    <div class="quiz-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="quiz-progress" style="width:0%"></div>
+      </div>
+      <div class="quiz-question">
+        <div class="quiz-jp" id="quiz-jp">🌸</div>
+        <div class="quiz-hint" id="quiz-hint">معناها إيه؟</div>
+      </div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="quiz-score">
+        ✅ صح: <span id="score-correct">0</span> &nbsp;|&nbsp; ❌ غلط: <span id="score-wrong">0</span> &nbsp;|&nbsp; 📊 السؤال: <span id="q-num">1</span>/10
+      </div>
+      <button class="quiz-next" id="quiz-next-btn" onclick="nextQuestion()" style="display:none">السؤال الجاي ←</button>
+    </div>
+  </div>
+
+</div><!-- end content -->
+
+<script>
+// ========================
+// VOCABULARY DATA
+// ========================
+const vocabData = {
+  food: {
+    title: 'الأكل والشرب',
+    icon: '🍱',
+    words: [
+      { jp: 'ごはん', reading: 'Gohan', ar: 'أرز / أكل', ex: 'ごはんを たべます = باكل أرز' },
+      { jp: 'みず', reading: 'Mizu', ar: 'مية', ex: 'みずを ください = ممكن مية؟' },
+      { jp: 'パン', reading: 'Pan', ar: 'عيش', ex: 'パンを かいます = اشتري عيش' },
+      { jp: 'たまご', reading: 'Tamago', ar: 'بيضة', ex: 'たまごが すきです = بحب البيض' },
+      { jp: 'にく', reading: 'Niku', ar: 'لحمة', ex: 'にくを たべません = مباكلش لحمة' },
+      { jp: 'さかな', reading: 'Sakana', ar: 'سمكة', ex: 'さかなが おいしい = السمك لذيذ' },
+      { jp: 'やさい', reading: 'Yasai', ar: 'خضار', ex: 'やさいが すき = بحب الخضار' },
+      { jp: 'くだもの', reading: 'Kudamono', ar: 'فاكهة', ex: 'くだものが たべたい = عايز أكل فاكهة' },
+      { jp: 'おちゃ', reading: 'Ocha', ar: 'شاي', ex: 'おちゃを のみます = بشرب شاي' },
+      { jp: 'コーヒー', reading: 'Koohii', ar: 'قهوة', ex: 'コーヒーが ほしい = عايز قهوة' },
+      { jp: 'すし', reading: 'Sushi', ar: 'سوشي', ex: 'すしが おいしい = السوشي لذيذ' },
+      { jp: 'ラーメン', reading: 'Raamen', ar: 'رامن (شوربة)', ex: 'ラーメンが たべたい = عايز راامن' },
+    ]
+  },
+  colors: {
+    title: 'الألوان',
+    icon: '🎨',
+    words: [
+      { jp: 'あか', reading: 'Aka', ar: 'أحمر', ex: 'あかい りんご = تفاحة حمرا' },
+      { jp: 'あお', reading: 'Ao', ar: 'أزرق / أخضر', ex: 'あおい そら = السما الزرقا' },
+      { jp: 'きいろ', reading: 'Kiiro', ar: 'أصفر', ex: 'きいろい ひまわり = عباد الشمس أصفر' },
+      { jp: 'しろ', reading: 'Shiro', ar: 'أبيض', ex: 'しろい ゆき = تلج أبيض' },
+      { jp: 'くろ', reading: 'Kuro', ar: 'أسود', ex: 'くろい ねこ = قطة سودا' },
+      { jp: 'みどり', reading: 'Midori', ar: 'أخضر', ex: 'みどりの き = شجرة خضرا' },
+      { jp: 'むらさき', reading: 'Murasaki', ar: 'بنفسجي', ex: 'むらさきの はな = زهرة بنفسجية' },
+      { jp: 'オレンジ', reading: 'Orenji', ar: 'برتقالي', ex: 'オレンジいろの そら = سما برتقالية' },
+      { jp: 'ピンク', reading: 'Pinku', ar: 'وردي', ex: 'ピンクの ドレス = فستان وردي' },
+      { jp: 'ちゃいろ', reading: 'Chairo', ar: 'بني', ex: 'ちゃいろい くつ = جزمة بنية' },
+    ]
+  },
+  numbers: {
+    title: 'الأرقام',
+    icon: '🔢',
+    words: [
+      { jp: 'いち', reading: 'Ichi', ar: 'واحد (١)', ex: 'いちばん = الأحسن' },
+      { jp: 'に', reading: 'Ni', ar: 'اتنين (٢)', ex: 'にほん = اليابان (أصلها ٢ كتاب)' },
+      { jp: 'さん', reading: 'San', ar: 'تلاتة (٣)', ex: 'さんにん = ٣ ناس' },
+      { jp: 'し / よん', reading: 'Shi / Yon', ar: 'أربعة (٤)', ex: 'よにん = ٤ ناس' },
+      { jp: 'ご', reading: 'Go', ar: 'خمسة (٥)', ex: 'ごえん = ٥ ين' },
+      { jp: 'ろく', reading: 'Roku', ar: 'ستة (٦)', ex: 'ろくじ = الساعة ٦' },
+      { jp: 'なな / しち', reading: 'Nana / Shichi', ar: 'سبعة (٧)', ex: 'ななにん = ٧ ناس' },
+      { jp: 'はち', reading: 'Hachi', ar: 'تمانية (٨)', ex: 'はちじ = الساعة ٨' },
+      { jp: 'く / きゅう', reading: 'Ku / Kyuu', ar: 'تسعة (٩)', ex: 'きゅうえん = ٩ ين' },
+      { jp: 'じゅう', reading: 'Juu', ar: 'عشرة (١٠)', ex: 'じゅういち = ١١' },
+    ]
+  },
+  family: {
+    title: 'العيلة',
+    icon: '👨‍👩‍👧',
+    words: [
+      { jp: 'おかあさん', reading: 'Okaasan', ar: 'أمي / أمك', ex: 'おかあさんが すき = بحب أمي' },
+      { jp: 'おとうさん', reading: 'Otousan', ar: 'أبويا / أبوك', ex: 'おとうさんは いしゃ = أبوي دكتور' },
+      { jp: 'おにいさん', reading: 'Oniisan', ar: 'أخويا الكبير', ex: 'おにいさんが います = عندي أخ أكبر' },
+      { jp: 'おねえさん', reading: 'Oneesan', ar: 'أختي الكبيرة', ex: 'おねえさんが かわいい = أختي حلوة' },
+      { jp: 'おとうと', reading: 'Otouto', ar: 'أخويا الصغير', ex: 'おとうとが います = عندي أخ أصغر' },
+      { jp: 'いもうと', reading: 'Imouto', ar: 'أختي الصغيرة', ex: 'いもうとが います = عندي أخت أصغر' },
+      { jp: 'おじいさん', reading: 'Ojiisan', ar: 'جدي / جدك', ex: 'おじいさんは げんき = جدي بخير' },
+      { jp: 'おばあさん', reading: 'Obaasan', ar: 'تتي / جدتك', ex: 'おばあさんが すき = بحب تتي' },
+      { jp: 'かぞく', reading: 'Kazoku', ar: 'العيلة', ex: 'かぞくが だいすき = بحب عيلتي أوي' },
+      { jp: 'こども', reading: 'Kodomo', ar: 'أطفال / ولد', ex: 'こどもが います = عندي أطفال' },
+    ]
+  },
+  time: {
+    title: 'الوقت والأيام',
+    icon: '⏰',
+    words: [
+      { jp: 'きょう', reading: 'Kyou', ar: 'النهارده', ex: 'きょうは げつようびです = النهارده الاتنين' },
+      { jp: 'あした', reading: 'Ashita', ar: 'بكرة', ex: 'あしたは ひまです = بكرة فاضي' },
+      { jp: 'きのう', reading: 'Kinou', ar: 'امبارح', ex: 'きのうは いそがしかった = امبارح كنت مشغول' },
+      { jp: 'げつようび', reading: 'Getsuyoubi', ar: 'الاتنين', ex: 'げつようびに べんきょうします = بذاكر الاتنين' },
+      { jp: 'かようび', reading: 'Kayoubi', ar: 'التلات', ex: '' },
+      { jp: 'すいようび', reading: 'Suiyoubi', ar: 'الأربع', ex: '' },
+      { jp: 'もくようび', reading: 'Mokuyoubi', ar: 'الخميس', ex: '' },
+      { jp: 'きんようび', reading: 'Kin\'youbi', ar: 'الجمعة', ex: '' },
+      { jp: 'どようび', reading: 'Doyoubi', ar: 'السبت', ex: 'どようびに えいがを みます = بشوف فيلم السبت' },
+      { jp: 'にちようび', reading: 'Nichiyoubi', ar: 'الأحد', ex: 'にちようびは やすみです = الأحد عطلة' },
+      { jp: 'あさ', reading: 'Asa', ar: 'الصبح', ex: 'あさごはん = فطار' },
+      { jp: 'ひる', reading: 'Hiru', ar: 'الضهر', ex: 'ひるごはん = غدا' },
+      { jp: 'よる', reading: 'Yoru', ar: 'الليل', ex: 'よるごはん = عشا' },
+      { jp: 'いま', reading: 'Ima', ar: 'دلوقتي', ex: 'いまは なんじですか = دلوقتي الساعة كام؟' },
+    ]
+  },
+  body: {
+    title: 'أعضاء الجسم',
+    icon: '🧍',
+    words: [
+      { jp: 'あたま', reading: 'Atama', ar: 'الراس', ex: 'あたまが いたい = راسي بيوجعني' },
+      { jp: 'め', reading: 'Me', ar: 'العين', ex: 'めが おおきい = عينيه كبيرة' },
+      { jp: 'みみ', reading: 'Mimi', ar: 'الودان', ex: 'みみが いたい = ودانى بيوجعنى' },
+      { jp: 'はな', reading: 'Hana', ar: 'الأنف', ex: 'はなが かゆい = أنفي بيتكز' },
+      { jp: 'くち', reading: 'Kuchi', ar: 'البق / الفم', ex: 'くちを あけて = افتح بقك' },
+      { jp: 'て', reading: 'Te', ar: 'الإيد', ex: 'てを あらいます = بغسل إيدي' },
+      { jp: 'あし', reading: 'Ashi', ar: 'الرجل', ex: 'あしが いたい = رجلي بتوجعني' },
+      { jp: 'こし', reading: 'Koshi', ar: 'الضهر / الخصر', ex: 'こしが いたい = ضهري بيوجعني' },
+      { jp: 'かみ', reading: 'Kami', ar: 'الشعر', ex: 'かみが ながい = شعرها طويل' },
+      { jp: 'かお', reading: 'Kao', ar: 'الوش', ex: 'かおを あらいます = بغسل وشي' },
+    ]
+  }
+};
+
+// ========================
+// QUIZ DATA
+// ========================
+const quizWords = [
+  { jp: 'ありがとう', ar: 'شكرا', wrong: ['عفواً', 'أهلاً', 'مرحباً'] },
+  { jp: 'すみません', ar: 'لو سمحت / آسف', wrong: ['شكراً', 'مع السلامة', 'صباح الخير'] },
+  { jp: 'たべる', ar: 'ياكل', wrong: ['يشرب', 'ينام', 'يمشي'] },
+  { jp: 'みず', ar: 'مية', wrong: ['أكل', 'قهوة', 'شاي'] },
+  { jp: 'おおきい', ar: 'كبير', wrong: ['صغير', 'تقيل', 'جميل'] },
+  { jp: 'あか', ar: 'أحمر', wrong: ['أزرق', 'أخضر', 'أصفر'] },
+  { jp: 'いぬ', ar: 'كلب', wrong: ['قطة', 'سمكة', 'عصفور'] },
+  { jp: 'がっこう', ar: 'مدرسة', wrong: ['بيت', 'محل', 'مستشفى'] },
+  { jp: 'てんき', ar: 'الجو / الطقس', wrong: ['وقت', 'مكان', 'يوم'] },
+  { jp: 'なまえ', ar: 'الاسم', wrong: ['العمر', 'البيت', 'الوقت'] },
+];
+
+let quizIndex = 0;
+let correct = 0;
+let wrong = 0;
+let answered = false;
+let shuffledQuiz = [...quizWords].sort(() => Math.random() - 0.5).slice(0, 10);
+
+// ========================
+// FUNCTIONS
+// ========================
+function showTab(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + tab).classList.add('active');
+  event.target.classList.add('active');
+
+  if (tab === 'quiz') loadQuiz();
+}
+
+function showVocab(category) {
+  const data = vocabData[category];
+  document.getElementById('vocab-categories').style.display = 'none';
+  document.getElementById('vocab-words').classList.add('active');
+  document.getElementById('vocab-words-title').textContent = data.title;
+  document.getElementById('vocab-words-icon').textContent = data.icon;
+
+  const grid = document.getElementById('word-grid');
+  grid.innerHTML = '';
+  data.words.forEach(word => {
+    grid.innerHTML += `
+      <div class="word-card" onclick="this.classList.toggle('flipped')">
+        <div class="japanese">${word.jp}</div>
+        <div class="reading">${word.reading}</div>
+        <div class="arabic">${word.ar}</div>
+        ${word.ex ? `<div class="example">💡 ${word.ex}</div>` : ''}
+      </div>`;
+  });
+}
+
+function backToCategories() {
+  document.getElementById('vocab-categories').style.display = 'block';
+  document.getElementById('vocab-words').classList.remove('active');
+}
+
+function loadQuiz() {
+  if (quizIndex >= shuffledQuiz.length) return;
+  answered = false;
+  const q = shuffledQuiz[quizIndex];
+  document.getElementById('quiz-jp').textContent = q.jp;
+  document.getElementById('quiz-hint').textContent = 'معناها بالعربي إيه؟';
+  document.getElementById('q-num').textContent = quizIndex + 1;
+  document.getElementById('quiz-progress').style.width = (quizIndex / 10 * 100) + '%';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+
+  const options = [q.ar, ...q.wrong].sort(() => Math.random() - 0.5);
+  const optDiv = document.getElementById('quiz-options');
+  optDiv.innerHTML = '';
+  options.forEach(opt => {
+    optDiv.innerHTML += `<button class="quiz-opt" onclick="checkAnswer(this, '${opt}', '${q.ar}')">${opt}</button>`;
+  });
+}
+
+function checkAnswer(btn, chosen, correct_ans) {
+  if (answered) return;
+  answered = true;
+
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    if (b.textContent === correct_ans) b.classList.add('correct');
+    else b.classList.add('wrong');
+  });
+
+  if (chosen === correct_ans) {
+    correct++;
+    document.getElementById('score-correct').textContent = correct;
+  } else {
+    wrong++;
+    document.getElementById('score-wrong').textContent = wrong;
+  }
+
+  document.getElementById('quiz-next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+  quizIndex++;
+  if (quizIndex >= shuffledQuiz.length) {
+    document.getElementById('quiz-jp').textContent = '🎉';
+    document.getElementById('quiz-hint').textContent = `خلصتي! صح ${correct} من ${shuffledQuiz.length}`;
+    document.getElementById('quiz-options').innerHTML = `<div style="grid-column:1/-1;text-align:center;font-size:40px;">🌸</div>`;
+    document.getElementById('quiz-next-btn').textContent = 'ألعبي تاني ↺';
+    document.getElementById('quiz-next-btn').onclick = () => {
+      quizIndex = 0; correct = 0; wrong = 0;
+      document.getElementById('score-correct').textContent = 0;
+      document.getElementById('score-wrong').textContent = 0;
+      shuffledQuiz = [...quizWords].sort(() => Math.random() - 0.5).slice(0, 10);
+      document.getElementById('quiz-next-btn').textContent = 'السؤال الجاي ←';
+      document.getElementById('quiz-next-btn').onclick = nextQuestion;
+      loadQuiz();
+    };
+    document.getElementById('quiz-progress').style.width = '100%';
+    return;
+  }
+  loadQuiz();
+}
+
+// Init quiz
+loadQuiz();
+</script>
+</body>
+</html>
