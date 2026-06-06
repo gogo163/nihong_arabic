@@ -206,20 +206,60 @@
       size:`${10+Math.random()*14}px`
     }));
 
+    function SpeakBtn({text, color, small}) {
+      const [speaking, setSpeaking] = React.useState(false);
+      const handleSpeak = (e) => {
+        e.stopPropagation();
+        setSpeaking(true);
+        if (!window.speechSynthesis) { setSpeaking(false); return; }
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "ja-JP";
+        utter.rate = 0.85;
+        utter.pitch = 1.1;
+        const voices = window.speechSynthesis.getVoices();
+        const jaVoice = voices.find(v => v.lang && v.lang.startsWith("ja"));
+        if (jaVoice) utter.voice = jaVoice;
+        utter.onend = () => setSpeaking(false);
+        utter.onerror = () => setSpeaking(false);
+        window.speechSynthesis.speak(utter);
+      };
+      const size = small ? 26 : 32;
+      return (
+        <button onClick={handleSpeak}
+          style={{
+            width:size, height:size, borderRadius:"50%",
+            border:`2px solid ${color||"#e91e8c"}88`,
+            background: speaking ? (color||"#e91e8c") : "rgba(255,255,255,0.85)",
+            color: speaking ? "#fff" : (color||"#e91e8c"),
+            fontSize: small ? 12 : 14,
+            cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+            transition:"all 0.2s", flexShrink:0,
+            boxShadow: speaking ? `0 2px 8px ${color||"#e91e8c"}55` : "none",
+          }}>
+          {speaking ? "🔊" : "🔈"}
+        </button>
+      );
+    }
+
     function FlipCard({item, cardKey, color, flipped, toggleFlip}) {
       const isFlipped = flipped[cardKey];
       return (
         <div className="flip-card" onClick={()=>toggleFlip(cardKey)}
-          style={{height:130,perspective:600,cursor:"pointer",borderRadius:16,overflow:"hidden",boxShadow:"0 3px 14px rgba(0,0,0,0.10)"}}>
+          style={{height:140,perspective:600,cursor:"pointer",borderRadius:16,overflow:"hidden",boxShadow:"0 3px 14px rgba(0,0,0,0.10)"}}>
           <div className={`card-flip${isFlipped?" flipped":""}`} style={{position:"relative",width:"100%",height:"100%"}}>
-            <div className="card-front" style={{position:"absolute",inset:0,borderRadius:16,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6,padding:12,background:`linear-gradient(135deg,#fff 60%,${color}18)`,border:`2px solid ${color}55`}}>
+            <div className="card-front" style={{position:"absolute",inset:0,borderRadius:16,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:5,padding:12,background:`linear-gradient(135deg,#fff 60%,${color}18)`,border:`2px solid ${color}55`}}>
               <div style={{fontSize:22,fontFamily:"'Noto Sans JP',sans-serif",color:"#1a0a12",fontWeight:700,textAlign:"center"}}>{item.jp}</div>
               <div style={{fontSize:12,color:"#7a4060",fontStyle:"italic",textAlign:"center"}}>{item.rom}</div>
-              <div style={{fontSize:10,color:"#b07090",marginTop:4}}>اضغط 👆</div>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginTop:2}}>
+                <SpeakBtn text={item.jp} color={color} small={true}/>
+                <span style={{fontSize:10,color:"#b07090"}}>اضغط للقلب 👆</span>
+              </div>
             </div>
             <div className="card-back" style={{position:"absolute",inset:0,borderRadius:16,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6,padding:12,background:`linear-gradient(135deg,${color}99,${color}cc)`}}>
               <div style={{fontSize:18,fontWeight:900,color:"#fff",textAlign:"center",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>{item.ar}</div>
               <div style={{fontSize:13,fontFamily:"'Noto Sans JP',sans-serif",color:"rgba(255,255,255,0.9)",textAlign:"center"}}>{item.jp}</div>
+              <SpeakBtn text={item.jp} color="#fff" small={true}/>
             </div>
           </div>
         </div>
