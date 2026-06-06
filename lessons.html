@@ -898,6 +898,26 @@ let shuffledQuiz = [...quizWords].sort(() => Math.random() - 0.5).slice(0, 10);
 // ========================
 // FUNCTIONS
 // ========================
+// ========================
+// TEXT-TO-SPEECH
+// ========================
+function speakJapanese(text, e) {
+  if (e) e.stopPropagation();
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'ja-JP';
+  utter.rate = 0.85;
+  utter.pitch = 1.1;
+  const voices = window.speechSynthesis.getVoices();
+  const jaVoice = voices.find(v => v.lang && v.lang.startsWith('ja'));
+  if (jaVoice) utter.voice = jaVoice;
+  window.speechSynthesis.speak(utter);
+}
+
+// Load voices on page ready
+window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
 function showTab(tab) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -922,6 +942,12 @@ function showVocab(category) {
         <div class="japanese">${word.jp}</div>
         <div class="reading">${word.reading}</div>
         <div class="arabic">${word.ar}</div>
+        <div style="display:flex;justify-content:center;margin-top:4px;">
+          <button onclick="speakJapanese('${word.jp}', event)"
+            style="background:var(--light-pink);border:none;border-radius:50%;width:28px;height:28px;
+            cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;
+            color:var(--pink);transition:all 0.2s;" title="استمع">🔈</button>
+        </div>
         ${word.ex ? `<div class="example">💡 ${word.ex}</div>` : ''}
       </div>`;
   });
@@ -941,6 +967,13 @@ function loadQuiz() {
   document.getElementById('q-num').textContent = quizIndex + 1;
   document.getElementById('quiz-progress').style.width = (quizIndex / 10 * 100) + '%';
   document.getElementById('quiz-next-btn').style.display = 'none';
+  // Add speak button under the Japanese text
+  const quizJpEl = document.getElementById('quiz-jp');
+  quizJpEl.innerHTML = `${q.jp}<br><button onclick="speakJapanese('${q.jp}', event)"
+    style="margin-top:8px;background:var(--light-pink,#fce4f3);border:none;border-radius:20px;
+    padding:6px 16px;cursor:pointer;font-size:14px;color:#e91e8c;font-weight:700;">
+    🔈 استمع
+  </button>`;
 
   const options = [q.ar, ...q.wrong].sort(() => Math.random() - 0.5);
   const optDiv = document.getElementById('quiz-options');
