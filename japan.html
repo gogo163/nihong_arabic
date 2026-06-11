@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اكتشف اليابان – NihongoArabic</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #e91e8c;
+    --light-pink: #fce4f3;
+    --dark-pink: #c0166e;
+    --red: #dc2626;
+    --orange: #ea580c;
+    --blue: #2563eb;
+    --green: #16a34a;
+    --purple: #7c3aed;
+    --soft: #f8f0f5;
+    --text: #2d1a26;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Naskh Arabic', serif; background: var(--soft); color: var(--text); }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a0a2e, #c0166e, #ff6eb4);
+    padding: 16px;
+    display: flex; align-items: center; gap: 10px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 3px 20px rgba(233,30,140,0.4);
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.2); border: none; border-radius: 10px;
+    padding: 7px 12px; color: white; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: 'Noto Naskh Arabic', serif;
+  }
+  .header-info h1 { color: white; font-size: 18px; font-weight: 900; }
+  .header-info p { color: rgba(255,255,255,0.8); font-size: 11px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex; overflow-x: auto; background: white;
+    border-bottom: 2px solid var(--light-pink);
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0; padding: 12px 16px; border: none; background: none;
+    font-family: 'Noto Naskh Arabic', serif; font-size: 14px; color: #999;
+    cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+    transition: all 0.2s; font-weight: 700; white-space: nowrap;
+  }
+  .tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+
+  /* Content */
+  .content { padding: 14px; max-width: 600px; margin: 0 auto; }
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Section title */
+  .sec-title {
+    font-size: 18px; font-weight: 900; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sec-title::after {
+    content: ''; flex: 1; height: 2px;
+    background: linear-gradient(to left, transparent, var(--pink));
+    border-radius: 2px;
+  }
+
+  /* Custom card */
+  .card {
+    background: white; border-radius: 18px; padding: 18px;
+    margin-bottom: 14px; border: 1.5px solid var(--light-pink);
+    box-shadow: 0 3px 14px rgba(233,30,140,0.07);
+    transition: transform 0.2s;
+  }
+  .card:active { transform: scale(0.99); }
+
+  .card-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  }
+  .card-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .card-title { font-size: 16px; font-weight: 900; }
+  .card-sub { font-size: 12px; color: #999; margin-top: 2px; }
+  .card-body { font-size: 14px; line-height: 1.9; color: #4a2a3a; }
+
+  /* Highlight text */
+  .highlight {
+    background: var(--light-pink); color: var(--pink);
+    padding: 2px 8px; border-radius: 8px; font-weight: 700;
+    display: inline-block; margin: 2px;
+  }
+
+  /* Fun fact badge */
+  .fact-badge {
+    background: linear-gradient(135deg, var(--pink), var(--dark-pink));
+    color: white; padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; display: inline-block; margin-bottom: 8px;
+  }
+
+  /* Food card */
+  .food-card {
+    background: white; border-radius: 16px; overflow: hidden;
+    margin-bottom: 12px; border: 1.5px solid #fed7aa;
+    box-shadow: 0 3px 12px rgba(234,88,12,0.08);
+  }
+  .food-header {
+    background: linear-gradient(135deg, #fed7aa, #fdba74);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .food-emoji { font-size: 32px; }
+  .food-name-jp { font-family: 'Noto Sans JP', sans-serif; font-size: 20px; font-weight: 700; color: #7c2d12; }
+  .food-name-ar { font-size: 14px; color: #9a3412; font-weight: 700; }
+  .food-body { padding: 14px 16px; font-size: 13px; line-height: 1.8; color: #4a2a3a; }
+  .food-tip {
+    background: #fff7ed; border-right: 3px solid #ea580c;
+    padding: 8px 12px; border-radius: 0 8px 8px 0;
+    font-size: 12px; color: #9a3412; margin-top: 8px;
+  }
+
+  /* Anime card */
+  .anime-card {
+    background: white; border-radius: 16px; padding: 16px;
+    margin-bottom: 12px; border: 1.5px solid #e9d5ff;
+    box-shadow: 0 3px 12px rgba(124,58,237,0.08);
+  }
+  .anime-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .anime-icon {
+    width: 50px; height: 50px; border-radius: 12px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+  }
+  .anime-title { font-size: 16px; font-weight: 900; color: #4c1d95; }
+  .anime-tag {
+    background: #f3e8ff; color: #7c3aed;
+    padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 700;
+    display: inline-block; margin: 2px;
+  }
+  .anime-body { font-size: 13px; line-height: 1.8; color: #4a2a3a; }
+  .anime-words {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  }
+  .word-chip {
+    background: #f3e8ff; border: 1px solid #d8b4fe;
+    border-radius: 10px; padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+  }
+  .word-chip span { font-family: 'Noto Sans JP', sans-serif; color: #7c3aed; }
+  .word-chip small { color: #666; }
+
+  /* Divider */
+  .divider {
+    text-align: center; color: #d4a0c0; font-size: 18px;
+    margin: 8px 0; letter-spacing: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="location.href='index.html'">◀ رجوع</button>
+  <div style="font-size:26px;">🎌</div>
+  <div class="header-info">
+    <h1>اكتشف اليابان</h1>
+    <p>ثقافة • عادات • أكل • أنيمي</p>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('customs', this)">🎎 عادات</button>
+  <button class="tab" onclick="showTab('facts', this)">💡 حقائق</button>
+  <button class="tab" onclick="showTab('food', this)">🍱 مطبخ</button>
+  <button class="tab" onclick="showTab('anime', this)">⛩️ أنيمي</button>
+</div>
+
+<div class="content">
+
+  <!-- ====== CUSTOMS ====== -->
+  <div class="section active" id="section-customs">
+    <p class="sec-title">🎎 عادات يومية يابانية</p>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#fce4f3;">🙇</div>
+        <div><div class="card-title">الانحناء (お辞儀 Ojigi)</div><div class="card-sub">تحية الاحترام الأساسية</div></div>
+      </div>
+      <div class="card-body">
+        اليابانيون بيحيّوا بعض بالانحناء بدل المصافحة! كلما انحنيت أكتر، كلما كنت أكتر احتراماً. فيه 3 درجات:
+        <br>• <span class="highlight">15 درجة</span> - تحية عادية
+        <br>• <span class="highlight">30 درجة</span> - احترام وشكر
+        <br>• <span class="highlight">45 درجة</span> - اعتذار عميق
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#fef3c7;">👟</div>
+        <div><div class="card-title">خلع الحذاء (靴 Kutsu)</div><div class="card-sub">عند دخول البيت</div></div>
+      </div>
+      <div class="card-body">
+        في اليابان لازم تخلع حذاءك قبل ما تدخل البيت! عندهم منطقة خاصة اسمها <span class="highlight">玄関 Genkan</span> عند الباب. حتى في بعض المطاعم والمدارس بيعملوا نفس الحاجة! وبيلبسوا شبشب داخلي اسمه <span class="highlight">スリッパ Surippa</span>.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#dcfce7;">🚃</div>
+        <div><div class="card-title">الهدوء في المواصلات</div><div class="card-sub">أدب عام</div></div>
+      </div>
+      <div class="card-body">
+        في المترو والباص الياباني:
+        <br>• 🔇 مش بيتكلموا بصوت عالي
+        <br>• 📵 الموبايل على صامت دايماً
+        <br>• 🚫 مش بياكلوا أو يشربوا
+        <br>• 💺 بيقفوا في طابور منظم
+        <br><br>الهدوء ده علامة احترام للآخرين!
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#ede9fe;">🎁</div>
+        <div><div class="card-title">ثقافة الهدايا (贈り物 Okurimono)</div><div class="card-sub">فن إعطاء الهدايا</div></div>
+      </div>
+      <div class="card-body">
+        اليابانيون بيديوا الهدايا بالإيدين الاتنين كعلامة احترام! وعادةً مش بيفتحوا الهدية قدام الشخص عشان ميبانش طمّاعين. كمان لما حد يديك هدية، قوليله:
+        <br><span class="highlight">ありがとうございます</span> (Arigatou gozaimasu) = شكراً جزيلاً!
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#fee2e2;">🌸</div>
+        <div><div class="card-title">花見 Hanami - مشاهدة الزهور</div><div class="card-sub">تقليد ربيعي مشهور</div></div>
+      </div>
+      <div class="card-body">
+        كل ربيع، اليابانيون بيروحوا الحدائق يجلسوا تحت أشجار الساكورا 🌸 ويتفرجوا على الزهور! بياكلوا ويشربوا ويغنوا مع عيلتهم وأصحابهم. ده تقليد عنده أكتر من 1000 سنة! الساكورا رمز لـ <span class="highlight">جمال الأشياء العابرة</span>.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#e0f2fe;">♨️</div>
+        <div><div class="card-title">Onsen (温泉) - الينابيع الحارة</div><div class="card-sub">استرخاء ياباني أصيل</div></div>
+      </div>
+      <div class="card-body">
+        الأونسن هو الحمام الياباني بالمياه الحارة الطبيعية من البراكين! اليابانيون بيروحوا الأونسن للاسترخاء والصحة. فيه قواعد مهمة:
+        <br>• 🚿 لازم تستحم قبل الدخول
+        <br>• 🔇 الهدوء التام
+        <br>• 🚫 الوشم ممنوع في أغلب الأماكن
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ====== FACTS ====== -->
+  <div class="section" id="section-facts">
+    <p class="sec-title">💡 حقائق مثيرة عن اليابان</p>
+
+    <div class="card">
+      <div class="fact-badge">🤯 مذهل!</div>
+      <div class="card-header">
+        <div class="card-icon" style="background:#fce4f3;">🚅</div>
+        <div><div class="card-title">القطارات الأسرع في العالم</div></div>
+      </div>
+      <div class="card-body">
+        قطار الشينكانسن <span class="highlight">新幹線</span> بيوصل لسرعة <span class="highlight">320 كم/ساعة</span>! وده مش الأسرع - القطار التجريبي Maglev وصل <span class="highlight">603 كم/ساعة</span>! ومعدل التأخير في القطارات اليابانية أقل من <span class="highlight">دقيقة واحدة</span> في السنة!
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fact-badge">😲 لا يصدق!</div>
+      <div class="card-header">
+        <div class="card-icon" style="background:#fef3c7;">🍣</div>
+        <div><div class="card-title">بلد السوشي والأمان</div></div>
+      </div>
+      <div class="card-body">
+        اليابان من أأمن بلاد العالم! معدل الجريمة منخفض جداً لدرجة إن الناس بتسيب محافظها في الكافيهات وترجع تلاقيها! كمان فيها <span class="highlight">أكتر من 50,000</span> مطعم سوشي فقط في طوكيو!
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fact-badge">🌍 مثير للاهتمام</div>
+      <div class="card-header">
+        <div class="card-icon" style="background:#dcfce7;">🤖</div>
+        <div><div class="card-title">بلد الروبوتات</div></div>
+      </div>
+      <div class="card-body">
+        اليابان فيها <span class="highlight">47%</span> من روبوتات الصناعة في العالم! وعندهم روبوتات بتعمل نادل في المطاعم، وممرضة في المستشفيات، وحتى معلم في المدارس! كمان فيه فندق كامل بيشتغل بالروبوتات اسمه <span class="highlight">Henn na Hotel</span>.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fact-badge">🎴 تاريخ عريق</div>
+      <div class="card-header">
+        <div class="card-icon" style="background:#ede9fe;">⛩️</div>
+        <div><div class="card-title">أقدم شركة في العالم</div></div>
+      </div>
+      <div class="card-body">
+        أقدم شركة في العالم يابانية! اسمها <span class="highlight">Kongō Gumi</span> وأُسِّست سنة <span class="highlight">578 ميلادي</span> - يعني عمرها أكتر من 1400 سنة! كانت بتبني المعابد البوذية. كمان اليابان فيها أكتر من <span class="highlight">50,000 شركة</span> عمرها أكتر من 100 سنة!
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fact-badge">🌺 طبيعة خلابة</div>
+      <div class="card-header">
+        <div class="card-icon" style="background:#fee2e2;">🗻</div>
+        <div><div class="card-title">جبل فوجي المقدس</div></div>
+      </div>
+      <div class="card-body">
+        جبل فوجي <span class="highlight">富士山</span> ارتفاعه <span class="highlight">3,776 متر</span> وهو أعلى جبل في اليابان! البركان ده مقدس عند اليابانيين ورمز وطني. كل سنة <span class="highlight">300,000</span> شخص يتسلقوه! وهو بركان خامل - آخر مرة اندلع كانت سنة 1707.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fact-badge">🎮 ترفيه</div>
+      <div class="card-header">
+        <div class="card-icon" style="background:#e0f2fe;">👾</div>
+        <div><div class="card-title">عاصمة الألعاب والترفيه</div></div>
+      </div>
+      <div class="card-body">
+        اليابان موطن أشهر شركات الألعاب في العالم: <span class="highlight">Nintendo</span> و<span class="highlight">Sony</span> و<span class="highlight">Sega</span>! كمان فيها <span class="highlight">أكبر صناعة مانجا وأنيمي</span> في العالم بإيرادات تتجاوز 20 مليار دولار سنوياً! ومدينة أكيهابارا في طوكيو هي جنة عشاق الأنيمي والألعاب! 🎮
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ====== FOOD ====== -->
+  <div class="section" id="section-food">
+    <p class="sec-title">🍱 المطبخ الياباني</p>
+
+    <div class="food-card">
+      <div class="food-header">
+        <div class="food-emoji">🍣</div>
+        <div>
+          <div class="food-name-jp">寿司 Sushi</div>
+          <div class="food-name-ar">السوشي</div>
+        </div>
+      </div>
+      <div class="food-body">
+        أشهر أكلة يابانية في العالم! أرز مدبوس مع سمك طازج فوقه. مش لازم يكون بسمك - فيه سوشي بالخضار والبيض. في اليابان بيتأكل بالإيد مش بالعيدان في الغالب!
+        <div class="food-tip">💡 كلمة يابانية: おいしい (Oishii) = لذيذ!</div>
+      </div>
+    </div>
+
+    <div class="food-card">
+      <div class="food-header">
+        <div class="food-emoji">🍜</div>
+        <div>
+          <div class="food-name-jp">ラーメン Ramen</div>
+          <div class="food-name-ar">الرامن</div>
+        </div>
+      </div>
+      <div class="food-body">
+        شوربة نودلز ياباني أصيل! فيه 4 أنواع رئيسية: Shoyu (صويا)، Miso، Shio (ملح)، Tonkotsu (عظم خنزير). في اليابان عندهم متاحف للرامن! وصوت الشرب بصوت عالي يعني إن الأكل لذيذ - مش وقاحة!
+        <div class="food-tip">💡 صوت الأكل بصوت = مدح للطباخ في اليابان!</div>
+      </div>
+    </div>
+
+    <div class="food-card">
+      <div class="food-header">
+        <div class="food-emoji">🍱</div>
+        <div>
+          <div class="food-name-jp">弁当 Bento</div>
+          <div class="food-name-ar">البنتو</div>
+        </div>
+      </div>
+      <div class="food-body">
+        وجبة متكاملة في علبة! الأمهات اليابانيات بتعمل للأطفال بنتو فني ومزين اسمه <span class="highlight">Kyaraben</span> على شكل شخصيات أنيمي وحيوانات! ده فن كامل وفيه مسابقات عالمية له!
+        <div class="food-tip">💡 البنتو بيتباع في المحطات اسمه Ekiben!</div>
+      </div>
+    </div>
+
+    <div class="food-card">
+      <div class="food-header">
+        <div class="food-emoji">🍡</div>
+        <div>
+          <div class="food-name-jp">和菓子 Wagashi</div>
+          <div class="food-name-ar">الحلويات اليابانية</div>
+        </div>
+      </div>
+      <div class="food-body">
+        حلويات يابانية تقليدية مصنوعة من الفاصوليا الحلوة والأرز! أشهرها Mochi (موتشي) - عجينة أرز ناعمة محشوة. كمان Dorayaki - فطيرة محشوة بالفاصوليا (أكلة دورايمون المفضلة! 🔵).
+        <div class="food-tip">💡 الموتشي في عيد رأس السنة ياباني مقدس!</div>
+      </div>
+    </div>
+
+    <div class="food-card">
+      <div class="food-header">
+        <div class="food-emoji">🍵</div>
+        <div>
+          <div class="food-name-jp">抹茶 Matcha</div>
+          <div class="food-name-ar">الماتشا</div>
+        </div>
+      </div>
+      <div class="food-body">
+        شاي أخضر مطحون ناعم! في اليابان عندهم <span class="highlight">茶道 Chado</span> - فن تحضير الشاي - وهو فلسفة كاملة عمرها 400 سنة! الماتشا دلوقتي في كل حاجة: آيس كريم، كيك، شوكولاتة، لاتيه!
+        <div class="food-tip">💡 الماتشا مليان مضادات أكسدة - صحي جداً!</div>
+      </div>
+    </div>
+
+    <div class="food-card">
+      <div class="food-header">
+        <div class="food-emoji">🐡</div>
+        <div>
+          <div class="food-name-jp">たこ焼き Takoyaki</div>
+          <div class="food-name-ar">تاكوياكي - كرات الأخطبوط</div>
+        </div>
+      </div>
+      <div class="food-body">
+        كرات عجين مقلية محشوة بقطع الأخطبوط! أكلة شارع مشهورة جداً من أوساكا. بتتأكل ساخنة مع صلصة خاصة ورقائق السمك المجفف اللي بترقص فوقها من الحرارة!
+        <div class="food-tip">💡 تاكو = أخطبوط، ياكي = مشوي/مقلي</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ====== ANIME ====== -->
+  <div class="section" id="section-anime">
+    <p class="sec-title">⛩️ ثقافة الأنيمي والمانجا</p>
+
+    <div class="anime-card">
+      <div class="anime-header">
+        <div class="anime-icon">🍥</div>
+        <div>
+          <div class="anime-title">ناروتو - Naruto ناルト</div>
+          <div>
+            <span class="anime-tag">أكشن</span>
+            <span class="anime-tag">مغامرة</span>
+            <span class="anime-tag">الأكثر مشاهدة</span>
+          </div>
+        </div>
+      </div>
+      <div class="anime-body">
+        قصة شاب نينجا يحلم يبقى زعيم قريته! من أشهر أنيمي في التاريخ. المكان الخيالي مستوحى من اليابان الفيودالية الحقيقية.
+      </div>
+      <div class="anime-words">
+        <div class="word-chip"><span>忍者</span> <small>Ninja = نينجا</small></div>
+        <div class="word-chip"><span>火影</span> <small>Hokage = زعيم القرية</small></div>
+        <div class="word-chip"><span>仲間</span> <small>Nakama = رفيق</small></div>
+        <div class="word-chip"><span>夢</span> <small>Yume = حلم</small></div>
+      </div>
+    </div>
+
+    <div class="anime-card">
+      <div class="anime-header">
+        <div class="anime-icon">⚔️</div>
+        <div>
+          <div class="anime-title">قاتل الشياطين - Demon Slayer 鬼滅の刃</div>
+          <div>
+            <span class="anime-tag">تاريخي</span>
+            <span class="anime-tag">أكشن</span>
+            <span class="anime-tag">ياباني أصيل</span>
+          </div>
+        </div>
+      </div>
+      <div class="anime-body">
+        يجري في اليابان عصر تيشو (1912-1926)! مليان بثقافة وملابس يابانية أصيلة. الفيلم كسر أرقام قياسية وبقى أعلى فيلم أنيمي إيرادات في التاريخ!
+      </div>
+      <div class="anime-words">
+        <div class="word-chip"><span>鬼</span> <small>Oni = شيطان</small></div>
+        <div class="word-chip"><span>刀</span> <small>Katana = سيف</small></div>
+        <div class="word-chip"><span>家族</span> <small>Kazoku = عيلة</small></div>
+        <div class="word-chip"><span>強い</span> <small>Tsuyoi = قوي</small></div>
+      </div>
+    </div>
+
+    <div class="anime-card">
+      <div class="anime-header">
+        <div class="anime-icon">🌊</div>
+        <div>
+          <div class="anime-title">ون بيس - One Piece ワンピース</div>
+          <div>
+            <span class="anime-tag">مغامرة</span>
+            <span class="anime-tag">كوميدي</span>
+            <span class="anime-tag">الأطول</span>
+          </div>
+        </div>
+      </div>
+      <div class="anime-body">
+        بدأ سنة 1997 ولسه مستمر! قصة لوفي اللي يدور على كنز أسطوري. أكتر مانجا مبيعاً في التاريخ بأكتر من 500 مليون نسخة!
+      </div>
+      <div class="anime-words">
+        <div class="word-chip"><span>海賊</span> <small>Kaizoku = قرصان</small></div>
+        <div class="word-chip"><span>冒険</span> <small>Bouken = مغامرة</small></div>
+        <div class="word-chip"><span>自由</span> <small>Jiyuu = حرية</small></div>
+        <div class="word-chip"><span>仲間</span> <small>Nakama = رفيق</small></div>
+      </div>
+    </div>
+
+    <div class="anime-card">
+      <div class="anime-header">
+        <div class="anime-icon">🏫</div>
+        <div>
+          <div class="anime-title">جيبلي - Studio Ghibli スタジオジブリ</div>
+          <div>
+            <span class="anime-tag">سحري</span>
+            <span class="anime-tag">عائلي</span>
+            <span class="anime-tag">أوسكار</span>
+          </div>
+        </div>
+      </div>
+      <div class="anime-body">
+        أشهر استوديو أنيمي في العالم! أفلامهم زي "الجارة توتورو" و"سبيريتد أواي" (اللي اتجاز الأوسكار!) مليانة بالثقافة اليابانية الأصيلة والطبيعة والروحانيات.
+      </div>
+      <div class="anime-words">
+        <div class="word-chip"><span>魔法</span> <small>Mahou = سحر</small></div>
+        <div class="word-chip"><span>自然</span> <small>Shizen = طبيعة</small></div>
+        <div class="word-chip"><span>精霊</span> <small>Seirei = روح</small></div>
+        <div class="word-chip"><span>森</span> <small>Mori = غابة</small></div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:#e9d5ff;">
+      <div class="card-header">
+        <div class="card-icon" style="background:#ede9fe;">📚</div>
+        <div><div class="card-title" style="color:#4c1d95;">المانجا - Manga 漫画</div><div class="card-sub">الكوميكس الياباني</div></div>
+      </div>
+      <div class="card-body">
+        المانجا بتتقرأ من اليمين لليسار - زي العربي! ده بيخليها قريبة لينا كعرب. في اليابان، حتى الكبار بيقروا مانجا في المترو والمواصلات. صناعة المانجا بتجيب أكتر من <span class="highlight">6 مليار دولار</span> سنوياً!
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function showTab(tab, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
