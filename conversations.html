@@ -786,7 +786,7 @@
 <script>
 function speak(text) {
   try {
-    if (window.AppInventor) { window.AppInventor.setWebViewString("SPEAK:" + text); return; }
+    if (window.AppInventor) { window.AppInventor.setWebViewString(text); return; }
   } catch(e) {}
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
