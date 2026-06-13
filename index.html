@@ -211,18 +211,31 @@
       const handleSpeak = (e) => {
         e.stopPropagation();
         setSpeaking(true);
+        setTimeout(() => setSpeaking(false), 2000);
+
+        // طريقة 1: Android App Inventor
+        try {
+          if (window.AppInventor) {
+            window.AppInventor.setWebViewString(text);
+            return;
+          }
+        } catch(err) {}
+
+        // طريقة 2: Web Speech API (للاب)
         if (!window.speechSynthesis) { setSpeaking(false); return; }
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = "ja-JP";
         utter.rate = 0.85;
         utter.pitch = 1.1;
-        const voices = window.speechSynthesis.getVoices();
-        const jaVoice = voices.find(v => v.lang && v.lang.startsWith("ja"));
-        if (jaVoice) utter.voice = jaVoice;
-        utter.onend = () => setSpeaking(false);
-        utter.onerror = () => setSpeaking(false);
-        window.speechSynthesis.speak(utter);
+        const trySpeak = () => {
+          const voices = window.speechSynthesis.getVoices();
+          const jaVoice = voices.find(v => v.lang && v.lang.startsWith("ja"));
+          if (jaVoice) utter.voice = jaVoice;
+          utter.onend = () => setSpeaking(false);
+          window.speechSynthesis.speak(utter);
+        };
+        window.speechSynthesis.getVoices().length > 0 ? trySpeak() : (window.speechSynthesis.onvoiceschanged = trySpeak);
       };
       const size = small ? 26 : 32;
       return (
