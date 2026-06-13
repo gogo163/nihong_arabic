@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محادثات يومية – NihongoArabic</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #e91e8c;
+    --light-pink: #fce4f3;
+    --dark-pink: #c0166e;
+    --soft: #f8f0f5;
+    --text: #2d1a26;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Naskh Arabic', serif; background: var(--soft); color: var(--text); }
+
+  .header {
+    background: linear-gradient(135deg, #1a0a2e, #c0166e, #ff6eb4);
+    padding: 16px; display: flex; align-items: center; gap: 10px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 3px 20px rgba(233,30,140,0.4);
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.2); border: none; border-radius: 10px;
+    padding: 7px 12px; color: white; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: 'Noto Naskh Arabic', serif;
+  }
+  .header-info h1 { color: white; font-size: 18px; font-weight: 900; }
+  .header-info p { color: rgba(255,255,255,0.8); font-size: 11px; }
+
+  /* Category grid */
+  .content { padding: 14px; max-width: 600px; margin: 0 auto; }
+
+  .cat-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .cat-card {
+    background: white; border-radius: 18px; padding: 18px 14px;
+    text-align: center; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.25s;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.07);
+  }
+  .cat-card:hover, .cat-card.active {
+    border-color: var(--pink); transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(233,30,140,0.2);
+  }
+  .cat-card .icon { font-size: 40px; margin-bottom: 8px; }
+  .cat-card h3 { font-size: 15px; font-weight: 900; }
+  .cat-card p { font-size: 11px; color: #999; margin-top: 3px; }
+
+  /* Conversation area */
+  .conv-area { display: none; }
+  .conv-area.active { display: block; }
+
+  .conv-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px; border-radius: 16px; margin-bottom: 14px;
+    color: white; font-weight: 900; font-size: 17px;
+  }
+
+  /* Chat bubbles */
+  .chat-wrap { margin-bottom: 20px; }
+
+  .scene-label {
+    text-align: center; font-size: 12px; color: #b07090;
+    background: var(--light-pink); border-radius: 20px;
+    padding: 5px 14px; display: inline-block;
+    margin: 10px auto 14px; display: flex;
+    align-items: center; justify-content: center; gap: 6px;
+  }
+
+  .bubble-row {
+    display: flex; margin-bottom: 10px; gap: 8px; align-items: flex-end;
+  }
+  .bubble-row.you { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+    background: var(--light-pink);
+  }
+  .bubble-row.you .avatar { background: #e0f2fe; }
+
+  .bubble {
+    max-width: 75%; padding: 10px 14px; border-radius: 18px;
+    cursor: pointer; transition: transform 0.15s;
+    position: relative;
+  }
+  .bubble:active { transform: scale(0.97); }
+
+  .bubble-row:not(.you) .bubble {
+    background: white; border: 1.5px solid var(--light-pink);
+    border-bottom-right-radius: 4px;
+  }
+  .bubble-row.you .bubble {
+    background: linear-gradient(135deg, var(--pink), var(--dark-pink));
+    color: white; border-bottom-left-radius: 4px;
+  }
+
+  .bubble .jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px; font-weight: 700; margin-bottom: 3px;
+  }
+  .bubble-row.you .bubble .jp { color: white; }
+  .bubble-row:not(.you) .bubble .jp { color: var(--pink); }
+
+  .bubble .rom { font-size: 11px; margin-bottom: 3px; }
+  .bubble-row.you .bubble .rom { color: rgba(255,255,255,0.8); }
+  .bubble-row:not(.you) .bubble .rom { color: #aaa; }
+
+  .bubble .ar { font-size: 13px; font-weight: 600; }
+  .bubble-row.you .bubble .ar { color: rgba(255,255,255,0.95); }
+
+  .bubble .speak-btn {
+    position: absolute; top: -8px; left: -8px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: white; border: 1.5px solid var(--light-pink);
+    font-size: 11px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+  }
+  .bubble-row.you .bubble .speak-btn {
+    left: auto; right: -8px;
+    border-color: rgba(255,255,255,0.5);
+  }
+  .bubble .speak-btn:hover { transform: scale(1.2); }
+
+  /* Vocab section */
+  .vocab-box {
+    background: white; border-radius: 16px; padding: 16px;
+    margin-top: 16px; border: 1.5px solid var(--light-pink);
+  }
+  .vocab-title {
+    font-size: 14px; font-weight: 900; color: var(--pink);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+  }
+  .vocab-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .vocab-item {
+    background: var(--soft); border-radius: 10px; padding: 8px 10px;
+    cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+  }
+  .vocab-item:hover { border-color: var(--pink); background: var(--light-pink); }
+  .vocab-item .vjp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px; font-weight: 700; color: var(--pink);
+  }
+  .vocab-item .vrom { font-size: 10px; color: #aaa; }
+  .vocab-item .var { font-size: 12px; font-weight: 700; }
+
+  /* Tips box */
+  .tip-box {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border-radius: 14px; padding: 14px;
+    margin-top: 12px; border: 1.5px solid #fcd34d;
+  }
+  .tip-title { font-size: 13px; font-weight: 900; color: #92400e; margin-bottom: 8px; }
+  .tip-item { font-size: 12px; color: #78350f; margin-bottom: 5px; line-height: 1.7; }
+
+  /* Section title */
+  .sec-title {
+    font-size: 17px; font-weight: 900; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sec-title::after {
+    content: ''; flex: 1; height: 2px;
+    background: linear-gradient(to left, transparent, var(--pink));
+  }
+
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .conv-area.active { animation: fadeIn 0.3s ease; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="location.href='index.html'">◀ رجوع</button>
+  <div style="font-size:24px;">💬</div>
+  <div class="header-info">
+    <h1>محادثات يومية</h1>
+    <p>اضغط على أي جملة تسمعها 🔈</p>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Category selection -->
+  <div id="cat-section">
+    <p class="sec-title">💬 اختاري الموقف</p>
+    <div class="cat-grid">
+      <div class="cat-card" onclick="showConv('restaurant')">
+        <div class="icon">🍽️</div>
+        <h3>في المطعم</h3>
+        <p>طلب الأكل والحساب</p>
+      </div>
+      <div class="cat-card" onclick="showConv('hotel')">
+        <div class="icon">🏨</div>
+        <h3>في الفندق</h3>
+        <p>تسجيل الدخول والخروج</p>
+      </div>
+      <div class="cat-card" onclick="showConv('airport')">
+        <div class="icon">✈️</div>
+        <h3>في المطار</h3>
+        <p>السفر والجمارك</p>
+      </div>
+      <div class="cat-card" onclick="showConv('shopping')">
+        <div class="icon">🛍️</div>
+        <h3>في المحل</h3>
+        <p>التسوق والأسعار</p>
+      </div>
+      <div class="cat-card" onclick="showConv('doctor')">
+        <div class="icon">🏥</div>
+        <h3>عند الدكتور</h3>
+        <p>وصف الأعراض</p>
+      </div>
+      <div class="cat-card" onclick="showConv('transport')">
+        <div class="icon">🚃</div>
+        <h3>في المواصلات</h3>
+        <p>المترو والتاكسي</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESTAURANT -->
+  <div class="conv-area" id="conv-restaurant">
+    <div class="conv-header" style="background:linear-gradient(135deg,#ea580c,#f97316);">
+      <span style="font-size:28px;">🍽️</span>
+      <div>
+        <div>في المطعم</div>
+        <div style="font-size:12px;opacity:0.85;font-weight:400;">レストランで</div>
+      </div>
+      <button onclick="backToCats()" style="margin-right:auto;background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-family:inherit;font-size:13px;">◀ رجوع</button>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="scene-label">🚪 عند الدخول</div>
+
+      <div class="bubble-row">
+        <div class="avatar">👨‍🍳</div>
+        <div class="bubble" onclick="speak('いらっしゃいませ')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">いらっしゃいませ</div>
+          <div class="rom">Irasshaimase</div>
+          <div class="ar">أهلاً وسهلاً! (ترحيب)</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('二人です')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">二人です</div>
+          <div class="rom">Futari desu</div>
+          <div class="ar">نحن اتنين</div>
+        </div>
+      </div>
+
+      <div class="bubble-row">
+        <div class="avatar">👨‍🍳</div>
+        <div class="bubble" onclick="speak('こちらへどうぞ')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">こちらへどうぞ</div>
+          <div class="rom">Kochira e douzo</div>
+          <div class="ar">تفضل من هنا</div>
+        </div>
+      </div>
+
+      <div class="scene-label">📋 الطلب</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('メニューをください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">メニューをください</div>
+          <div class="rom">Menyuu wo kudasai</div>
+          <div class="ar">ممكن المنيو؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('これをください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">これをください</div>
+          <div class="rom">Kore wo kudasai</div>
+          <div class="ar">عايز ده (وانت بتشاور)</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('おすすめは何ですか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">おすすめは何ですか</div>
+          <div class="rom">Osusume wa nan desu ka</div>
+          <div class="ar">إيه الأكلة المميزة؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row">
+        <div class="avatar">👨‍🍳</div>
+        <div class="bubble" onclick="speak('少々お待ちください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">少々お待ちください</div>
+          <div class="rom">Shoushou omachi kudasai</div>
+          <div class="ar">لحظة من فضلك</div>
+        </div>
+      </div>
+
+      <div class="scene-label">💰 الحساب</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('お会計をお願いします')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">お会計をお願いします</div>
+          <div class="rom">Okaikei wo onegaishimasu</div>
+          <div class="ar">الحساب من فضلك</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('カードで払えますか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">カードで払えますか</div>
+          <div class="rom">Kaado de haraemasu ka</div>
+          <div class="ar">ممكن أدفع بكارت؟</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vocab-box">
+      <div class="vocab-title">📚 كلمات مفيدة في المطعم</div>
+      <div class="vocab-grid">
+        <div class="vocab-item" onclick="speak('おいしい')"><div class="vjp">おいしい</div><div class="vrom">Oishii</div><div class="var">لذيذ</div></div>
+        <div class="vocab-item" onclick="speak('水')"><div class="vjp">水</div><div class="vrom">Mizu</div><div class="var">مية</div></div>
+        <div class="vocab-item" onclick="speak('箸')"><div class="vjp">箸</div><div class="vrom">Hashi</div><div class="var">عيدان الأكل</div></div>
+        <div class="vocab-item" onclick="speak('アレルギー')"><div class="vjp">アレルギー</div><div class="vrom">Arerugii</div><div class="var">حساسية</div></div>
+        <div class="vocab-item" onclick="speak('辛い')"><div class="vjp">辛い</div><div class="vrom">Karai</div><div class="var">حار</div></div>
+        <div class="vocab-item" onclick="speak('甘い')"><div class="vjp">甘い</div><div class="vrom">Amai</div><div class="var">حلو</div></div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-title">💡 نصايح مهمة في المطاعم اليابانية</div>
+      <div class="tip-item">🙏 قول <b>いただきます</b> (Itadakimasu) قبل الأكل</div>
+      <div class="tip-item">🙌 قول <b>ごちそうさま</b> (Gochisousama) بعد الأكل</div>
+      <div class="tip-item">🚫 البقشيش مش عادة في اليابان!</div>
+      <div class="tip-item">📲 معظم المطاعم عندها صور في المنيو - اشاور بس!</div>
+    </div>
+  </div>
+
+  <!-- HOTEL -->
+  <div class="conv-area" id="conv-hotel">
+    <div class="conv-header" style="background:linear-gradient(135deg,#2563eb,#7c3aed);">
+      <span style="font-size:28px;">🏨</span>
+      <div><div>في الفندق</div><div style="font-size:12px;opacity:0.85;font-weight:400;">ホテルで</div></div>
+      <button onclick="backToCats()" style="margin-right:auto;background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-family:inherit;font-size:13px;">◀ رجوع</button>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="scene-label">🔑 تسجيل الدخول</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('チェックインをお願いします')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">チェックインをお願いします</div>
+          <div class="rom">Chekkuin wo onegaishimasu</div>
+          <div class="ar">عايز أعمل check-in</div>
+        </div>
+      </div>
+
+      <div class="bubble-row">
+        <div class="avatar">💁</div>
+        <div class="bubble" onclick="speak('お名前をお願いします')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">お名前をお願いします</div>
+          <div class="rom">Onamae wo onegaishimasu</div>
+          <div class="ar">اسمك من فضلك</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('予約しました')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">予約しました</div>
+          <div class="rom">Yoyaku shimashita</div>
+          <div class="ar">عندي حجز</div>
+        </div>
+      </div>
+
+      <div class="scene-label">🛎️ طلبات الغرفة</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('タオルをください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">タオルをください</div>
+          <div class="rom">Taoru wo kudasai</div>
+          <div class="ar">ممكن تاول؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('Wi-Fiのパスワードは何ですか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">Wi-Fiのパスワードは何ですか</div>
+          <div class="rom">Wai-fai no pasuwaado wa nan desu ka</div>
+          <div class="ar">باسورد الواي فاي إيه؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('エアコンの使い方を教えてください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">エアコンの使い方を教えてください</div>
+          <div class="rom">Eakon no tsukaikata wo oshiete kudasai</div>
+          <div class="ar">إزاي أشغّل التكييف؟</div>
+        </div>
+      </div>
+
+      <div class="scene-label">🚪 تسجيل الخروج</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('チェックアウトをお願いします')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">チェックアウトをお願いします</div>
+          <div class="rom">Chekkuauto wo onegaishimasu</div>
+          <div class="ar">عايز أعمل check-out</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vocab-box">
+      <div class="vocab-title">📚 كلمات مفيدة في الفندق</div>
+      <div class="vocab-grid">
+        <div class="vocab-item" onclick="speak('部屋')"><div class="vjp">部屋</div><div class="vrom">Heya</div><div class="var">الأوضة</div></div>
+        <div class="vocab-item" onclick="speak('鍵')"><div class="vjp">鍵</div><div class="vrom">Kagi</div><div class="var">المفتاح</div></div>
+        <div class="vocab-item" onclick="speak('朝食')"><div class="vjp">朝食</div><div class="vrom">Choushoku</div><div class="var">الفطار</div></div>
+        <div class="vocab-item" onclick="speak('エレベーター')"><div class="vjp">エレベーター</div><div class="vrom">Erebeetaa</div><div class="var">الأسانسير</div></div>
+        <div class="vocab-item" onclick="speak('フロント')"><div class="vjp">フロント</div><div class="vrom">Furonto</div><div class="var">الاستقبال</div></div>
+        <div class="vocab-item" onclick="speak('禁煙')"><div class="vjp">禁煙</div><div class="vrom">Kin-en</div><div class="var">ممنوع التدخين</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AIRPORT -->
+  <div class="conv-area" id="conv-airport">
+    <div class="conv-header" style="background:linear-gradient(135deg,#0891b2,#06b6d4);">
+      <span style="font-size:28px;">✈️</span>
+      <div><div>في المطار</div><div style="font-size:12px;opacity:0.85;font-weight:400;">空港で</div></div>
+      <button onclick="backToCats()" style="margin-right:auto;background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-family:inherit;font-size:13px;">◀ رجوع</button>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="scene-label">🎫 الكاونتر</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('チェックインをお願いします')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">チェックインをお願いします</div>
+          <div class="rom">Chekkuin wo onegaishimasu</div>
+          <div class="ar">عايز أعمل check-in</div>
+        </div>
+      </div>
+
+      <div class="bubble-row">
+        <div class="avatar">👩‍✈️</div>
+        <div class="bubble" onclick="speak('パスポートをお願いします')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">パスポートをお願いします</div>
+          <div class="rom">Pasupooto wo onegaishimasu</div>
+          <div class="ar">الباسبور من فضلك</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('窓側の席をお願いします')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">窓側の席をお願いします</div>
+          <div class="rom">Madogawa no seki wo onegaishimasu</div>
+          <div class="ar">عايز مقعد جنب الشباك</div>
+        </div>
+      </div>
+
+      <div class="scene-label">🛃 الجمارك</div>
+
+      <div class="bubble-row">
+        <div class="avatar">👮</div>
+        <div class="bubble" onclick="speak('日本へ来た目的は何ですか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">日本へ来た目的は何ですか</div>
+          <div class="rom">Nihon e kita mokuteki wa nan desu ka</div>
+          <div class="ar">سبب زيارتك لليابان؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('観光です')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">観光です</div>
+          <div class="rom">Kankou desu</div>
+          <div class="ar">سياحة</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('一週間滞在します')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">一週間滞在します</div>
+          <div class="rom">Isshuukan taizai shimasu</div>
+          <div class="ar">هقيم أسبوع واحد</div>
+        </div>
+      </div>
+
+      <div class="scene-label">🧳 أمتعة</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('荷物が出てきません')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">荷物が出てきません</div>
+          <div class="rom">Nimotsu ga dete kimasen</div>
+          <div class="ar">شنطتي مجاتش</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vocab-box">
+      <div class="vocab-title">📚 كلمات مفيدة في المطار</div>
+      <div class="vocab-grid">
+        <div class="vocab-item" onclick="speak('搭乗口')"><div class="vjp">搭乗口</div><div class="vrom">Toujouguchi</div><div class="var">بوابة الصعود</div></div>
+        <div class="vocab-item" onclick="speak('出口')"><div class="vjp">出口</div><div class="vrom">Deguchi</div><div class="var">مخرج</div></div>
+        <div class="vocab-item" onclick="speak('遅延')"><div class="vjp">遅延</div><div class="vrom">Chien</div><div class="var">تأخير</div></div>
+        <div class="vocab-item" onclick="speak('税関')"><div class="vjp">税関</div><div class="vrom">Zeikan</div><div class="var">جمارك</div></div>
+        <div class="vocab-item" onclick="speak('両替')"><div class="vjp">両替</div><div class="vrom">Ryougae</div><div class="var">صرافة</div></div>
+        <div class="vocab-item" onclick="speak('案内所')"><div class="vjp">案内所</div><div class="vrom">Annaijo</div><div class="var">مكتب الاستعلامات</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOPPING -->
+  <div class="conv-area" id="conv-shopping">
+    <div class="conv-header" style="background:linear-gradient(135deg,#e91e8c,#f43f5e);">
+      <span style="font-size:28px;">🛍️</span>
+      <div><div>في المحل</div><div style="font-size:12px;opacity:0.85;font-weight:400;">お店で</div></div>
+      <button onclick="backToCats()" style="margin-right:auto;background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-family:inherit;font-size:13px;">◀ رجوع</button>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="scene-label">🔍 البحث عن حاجة</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('これはいくらですか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">これはいくらですか</div>
+          <div class="rom">Kore wa ikura desu ka</div>
+          <div class="ar">ده بكام؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('試着できますか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">試着できますか</div>
+          <div class="rom">Shichaku dekimasu ka</div>
+          <div class="ar">ممكن أجربه؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('大きいサイズはありますか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">大きいサイズはありますか</div>
+          <div class="rom">Ookii saizu wa arimasu ka</div>
+          <div class="ar">فيه مقاس أكبر؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('これをください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">これをください</div>
+          <div class="rom">Kore wo kudasai</div>
+          <div class="ar">هاخد ده</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('袋をください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">袋をください</div>
+          <div class="rom">Fukuro wo kudasai</div>
+          <div class="ar">ممكن كيس؟</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vocab-box">
+      <div class="vocab-title">📚 كلمات مفيدة في التسوق</div>
+      <div class="vocab-grid">
+        <div class="vocab-item" onclick="speak('安い')"><div class="vjp">安い</div><div class="vrom">Yasui</div><div class="var">رخيص</div></div>
+        <div class="vocab-item" onclick="speak('高い')"><div class="vjp">高い</div><div class="vrom">Takai</div><div class="var">غالي</div></div>
+        <div class="vocab-item" onclick="speak('セール')"><div class="vjp">セール</div><div class="vrom">Seeru</div><div class="var">تخفيضات</div></div>
+        <div class="vocab-item" onclick="speak('色')"><div class="vjp">色</div><div class="vrom">Iro</div><div class="var">اللون</div></div>
+        <div class="vocab-item" onclick="speak('返品')"><div class="vjp">返品</div><div class="vrom">Henpin</div><div class="var">استرجاع</div></div>
+        <div class="vocab-item" onclick="speak('レシート')"><div class="vjp">レシート</div><div class="vrom">Reshiito</div><div class="var">فاتورة</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCTOR -->
+  <div class="conv-area" id="conv-doctor">
+    <div class="conv-header" style="background:linear-gradient(135deg,#16a34a,#22c55e);">
+      <span style="font-size:28px;">🏥</span>
+      <div><div>عند الدكتور</div><div style="font-size:12px;opacity:0.85;font-weight:400;">病院で</div></div>
+      <button onclick="backToCats()" style="margin-right:auto;background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-family:inherit;font-size:13px;">◀ رجوع</button>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="scene-label">🩺 في العيادة</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('具合が悪いです')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">具合が悪いです</div>
+          <div class="rom">Guai ga warui desu</div>
+          <div class="ar">أنا مش كويس</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('頭が痛いです')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">頭が痛いです</div>
+          <div class="rom">Atama ga itai desu</div>
+          <div class="ar">راسي بيوجعني</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('熱があります')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">熱があります</div>
+          <div class="rom">Netsu ga arimasu</div>
+          <div class="ar">عندي حرارة</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('アレルギーがあります')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">アレルギーがあります</div>
+          <div class="rom">Arerugii ga arimasu</div>
+          <div class="ar">عندي حساسية</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('薬をください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">薬をください</div>
+          <div class="rom">Kusuri wo kudasai</div>
+          <div class="ar">ممكن دوا؟</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vocab-box">
+      <div class="vocab-title">📚 أعراض مهمة</div>
+      <div class="vocab-grid">
+        <div class="vocab-item" onclick="speak('腹痛')"><div class="vjp">腹痛</div><div class="vrom">Fukutsuu</div><div class="var">وجع بطن</div></div>
+        <div class="vocab-item" onclick="speak('咳')"><div class="vjp">咳</div><div class="vrom">Seki</div><div class="var">كحة</div></div>
+        <div class="vocab-item" onclick="speak('めまい')"><div class="vjp">めまい</div><div class="vrom">Memai</div><div class="var">دوخة</div></div>
+        <div class="vocab-item" onclick="speak('吐き気')"><div class="vjp">吐き気</div><div class="vrom">Hakike</div><div class="var">غثيان</div></div>
+        <div class="vocab-item" onclick="speak('骨折')"><div class="vjp">骨折</div><div class="vrom">Kossetsu</div><div class="var">كسر</div></div>
+        <div class="vocab-item" onclick="speak('救急車')"><div class="vjp">救急車</div><div class="vrom">Kyuukyuusha</div><div class="var">إسعاف</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSPORT -->
+  <div class="conv-area" id="conv-transport">
+    <div class="conv-header" style="background:linear-gradient(135deg,#7c3aed,#a855f7);">
+      <span style="font-size:28px;">🚃</span>
+      <div><div>في المواصلات</div><div style="font-size:12px;opacity:0.85;font-weight:400;">交通機関で</div></div>
+      <button onclick="backToCats()" style="margin-right:auto;background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-family:inherit;font-size:13px;">◀ رجوع</button>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="scene-label">🚇 المترو</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('東京駅はどこですか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">東京駅はどこですか</div>
+          <div class="rom">Toukyou-eki wa doko desu ka</div>
+          <div class="ar">محطة طوكيو فين؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('この電車は新宿に止まりますか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">この電車は新宿に止まりますか</div>
+          <div class="rom">Kono densha wa Shinjuku ni tomarimasu ka</div>
+          <div class="ar">القطار ده بيوقف في شينجوكو؟</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('切符はどこで買えますか')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">切符はどこで買えますか</div>
+          <div class="rom">Kippu wa doko de kaemasu ka</div>
+          <div class="ar">التذكرة بتتاشترى منين؟</div>
+        </div>
+      </div>
+
+      <div class="scene-label">🚕 التاكسي</div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('この住所まで行ってください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">この住所まで行ってください</div>
+          <div class="rom">Kono juusho made itte kudasai</div>
+          <div class="ar">روح العنوان ده (وتشاور على ورقة)</div>
+        </div>
+      </div>
+
+      <div class="bubble-row you">
+        <div class="avatar">🧑</div>
+        <div class="bubble" onclick="speak('ここで止めてください')">
+          <button class="speak-btn">🔈</button>
+          <div class="jp">ここで止めてください</div>
+          <div class="rom">Koko de tomete kudasai</div>
+          <div class="ar">وقف هنا من فضلك</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vocab-box">
+      <div class="vocab-title">📚 كلمات مفيدة في المواصلات</div>
+      <div class="vocab-grid">
+        <div class="vocab-item" onclick="speak('駅')"><div class="vjp">駅</div><div class="vrom">Eki</div><div class="var">محطة</div></div>
+        <div class="vocab-item" onclick="speak('出口')"><div class="vjp">出口</div><div class="vrom">Deguchi</div><div class="var">مخرج</div></div>
+        <div class="vocab-item" onclick="speak('乗り換え')"><div class="vjp">乗り換え</div><div class="vrom">Norikae</div><div class="var">تغيير القطار</div></div>
+        <div class="vocab-item" onclick="speak('終電')"><div class="vjp">終電</div><div class="vrom">Shuuden</div><div class="var">آخر قطار</div></div>
+        <div class="vocab-item" onclick="speak('バス停')"><div class="vjp">バス停</div><div class="vrom">Basutei</div><div class="var">موقف الباص</div></div>
+        <div class="vocab-item" onclick="speak('地図')"><div class="vjp">地図</div><div class="vrom">Chizu</div><div class="var">خريطة</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function speak(text) {
+  try {
+    if (window.AppInventor) { window.AppInventor.setWebViewString("SPEAK:" + text); return; }
+  } catch(e) {}
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ja-JP'; u.rate = 0.85; u.pitch = 1.1;
+  const trySpeak = () => {
+    const v = window.speechSynthesis.getVoices().find(v => v.lang.startsWith('ja'));
+    if (v) u.voice = v;
+    window.speechSynthesis.speak(u);
+  };
+  window.speechSynthesis.getVoices().length > 0 ? trySpeak() : (window.speechSynthesis.onvoiceschanged = trySpeak);
+}
+
+function showConv(id) {
+  document.getElementById('cat-section').style.display = 'none';
+  document.querySelectorAll('.conv-area').forEach(c => c.classList.remove('active'));
+  document.getElementById('conv-' + id).classList.add('active');
+}
+
+function backToCats() {
+  document.getElementById('cat-section').style.display = 'block';
+  document.querySelectorAll('.conv-area').forEach(c => c.classList.remove('active'));
+}
+
+if (window.speechSynthesis) window.speechSynthesis.getVoices();
+</script>
+</body>
+</html>
