@@ -911,20 +911,42 @@ let shuffledQuiz = [...quizWords].sort(() => Math.random() - 0.5).slice(0, 10);
 // ========================
 function speakJapanese(text, e) {
   if (e) e.stopPropagation();
+
+  // طريقة 1: Android App Inventor TextToSpeech
+  try {
+    if (window.AppInventor) {
+      window.AppInventor.setWebViewString(text);
+      return;
+    }
+  } catch(err) {}
+
+  // طريقة 2: Web Speech API (للاب والمتصفح)
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'ja-JP';
   utter.rate = 0.85;
   utter.pitch = 1.1;
-  const voices = window.speechSynthesis.getVoices();
-  const jaVoice = voices.find(v => v.lang && v.lang.startsWith('ja'));
-  if (jaVoice) utter.voice = jaVoice;
-  window.speechSynthesis.speak(utter);
+
+  // انتظر لحد ما الأصوات تتحمل
+  const trySpeak = () => {
+    const voices = window.speechSynthesis.getVoices();
+    const jaVoice = voices.find(v => v.lang && v.lang.startsWith('ja'));
+    if (jaVoice) utter.voice = jaVoice;
+    window.speechSynthesis.speak(utter);
+  };
+
+  if (window.speechSynthesis.getVoices().length > 0) {
+    trySpeak();
+  } else {
+    window.speechSynthesis.onvoiceschanged = trySpeak;
+  }
 }
 
 // Load voices on page ready
-window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+}
 
 function showTab(tab) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
