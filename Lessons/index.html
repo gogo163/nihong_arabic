@@ -218,7 +218,7 @@
     }
     grid.innerHTML = list.map(l => `
       <a class="lesson-card ${completed.includes(l.id) ? 'completed' : ''}"
-         href="Lesson.html?id=${l.id}">
+         href="lesson.html?id=${l.id}">
         <div class="check">✓</div>
         <div class="num">درس ${l.id}</div>
         <span class="jp">${l.japanese}</span>
