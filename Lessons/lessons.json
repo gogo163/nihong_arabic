@@ -1,370 +1,2722 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NihongoArabic – درس</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: #fff0f5;
-      color: #2d2d2d;
-      min-height: 100vh;
-    }
-
-    header {
-      background: linear-gradient(135deg, #e91e8c, #ff6eb4);
-      color: white;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 2px 8px rgba(233,30,140,0.3);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    header .back {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    header h1 { font-size: 16px; flex: 1; }
-    header .badge {
-      background: rgba(255,255,255,0.25);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-
-    .content { padding: 14px; max-width: 640px; margin: 0 auto; }
-
-    /* TITLE CARD */
-    .title-card {
-      background: linear-gradient(135deg, #e91e8c, #ff6eb4);
-      color: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 14px;
-      text-align: center;
-    }
-    .title-card .jp-big { font-size: 30px; letter-spacing: 3px; margin-bottom: 6px; }
-    .title-card .rom { font-size: 13px; opacity: 0.85; margin-bottom: 6px; }
-    .title-card .ar-title { font-size: 18px; font-weight: bold; }
-
-    /* CARD */
-    .card {
-      background: white;
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(233,30,140,0.07);
-    }
-    .card-title {
-      font-size: 14px;
-      font-weight: bold;
-      color: #e91e8c;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* VOCAB TABLE */
-    table { width: 100%; border-collapse: collapse; }
-    th {
-      background: #fff0f5;
-      color: #e91e8c;
-      padding: 8px 6px;
-      font-size: 12px;
-      text-align: center;
-      border-bottom: 2px solid #ffd6e8;
-    }
-    td {
-      padding: 9px 6px;
-      text-align: center;
-      font-size: 13px;
-      border-bottom: 1px solid #ffeef5;
-    }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #fff8fb; }
-    .jp-cell { font-size: 17px; color: #c2185b; }
-
-    /* TTS */
-    .tts {
-      background: none;
-      border: none;
-      color: #e91e8c;
-      font-size: 16px;
-      cursor: pointer;
-      padding: 2px 5px;
-      border-radius: 6px;
-    }
-    .tts:hover { background: #ffd6e8; }
-
-    /* GRAMMAR */
-    .grammar-box {
-      background: #fff0f5;
-      border-right: 4px solid #e91e8c;
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-    }
-    .grammar-box .pat {
-      font-size: 16px;
-      color: #c2185b;
-      margin-bottom: 3px;
-      direction: ltr;
-      text-align: left;
-    }
-    .grammar-box .mng { font-size: 13px; color: #555; }
-
-    /* DIALOGUE */
-    .dlg-line {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      align-items: flex-start;
-    }
-    .spk {
-      background: #e91e8c;
-      color: white;
-      border-radius: 16px;
-      padding: 3px 10px;
-      font-size: 11px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    .speech { flex: 1; }
-    .speech .jp { font-size: 15px; color: #c2185b; margin-bottom: 2px; }
-    .speech .rm { font-size: 11px; color: #aaa; margin-bottom: 2px; direction: ltr; text-align: left; }
-    .speech .ar { font-size: 13px; color: #666; }
-
-    /* EXERCISES */
-    .ex-item {
-      background: #fff0f5;
-      border-radius: 10px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      font-size: 13px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .ex-num {
-      background: #e91e8c;
-      color: white;
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-
-    /* BOTTOM BUTTONS */
-    .bottom-btns {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-      margin-top: 4px;
-    }
-    .btn-done {
-      flex: 1;
-      background: linear-gradient(135deg, #e91e8c, #ff6eb4);
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 15px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: opacity 0.2s;
-    }
-    .btn-done:hover { opacity: 0.9; }
-    .btn-done.done-state {
-      background: linear-gradient(135deg, #4caf50, #66bb6a);
-    }
-    .btn-next {
-      flex: 1;
-      background: white;
-      color: #e91e8c;
-      border: 2px solid #e91e8c;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 15px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-    .btn-next:hover { background: #e91e8c; color: white; }
-    .btn-next:disabled { opacity: 0.3; cursor: not-allowed; }
-
-    .loading { text-align: center; padding: 40px; color: #e91e8c; font-size: 18px; }
-  </style>
-</head>
-<body>
-
-<header>
-  <button class="back" onclick="window.location.href='index.html'">→</button>
-  <h1 id="header-title">جاري التحميل...</h1>
-  <div class="badge" id="header-badge">درس -</div>
-</header>
-
-<div class="content" id="content">
-  <div class="loading">⏳ جاري التحميل...</div>
-</div>
-
-<script>
-  // Get lesson ID from URL
-  const params = new URLSearchParams(window.location.search);
-  const lessonId = parseInt(params.get('id')) || 1;
-  let lessons = [];
-  let completed = JSON.parse(localStorage.getItem('completedLessons') || '[]');
-
-  async function loadLesson() {
-    try {
-      const res = await fetch('lessons.json');
-      lessons = await res.json();
-      const lesson = lessons.find(l => l.id === lessonId);
-      if (!lesson) {
-        document.getElementById('content').innerHTML = '<div class="loading">❌ الدرس مش موجود</div>';
-        return;
+[
+  {
+    "id": 1,
+    "title": "التعريف بالنفس",
+    "japanese": "わたしは〜です",
+    "romaji": "Watashi wa ~ desu",
+    "vocabulary": [
+      {
+        "arabic": "أنا",
+        "romaji": "watashi",
+        "japanese": "わたし"
+      },
+      {
+        "arabic": "أنت (ذكر)",
+        "romaji": "anata",
+        "japanese": "あなた"
+      },
+      {
+        "arabic": "اسم",
+        "romaji": "namae",
+        "japanese": "なまえ"
+      },
+      {
+        "arabic": "طالب",
+        "romaji": "gakusei",
+        "japanese": "がくせい"
+      },
+      {
+        "arabic": "مدرس",
+        "romaji": "sensei",
+        "japanese": "せんせい"
+      },
+      {
+        "arabic": "مصري",
+        "romaji": "ejiputo-jin",
+        "japanese": "エジプトじん"
+      },
+      {
+        "arabic": "ياباني",
+        "romaji": "nihon-jin",
+        "japanese": "にほんじん"
+      },
+      {
+        "arabic": "نعم",
+        "romaji": "hai",
+        "japanese": "はい"
+      },
+      {
+        "arabic": "لا",
+        "romaji": "iie",
+        "japanese": "いいえ"
       }
-      renderLesson(lesson);
-    } catch(e) {
-      document.getElementById('content').innerHTML = '<div class="loading">❌ تعذر تحميل الدرس</div>';
-    }
+    ],
+    "grammar": [
+      {
+        "pattern": "[اسم] は [اسم] です",
+        "meaning": "أنا / أنت ... (جملة اسمية إيجابية)"
+      },
+      {
+        "pattern": "[اسم] は [اسم] では ありません",
+        "meaning": "أنا لست ... (جملة اسمية نفي)"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "はじめまして！わたしは アحمد です。",
+        "romaji": "Hajimemashite! Watashi wa Ahmed desu.",
+        "arabic": "أهلاً! أنا أحمد."
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "わたしは ヨーコ です。よろしく おねがいします！",
+        "romaji": "Watashi wa Yoko desu. Yoroshiku onegaishimasu!",
+        "arabic": "أنا يوكو. تشرفت بمعرفتك!"
+      }
+    ],
+    "exercises": [
+      "わたしは _____ です。(اكتب اسمك)",
+      "わたしは _____ じん です。(اكتب جنسيتك)"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "هذا وذاك",
+    "japanese": "これ・それ・あれ",
+    "romaji": "Kore · Sore · Are",
+    "vocabulary": [
+      {
+        "arabic": "هذا (قريب مني)",
+        "romaji": "kore",
+        "japanese": "これ"
+      },
+      {
+        "arabic": "ذاك (قريب منك)",
+        "romaji": "sore",
+        "japanese": "それ"
+      },
+      {
+        "arabic": "ذاك (بعيد عنا)",
+        "romaji": "are",
+        "japanese": "あれ"
+      },
+      {
+        "arabic": "كتاب",
+        "romaji": "hon",
+        "japanese": "ほん"
+      },
+      {
+        "arabic": "قلم",
+        "romaji": "pen",
+        "japanese": "ペン"
+      },
+      {
+        "arabic": "هاتف",
+        "romaji": "denwa",
+        "japanese": "でんわ"
+      },
+      {
+        "arabic": "حقيبة",
+        "romaji": "kaban",
+        "japanese": "かばん"
+      },
+      {
+        "arabic": "ماذا؟",
+        "romaji": "nan/nani",
+        "japanese": "なん/なに"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "これは〜です",
+        "meaning": "هذا هو ... (قريب من المتكلم)"
+      },
+      {
+        "pattern": "それは なんですか？",
+        "meaning": "ما هذا الذي معك؟ (قريب من المستمع)"
+      },
+      {
+        "pattern": "あれは〜です",
+        "meaning": "ذاك هو ... (بعيد عن الاثنين)"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "それは なんですか？",
+        "romaji": "Sore wa nan desu ka?",
+        "arabic": "ما هذا الذي معك؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "これは ほん です。",
+        "romaji": "Kore wa hon desu.",
+        "arabic": "هذا كتاب."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "あれも ほん ですか？",
+        "romaji": "Are mo hon desu ka?",
+        "arabic": "وذاك أيضاً كتاب؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "いいえ、あれは かばん です。",
+        "romaji": "Iie, are wa kaban desu.",
+        "arabic": "لا، ذاك حقيبة."
+      }
+    ],
+    "exercises": [
+      "ترجم: هذا قلم → _____ は ペン です",
+      "ترجم: ما ذاك؟ → _____ は なんですか？",
+      "ترجم: ذاك ليس هاتفاً → あれは でんわ _____ ありません"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "الأرقام والوقت",
+    "japanese": "すうじ と じかん",
+    "romaji": "Suuji to Jikan",
+    "vocabulary": [
+      {
+        "arabic": "واحد",
+        "romaji": "ichi",
+        "japanese": "いち"
+      },
+      {
+        "arabic": "اتنين",
+        "romaji": "ni",
+        "japanese": "に"
+      },
+      {
+        "arabic": "تلاتة",
+        "romaji": "san",
+        "japanese": "さん"
+      },
+      {
+        "arabic": "أربعة",
+        "romaji": "shi/yon",
+        "japanese": "し/よん"
+      },
+      {
+        "arabic": "خمسة",
+        "romaji": "go",
+        "japanese": "ご"
+      },
+      {
+        "arabic": "ستة",
+        "romaji": "roku",
+        "japanese": "ろく"
+      },
+      {
+        "arabic": "سبعة",
+        "romaji": "shichi/nana",
+        "japanese": "しち/なな"
+      },
+      {
+        "arabic": "تمانية",
+        "romaji": "hachi",
+        "japanese": "はち"
+      },
+      {
+        "arabic": "تسعة",
+        "romaji": "ku/kyuu",
+        "japanese": "く/きゅう"
+      },
+      {
+        "arabic": "عشرة",
+        "romaji": "juu",
+        "japanese": "じゅう"
+      },
+      {
+        "arabic": "ساعة",
+        "romaji": "jikan",
+        "japanese": "じかん"
+      },
+      {
+        "arabic": "دقيقة",
+        "romaji": "fun/pun",
+        "japanese": "ふん/ぷん"
+      },
+      {
+        "arabic": "الآن",
+        "romaji": "ima",
+        "japanese": "いま"
+      },
+      {
+        "arabic": "الصبح",
+        "romaji": "gozen",
+        "japanese": "ごぜん"
+      },
+      {
+        "arabic": "المساء",
+        "romaji": "gogo",
+        "japanese": "ごご"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "いま なんじ ですか？",
+        "meaning": "الساعة كام دلوقتي؟"
+      },
+      {
+        "pattern": "〜じ です",
+        "meaning": "الساعة ... (رقم + じ)"
+      },
+      {
+        "pattern": "〜じ 〜ふん です",
+        "meaning": "الساعة ... و... دقيقة"
+      },
+      {
+        "pattern": "ごぜん くじ はん です",
+        "meaning": "مثال: الساعة 9 ونص الصبح"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "すみません、いま なんじ ですか？",
+        "romaji": "Sumimasen, ima nanji desu ka?",
+        "arabic": "معذرة، الساعة كام دلوقتي؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "ごご さんじ です。",
+        "romaji": "Gogo sanji desu.",
+        "arabic": "الساعة 3 المساء."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ありがとう ございます！",
+        "romaji": "Arigatou gozaimasu!",
+        "arabic": "شكراً جزيلاً!"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "どういたしまして。",
+        "romaji": "Dou itashimashite.",
+        "arabic": "العفو!"
+      }
+    ],
+    "exercises": [
+      "الساعة كام؟ → いま _____ですか？",
+      "الساعة 5 المساء → ごご _____じ です",
+      "الساعة 10 ونص الصبح → ごぜん じゅうじ _____ です"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "أين الأشياء؟",
+    "japanese": "います と あります",
+    "romaji": "Imasu to Arimasu",
+    "vocabulary": [
+      {
+        "arabic": "يوجد (للأحياء)",
+        "romaji": "imasu",
+        "japanese": "います"
+      },
+      {
+        "arabic": "يوجد (للجمادات)",
+        "romaji": "arimasu",
+        "japanese": "あります"
+      },
+      {
+        "arabic": "لا يوجد (للأحياء)",
+        "romaji": "imasen",
+        "japanese": "いません"
+      },
+      {
+        "arabic": "لا يوجد (للجمادات)",
+        "romaji": "arimasen",
+        "japanese": "ありません"
+      },
+      {
+        "arabic": "هنا",
+        "romaji": "koko",
+        "japanese": "ここ"
+      },
+      {
+        "arabic": "هناك (قريب)",
+        "romaji": "soko",
+        "japanese": "そこ"
+      },
+      {
+        "arabic": "هناك (بعيد)",
+        "romaji": "asoko",
+        "japanese": "あそこ"
+      },
+      {
+        "arabic": "فوق",
+        "romaji": "ue",
+        "japanese": "うえ"
+      },
+      {
+        "arabic": "تحت",
+        "romaji": "shita",
+        "japanese": "した"
+      },
+      {
+        "arabic": "جنب",
+        "romaji": "tonari",
+        "japanese": "となり"
+      },
+      {
+        "arabic": "داخل",
+        "romaji": "naka",
+        "japanese": "なか"
+      },
+      {
+        "arabic": "أمام",
+        "romaji": "mae",
+        "japanese": "まえ"
+      },
+      {
+        "arabic": "ورا",
+        "romaji": "ushiro",
+        "japanese": "うしろ"
+      },
+      {
+        "arabic": "قطة",
+        "romaji": "neko",
+        "japanese": "ねこ"
+      },
+      {
+        "arabic": "كلب",
+        "romaji": "inu",
+        "japanese": "いぬ"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜は どこに ありますか？",
+        "meaning": "فين الـ...؟ (للأشياء)"
+      },
+      {
+        "pattern": "〜は 〜に あります",
+        "meaning": "الـ... في/على/تحت... (للأشياء)"
+      },
+      {
+        "pattern": "〜は どこに いますか？",
+        "meaning": "فين الـ...؟ (للأحياء)"
+      },
+      {
+        "pattern": "〜は 〜に います",
+        "meaning": "الـ... في/على/تحت... (للأحياء)"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "ねこは どこに いますか？",
+        "romaji": "Neko wa doko ni imasu ka?",
+        "arabic": "فين القطة؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "ねこは テーブルの うえに います。",
+        "romaji": "Neko wa teeburu no ue ni imasu.",
+        "arabic": "القطة على التربيزة."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ほんは どこに ありますか？",
+        "romaji": "Hon wa doko ni arimasu ka?",
+        "arabic": "فين الكتاب؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "ほんは かばんの なかに あります。",
+        "romaji": "Hon wa kaban no naka ni arimasu.",
+        "arabic": "الكتاب جوه الشنطة."
+      }
+    ],
+    "exercises": [
+      "القطة على الكرسي → ねこは いすの うえに _____",
+      "الكتاب على المكتب → ほんは つくえの うえに _____",
+      "المدرس في الفصل → せんせいは きょうしつに _____"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "الأفعال اليومية",
+    "japanese": "どうし – まいにちの せいかつ",
+    "romaji": "Doushi – Mainichi no Seikatsu",
+    "vocabulary": [
+      {
+        "arabic": "يأكل",
+        "romaji": "tabemasu",
+        "japanese": "たべます"
+      },
+      {
+        "arabic": "يشرب",
+        "romaji": "nomimasu",
+        "japanese": "のみます"
+      },
+      {
+        "arabic": "يذهب",
+        "romaji": "ikimasu",
+        "japanese": "いきます"
+      },
+      {
+        "arabic": "يجي",
+        "romaji": "kimasu",
+        "japanese": "きます"
+      },
+      {
+        "arabic": "يرجع",
+        "romaji": "kaerimasu",
+        "japanese": "かえります"
+      },
+      {
+        "arabic": "ينام",
+        "romaji": "nemasu",
+        "japanese": "ねます"
+      },
+      {
+        "arabic": "يصحى",
+        "romaji": "okimasu",
+        "japanese": "おきます"
+      },
+      {
+        "arabic": "يشتغل",
+        "romaji": "hatarakimasu",
+        "japanese": "はたらきます"
+      },
+      {
+        "arabic": "يذاكر",
+        "romaji": "benkyou shimasu",
+        "japanese": "べんきょう します"
+      },
+      {
+        "arabic": "يتفرج",
+        "romaji": "mimasu",
+        "japanese": "みます"
+      },
+      {
+        "arabic": "يسمع",
+        "romaji": "kikimasu",
+        "japanese": "ききます"
+      },
+      {
+        "arabic": "يقرأ",
+        "romaji": "yomimasu",
+        "japanese": "よみます"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜を たべます",
+        "meaning": "باكل... (را + فعل)"
+      },
+      {
+        "pattern": "〜に いきます",
+        "meaning": "بروح لـ..."
+      },
+      {
+        "pattern": "まいにち 〜ます",
+        "meaning": "كل يوم بـ..."
+      },
+      {
+        "pattern": "〜ません",
+        "meaning": "نفي الفعل في المضارع/المستقبل"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "まいにち なんじに おきますか？",
+        "romaji": "Mainichi nanji ni okimasu ka?",
+        "arabic": "بتصحى كل يوم الساعة كام؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "しちじに おきます。",
+        "romaji": "Shichiji ni okimasu.",
+        "arabic": "بصحى الساعة 7."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "あさごはんを たべますか？",
+        "romaji": "Asagohan wo tabemasu ka?",
+        "arabic": "بتاكل فطار؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "はい、たべます！",
+        "romaji": "Hai, tabemasu!",
+        "arabic": "أيوه باكل!"
+      }
+    ],
+    "exercises": [
+      "أنا بشرب قهوة → わたしは コーヒーを _____",
+      "بروح الجامعة → だいがくに _____",
+      "مش بنام بدري → はやく _____ ません"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "الطعام والمشروبات",
+    "japanese": "たべもの と のみもの",
+    "romaji": "Tabemono to Nomimono",
+    "vocabulary": [
+      {
+        "arabic": "أرز",
+        "romaji": "gohan",
+        "japanese": "ごはん"
+      },
+      {
+        "arabic": "خبز",
+        "romaji": "pan",
+        "japanese": "パン"
+      },
+      {
+        "arabic": "سوشي",
+        "romaji": "sushi",
+        "japanese": "すし"
+      },
+      {
+        "arabic": "راحن",
+        "romaji": "raamen",
+        "japanese": "ラーメン"
+      },
+      {
+        "arabic": "تيمبورا",
+        "romaji": "tenpura",
+        "japanese": "てんぷら"
+      },
+      {
+        "arabic": "ماء",
+        "romaji": "mizu",
+        "japanese": "みず"
+      },
+      {
+        "arabic": "شاي",
+        "romaji": "ocha",
+        "japanese": "おちゃ"
+      },
+      {
+        "arabic": "قهوة",
+        "romaji": "koohii",
+        "japanese": "コーヒー"
+      },
+      {
+        "arabic": "عصير",
+        "romaji": "juusu",
+        "japanese": "ジュース"
+      },
+      {
+        "arabic": "لذيذ",
+        "romaji": "oishii",
+        "japanese": "おいしい"
+      },
+      {
+        "arabic": "مش لذيذ",
+        "romaji": "mazui",
+        "japanese": "まずい"
+      },
+      {
+        "arabic": "حلو",
+        "romaji": "amai",
+        "japanese": "あまい"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜が すきです",
+        "meaning": "بحب الـ..."
+      },
+      {
+        "pattern": "〜が きらいです",
+        "meaning": "بكره الـ..."
+      },
+      {
+        "pattern": "〜を ください",
+        "meaning": "عايز/ي الـ... من فضلك"
+      },
+      {
+        "pattern": "おいしい！",
+        "meaning": "تعبير عن اللذاذة"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "すしが すきですか？",
+        "romaji": "Sushi ga suki desu ka?",
+        "arabic": "بتحب السوشي؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "はい、だいすきです！",
+        "romaji": "Hai, daisuki desu!",
+        "arabic": "أيوه، بحبه جداً!"
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "コーヒーを ください。",
+        "romaji": "Koohii wo kudasai.",
+        "arabic": "عايز قهوة من فضلك."
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "はい、どうぞ！",
+        "romaji": "Hai, douzo!",
+        "arabic": "تفضل!"
+      }
+    ],
+    "exercises": [
+      "بحب الشاي → おちゃが _____",
+      "عايز ماء من فضلك → みずを _____",
+      "الراحن لذيذ → ラーメンは _____"
+    ]
+  },
+  {
+    "id": 7,
+    "title": "التسوق والأسعار",
+    "japanese": "かいもの と ねだん",
+    "romaji": "Kaimono to Nedan",
+    "vocabulary": [
+      {
+        "arabic": "كام؟ (السعر)",
+        "romaji": "ikura",
+        "japanese": "いくら"
+      },
+      {
+        "arabic": "ين (عملة)",
+        "romaji": "en",
+        "japanese": "えん"
+      },
+      {
+        "arabic": "غالي",
+        "romaji": "takai",
+        "japanese": "たかい"
+      },
+      {
+        "arabic": "رخيص",
+        "romaji": "yasui",
+        "japanese": "やسい"
+      },
+      {
+        "arabic": "بشتري",
+        "romaji": "kaimasu",
+        "japanese": "かいます"
+      },
+      {
+        "arabic": "محل",
+        "romaji": "mise",
+        "japanese": "みせ"
+      },
+      {
+        "arabic": "سوبر ماركت",
+        "romaji": "suupaa",
+        "japanese": "スーパー"
+      },
+      {
+        "arabic": "فلوس",
+        "romaji": "okane",
+        "japanese": "おかね"
+      },
+      {
+        "arabic": "تمن مية",
+        "romaji": "hyaku en",
+        "japanese": "ひゃくえん"
+      },
+      {
+        "arabic": "ألف",
+        "romaji": "sen",
+        "japanese": "せん"
+      },
+      {
+        "arabic": "عشر آلاف",
+        "romaji": "ichiman",
+        "japanese": "いちまん"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "これは いくらですか？",
+        "meaning": "ده بكام؟"
+      },
+      {
+        "pattern": "〜えん です",
+        "meaning": "بـ... ين"
+      },
+      {
+        "pattern": "〜を ひとつ ください",
+        "meaning": "واحد من الـ... من فضلك"
+      },
+      {
+        "pattern": "たかい！/ やすい！",
+        "meaning": "غالي! / رخيص!"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "これは いくらですか？",
+        "romaji": "Kore wa ikura desu ka?",
+        "arabic": "ده بكام؟"
+      },
+      {
+        "speaker": "البائع",
+        "japanese": "ごひゃくえん です。",
+        "romaji": "Gohyaku en desu.",
+        "arabic": "بخمسمية ين."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "じゃあ、これを ひとつ ください。",
+        "romaji": "Jaa, kore wo hitotsu kudasai.",
+        "arabic": "تمام، واحد من ده من فضلك."
+      },
+      {
+        "speaker": "البائع",
+        "japanese": "ありがとう ございます！",
+        "romaji": "Arigatou gozaimasu!",
+        "arabic": "شكراً جزيلاً!"
+      }
+    ],
+    "exercises": [
+      "ده بكام؟ → これは _____ですか？",
+      "بألف ين → _____えん です",
+      "واحد من ده من فضلك → これを ひとつ _____"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "الأيام والتاريخ",
+    "japanese": "ようびと ひづけ",
+    "romaji": "Youbi to Hizuke",
+    "vocabulary": [
+      {
+        "arabic": "الاتنين",
+        "romaji": "getsuyoubi",
+        "japanese": "げつようび"
+      },
+      {
+        "arabic": "التلات",
+        "romaji": "kayoubi",
+        "japanese": "かようび"
+      },
+      {
+        "arabic": "الأربع",
+        "romaji": "suiyoubi",
+        "japanese": "すいようび"
+      },
+      {
+        "arabic": "الخميس",
+        "romaji": "mokuyoubi",
+        "japanese": "もくようび"
+      },
+      {
+        "arabic": "الجمعة",
+        "romaji": "kin'youbi",
+        "japanese": "きんようび"
+      },
+      {
+        "arabic": "السبت",
+        "romaji": "doyoubi",
+        "japanese": "どようび"
+      },
+      {
+        "arabic": "الأحد",
+        "romaji": "nichiyoubi",
+        "japanese": "にちようび"
+      },
+      {
+        "arabic": "النهارده",
+        "romaji": "kyou",
+        "japanese": "きょう"
+      },
+      {
+        "arabic": "بكره",
+        "romaji": "ashita",
+        "japanese": "あした"
+      },
+      {
+        "arabic": "إمبارح",
+        "romaji": "kinou",
+        "japanese": "きのう"
+      },
+      {
+        "arabic": "الأسبوع ده",
+        "romaji": "konshuu",
+        "japanese": "こんしゅう"
+      },
+      {
+        "arabic": "الشهر ده",
+        "romaji": "kongetsu",
+        "japanese": "こんげつ"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "きょうは なんようびですか？",
+        "meaning": "النهارده إيه؟"
+      },
+      {
+        "pattern": "きょうは 〜ようびです",
+        "meaning": "النهارده..."
+      },
+      {
+        "pattern": "〜がつ 〜にち",
+        "meaning": "شهر... يوم..."
+      },
+      {
+        "pattern": "たんじょうびは いつですか？",
+        "meaning": "إمتى عيد ميلادك؟"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "きょうは なんようびですか？",
+        "romaji": "Kyou wa nan youbi desu ka?",
+        "arabic": "النهارده إيه؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "きんようびです。",
+        "romaji": "Kin'youbi desu.",
+        "arabic": "الجمعة."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "たんじょうびは いつですか？",
+        "romaji": "Tanjoubi wa itsu desu ka?",
+        "arabic": "إمتى عيد ميلادك؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "さんがつ じゅうごにち です。",
+        "romaji": "Sangatsu juugonichi desu.",
+        "arabic": "15 مارس."
+      }
+    ],
+    "exercises": [
+      "النهارده إيه؟ → きょうは なん_____ですか？",
+      "بكره السبت → あしたは _____",
+      "عيد ميلادي 5 مايو → たんじょうびは ごがつ _____にち です"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "الأسرة والعلاقات",
+    "japanese": "かぞく",
+    "romaji": "Kazoku",
+    "vocabulary": [
+      {
+        "arabic": "أب (أبوي)",
+        "romaji": "chichi",
+        "japanese": "ちち"
+      },
+      {
+        "arabic": "أم (أمي)",
+        "romaji": "haha",
+        "japanese": "はは"
+      },
+      {
+        "arabic": "أب (أبو حد تاني)",
+        "romaji": "otousan",
+        "japanese": "おとうさん"
+      },
+      {
+        "arabic": "أم (أم حد تاني)",
+        "romaji": "okaasan",
+        "japanese": "おかあさん"
+      },
+      {
+        "arabic": "أخ أكبر",
+        "romaji": "ani",
+        "japanese": "あに"
+      },
+      {
+        "arabic": "أخ أصغر",
+        "romaji": "otouto",
+        "japanese": "おとうと"
+      },
+      {
+        "arabic": "أخت أكبر",
+        "romaji": "ane",
+        "japanese": "あね"
+      },
+      {
+        "arabic": "أخت أصغر",
+        "romaji": "imouto",
+        "japanese": "いもうと"
+      },
+      {
+        "arabic": "أسرة",
+        "romaji": "kazoku",
+        "japanese": "かぞく"
+      },
+      {
+        "arabic": "ولد/بنت",
+        "romaji": "musuko/musume",
+        "japanese": "むすこ/むすめ"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "かぞくは なんにん ですか？",
+        "meaning": "الأسرة كام نفر؟"
+      },
+      {
+        "pattern": "〜にん かぞく です",
+        "meaning": "الأسرة... أفراد"
+      },
+      {
+        "pattern": "あには がくせい です",
+        "meaning": "أخي الكبير طالب"
+      },
+      {
+        "pattern": "〜が います",
+        "meaning": "عندي... (للأشخاص)"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "かぞくは なんにんですか？",
+        "romaji": "Kazoku wa nannin desu ka?",
+        "arabic": "الأسرة كام نفر؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "よにん かぞく です。ちちと ははと あねと わたしです。",
+        "romaji": "Yonin kazoku desu.",
+        "arabic": "أربع أفراد. أبي وأمي وأختي وأنا."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "おねえさんは おいくつですか？",
+        "romaji": "Oneesan wa oikutsu desu ka?",
+        "arabic": "أختك الكبيرة عندها كام سنة؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "にじゅうごさい です。",
+        "romaji": "Nijuugosai desu.",
+        "arabic": "عندها 25 سنة."
+      }
+    ],
+    "exercises": [
+      "الأسرة 5 أفراد → _____にん かぞく です",
+      "عندي أخ أصغر → おとうとが _____",
+      "أبوي مدرس → ちちは せんせい _____"
+    ]
+  },
+  {
+    "id": 10,
+    "title": "المواصلات والأماكن",
+    "japanese": "のりもの と ばしょ",
+    "romaji": "Norimono to Basho",
+    "vocabulary": [
+      {
+        "arabic": "مترو",
+        "romaji": "chikatetsu",
+        "japanese": "ちかてつ"
+      },
+      {
+        "arabic": "أتوبيس",
+        "romaji": "basu",
+        "japanese": "バス"
+      },
+      {
+        "arabic": "تاكسي",
+        "romaji": "takushii",
+        "japanese": "タクシー"
+      },
+      {
+        "arabic": "قطر",
+        "romaji": "densha",
+        "japanese": "でんしゃ"
+      },
+      {
+        "arabic": "عربية",
+        "romaji": "kuruma",
+        "japanese": "くるま"
+      },
+      {
+        "arabic": "محطة",
+        "romaji": "eki",
+        "japanese": "えき"
+      },
+      {
+        "arabic": "مطار",
+        "romaji": "kuukou",
+        "japanese": "くうこう"
+      },
+      {
+        "arabic": "مستشفى",
+        "romaji": "byouin",
+        "japanese": "びょういん"
+      },
+      {
+        "arabic": "مدرسة",
+        "romaji": "gakkou",
+        "japanese": "がっこう"
+      },
+      {
+        "arabic": "بنك",
+        "romaji": "ginkou",
+        "japanese": "ぎんこう"
+      },
+      {
+        "arabic": "بروح بـ...",
+        "romaji": "de ikimasu",
+        "japanese": "で いきます"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜で いきます",
+        "meaning": "بروح بـ... (وسيلة المواصلات)"
+      },
+      {
+        "pattern": "えきは どこですか？",
+        "meaning": "المحطة فين؟"
+      },
+      {
+        "pattern": "〜まで どのくらいですか？",
+        "meaning": "لحد... بياخد كام؟"
+      },
+      {
+        "pattern": "〜ふんかかります",
+        "meaning": "بياخد... دقيقة"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "えきまで どうやって いきますか？",
+        "romaji": "Eki made douyatte ikimasu ka?",
+        "arabic": "بروح للمحطة إزاي؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "バスで いきます。じゅっぷん かかります。",
+        "romaji": "Basu de ikimasu. Juppun kakarimasu.",
+        "arabic": "بالأتوبيس. بياخد 10 دقايق."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ちかてつは ありますか？",
+        "romaji": "Chikatetsu wa arimasu ka?",
+        "arabic": "في مترو؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "はい、えきの ちかくに あります。",
+        "romaji": "Hai, eki no chikaku ni arimasu.",
+        "arabic": "أيوه، جنب المحطة."
+      }
+    ],
+    "exercises": [
+      "بروح بالقطر → でんしゃ_____ いきます",
+      "المستشفى فين؟ → _____は どこですか？",
+      "بياخد 20 دقيقة → にじっぷん _____"
+    ]
+  },
+  {
+    "id": 11,
+    "title": "الطقس والفصول",
+    "japanese": "てんきと きせつ",
+    "romaji": "Tenki to Kisetsu",
+    "vocabulary": [
+      {
+        "arabic": "الطقس",
+        "romaji": "tenki",
+        "japanese": "てんき"
+      },
+      {
+        "arabic": "حر",
+        "romaji": "atsui",
+        "japanese": "あつい"
+      },
+      {
+        "arabic": "برد",
+        "romaji": "samui",
+        "japanese": "さむい"
+      },
+      {
+        "arabic": "دافي",
+        "romaji": "atatakai",
+        "japanese": "あたたかい"
+      },
+      {
+        "arabic": "شمس",
+        "romaji": "hare",
+        "japanese": "はれ"
+      },
+      {
+        "arabic": "مطر",
+        "romaji": "ame",
+        "japanese": "あめ"
+      },
+      {
+        "arabic": "تلج",
+        "romaji": "yuki",
+        "japanese": "ゆき"
+      },
+      {
+        "arabic": "ريح",
+        "romaji": "kaze",
+        "japanese": "かぜ"
+      },
+      {
+        "arabic": "الربيع",
+        "romaji": "haru",
+        "japanese": "はる"
+      },
+      {
+        "arabic": "الصيف",
+        "romaji": "natsu",
+        "japanese": "なつ"
+      },
+      {
+        "arabic": "الخريف",
+        "romaji": "aki",
+        "japanese": "あき"
+      },
+      {
+        "arabic": "الشتا",
+        "romaji": "fuyu",
+        "japanese": "ふゆ"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "きょうは どんな てんきですか？",
+        "meaning": "الجو إزاي النهارده؟"
+      },
+      {
+        "pattern": "〜です / 〜くないです",
+        "meaning": "الصفة / نفي الصفة"
+      },
+      {
+        "pattern": "〜が すきな きせつは？",
+        "meaning": "إيه فصلك المفضل؟"
+      },
+      {
+        "pattern": "〜に なります",
+        "meaning": "هيبقى... (للتنبؤ بالطقس)"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "きょうは どんな てんきですか？",
+        "romaji": "Kyou wa donna tenki desu ka?",
+        "arabic": "الجو إزاي النهارده؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "はれています。でも すこし さむいです。",
+        "romaji": "Harete imasu. Demo sukoshi samui desu.",
+        "arabic": "الجو صاحي. بس برد شوية."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "すきな きせつは なんですか？",
+        "romaji": "Suki na kisetsu wa nan desu ka?",
+        "arabic": "إيه فصلك المفضل؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "はるが すきです。さくらが きれいです！",
+        "romaji": "Haru ga suki desu. Sakura ga kirei desu!",
+        "arabic": "بحب الربيع. زهر الكرز جميل!"
+      }
+    ],
+    "exercises": [
+      "الجو حر → てんきは _____です",
+      "بحب الشتا → _____が すきです",
+      "النهارده بيمطر → きょうは _____ です"
+    ]
+  },
+  {
+    "id": 12,
+    "title": "الألوان والأوصاف",
+    "japanese": "いろと けいようし",
+    "romaji": "Iro to Keiyoushi",
+    "vocabulary": [
+      {
+        "arabic": "أحمر",
+        "romaji": "akai",
+        "japanese": "あかい"
+      },
+      {
+        "arabic": "أزرق",
+        "romaji": "aoi",
+        "japanese": "あおい"
+      },
+      {
+        "arabic": "أصفر",
+        "romaji": "kiiroi",
+        "japanese": "きいろい"
+      },
+      {
+        "arabic": "أخضر",
+        "romaji": "midori",
+        "japanese": "みどり"
+      },
+      {
+        "arabic": "أبيض",
+        "romaji": "shiroi",
+        "japanese": "しろい"
+      },
+      {
+        "arabic": "أسود",
+        "romaji": "kuroi",
+        "japanese": "くろい"
+      },
+      {
+        "arabic": "وردي",
+        "romaji": "pinku",
+        "japanese": "ピンク"
+      },
+      {
+        "arabic": "كبير",
+        "romaji": "ookii",
+        "japanese": "おおきい"
+      },
+      {
+        "arabic": "صغير",
+        "romaji": "chiisai",
+        "japanese": "ちいさい"
+      },
+      {
+        "arabic": "جميل",
+        "romaji": "kirei",
+        "japanese": "きれい"
+      },
+      {
+        "arabic": "قديم",
+        "romaji": "furui",
+        "japanese": "ふるい"
+      },
+      {
+        "arabic": "جديد",
+        "romaji": "atarashii",
+        "japanese": "あたらしい"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜い + اسم",
+        "meaning": "صفة + اسم (صفات い)"
+      },
+      {
+        "pattern": "〜な + اسم",
+        "meaning": "صفة + اسم (صفات な)"
+      },
+      {
+        "pattern": "〜くないです",
+        "meaning": "نفي صفات い"
+      },
+      {
+        "pattern": "〜じゃないです",
+        "meaning": "نفي صفات な"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "そのかばんは なにいろですか？",
+        "romaji": "Sono kaban wa nani iro desu ka?",
+        "arabic": "الشنطة دي لونها إيه؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "あかいかばんです。あたらしいですよ！",
+        "romaji": "Akai kaban desu. Atarashii desu yo!",
+        "arabic": "شنطة حمرا. جديدة!"
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "きれいですね！",
+        "romaji": "Kirei desu ne!",
+        "arabic": "جميلة!"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "ありがとうございます。",
+        "romaji": "Arigatou gozaimasu.",
+        "arabic": "شكراً!"
+      }
+    ],
+    "exercises": [
+      "السيارة الحمرا → _____ くるま",
+      "الكتاب القديم → _____ ほん",
+      "مش كبير → おおき_____です"
+    ]
+  },
+  {
+    "id": 13,
+    "title": "الجسم والصحة",
+    "japanese": "からだと けんこう",
+    "romaji": "Karada to Kenkou",
+    "vocabulary": [
+      {
+        "arabic": "رأس",
+        "romaji": "atama",
+        "japanese": "あたま"
+      },
+      {
+        "arabic": "عين",
+        "romaji": "me",
+        "japanese": "め"
+      },
+      {
+        "arabic": "أذن",
+        "romaji": "mimi",
+        "japanese": "みみ"
+      },
+      {
+        "arabic": "أنف",
+        "romaji": "hana",
+        "japanese": "はな"
+      },
+      {
+        "arabic": "فم",
+        "romaji": "kuchi",
+        "japanese": "くち"
+      },
+      {
+        "arabic": "إيد",
+        "romaji": "te",
+        "japanese": "て"
+      },
+      {
+        "arabic": "رجل",
+        "romaji": "ashi",
+        "japanese": "あし"
+      },
+      {
+        "arabic": "بطن",
+        "romaji": "onaka",
+        "japanese": "おなか"
+      },
+      {
+        "arabic": "عيان",
+        "romaji": "byouki",
+        "japanese": "びょうき"
+      },
+      {
+        "arabic": "بوجعني",
+        "romaji": "itai",
+        "japanese": "いたい"
+      },
+      {
+        "arabic": "دكتور",
+        "romaji": "isha",
+        "japanese": "いしゃ"
+      },
+      {
+        "arabic": "دوا",
+        "romaji": "kusuri",
+        "japanese": "くすり"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜が いたいです",
+        "meaning": "الـ... بيوجعني"
+      },
+      {
+        "pattern": "びょうきです",
+        "meaning": "أنا عيان"
+      },
+      {
+        "pattern": "だいじょうぶですか？",
+        "meaning": "إنت كويس؟"
+      },
+      {
+        "pattern": "くすりを のんでください",
+        "meaning": "خد الدوا من فضلك"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "يوكو",
+        "japanese": "だいじょうぶですか？かおが あおいですよ。",
+        "romaji": "Daijoubu desu ka? Kao ga aoi desu yo.",
+        "arabic": "إنت كويس؟ وشك شاحب."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "あたまが いたいです。びょうきかも しれません。",
+        "romaji": "Atama ga itai desu. Byouki kamo shiremasen.",
+        "arabic": "راسي بيوجعني. ممكن أكون عيان."
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "いしゃに いって ください。",
+        "romaji": "Isha ni itte kudasai.",
+        "arabic": "روح الدكتور من فضلك."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ありがとう、そうします。",
+        "romaji": "Arigatou, sou shimasu.",
+        "arabic": "شكراً، هعمل كده."
+      }
+    ],
+    "exercises": [
+      "بطني بيوجعني → おなかが _____",
+      "أنا عيان → _____です",
+      "إنت كويس؟ → _____ですか？"
+    ]
+  },
+  {
+    "id": 14,
+    "title": "الهوايات والوقت الحر",
+    "japanese": "しゅみと ひまな じかん",
+    "romaji": "Shumi to Hima na Jikan",
+    "vocabulary": [
+      {
+        "arabic": "هواية",
+        "romaji": "shumi",
+        "japanese": "しゅみ"
+      },
+      {
+        "arabic": "قراية",
+        "romaji": "dokusho",
+        "japanese": "どくしょ"
+      },
+      {
+        "arabic": "رياضة",
+        "romaji": "supootsu",
+        "japanese": "スポーツ"
+      },
+      {
+        "arabic": "موسيقى",
+        "romaji": "ongaku",
+        "japanese": "おんがく"
+      },
+      {
+        "arabic": "رسم",
+        "romaji": "e wo kaku",
+        "japanese": "えを かく"
+      },
+      {
+        "arabic": "طبخ",
+        "romaji": "ryouri",
+        "japanese": "りょうり"
+      },
+      {
+        "arabic": "سفر",
+        "romaji": "ryokou",
+        "japanese": "りょこう"
+      },
+      {
+        "arabic": "أفلام",
+        "romaji": "eiga",
+        "japanese": "えいが"
+      },
+      {
+        "arabic": "ألعاب",
+        "romaji": "geemu",
+        "japanese": "ゲーム"
+      },
+      {
+        "arabic": "في وقت الفراغ",
+        "romaji": "hima na toki",
+        "japanese": "ひまな とき"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "しゅみは なんですか？",
+        "meaning": "إيه هوايتك؟"
+      },
+      {
+        "pattern": "〜が しゅみです",
+        "meaning": "هوايتي هي الـ..."
+      },
+      {
+        "pattern": "〜が じょうずです",
+        "meaning": "بيجيدي الـ..."
+      },
+      {
+        "pattern": "いっしょに 〜しませんか？",
+        "meaning": "مش عايزين نعمل... مع بعض؟"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "しゅみは なんですか？",
+        "romaji": "Shumi wa nan desu ka?",
+        "arabic": "إيه هوايتك؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "どくしょと りょうりが しゅみです。",
+        "romaji": "Dokusho to ryouri ga shumi desu.",
+        "arabic": "القراية والطبخ هوايتي."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "りょうりが じょうずですね！",
+        "romaji": "Ryouri ga jouzu desu ne!",
+        "arabic": "بتطبخي كويس!"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "いっしょに りょうりしませんか？",
+        "romaji": "Issho ni ryouri shimasen ka?",
+        "arabic": "مش عايزين نطبخ مع بعض؟"
+      }
+    ],
+    "exercises": [
+      "هوايتي السفر → りょこうが _____",
+      "بيجيدي الموسيقى → おんがくが _____",
+      "مش عايزين نتفرج أفلام؟ → えいがを み_____ か？"
+    ]
+  },
+  {
+    "id": 15,
+    "title": "الماضي والمستقبل",
+    "japanese": "かこと みらい",
+    "romaji": "Kako to Mirai",
+    "vocabulary": [
+      {
+        "arabic": "الأسبوع اللي فات",
+        "romaji": "senshuu",
+        "japanese": "せんしゅう"
+      },
+      {
+        "arabic": "الشهر اللي فات",
+        "romaji": "sengetsu",
+        "japanese": "せんげつ"
+      },
+      {
+        "arabic": "السنة اللي فاتت",
+        "romaji": "kyonen",
+        "japanese": "きょねん"
+      },
+      {
+        "arabic": "الأسبوع الجاي",
+        "romaji": "raishuu",
+        "japanese": "らいしゅう"
+      },
+      {
+        "arabic": "الشهر الجاي",
+        "romaji": "raigetsu",
+        "japanese": "らいげつ"
+      },
+      {
+        "arabic": "السنة الجاية",
+        "romaji": "rainen",
+        "japanese": "らいねん"
+      },
+      {
+        "arabic": "رحت (ماضي)",
+        "romaji": "ikimashita",
+        "japanese": "いきました"
+      },
+      {
+        "arabic": "اكلت (ماضي)",
+        "romaji": "tabemashita",
+        "japanese": "たべました"
+      },
+      {
+        "arabic": "اتكلمت (ماضي)",
+        "romaji": "hanashimashita",
+        "japanese": "はなしました"
+      },
+      {
+        "arabic": "هروح (مستقبل)",
+        "romaji": "ikimasu",
+        "japanese": "いきます"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜ました",
+        "meaning": "فعل في الماضي"
+      },
+      {
+        "pattern": "〜ませんでした",
+        "meaning": "نفي الفعل في الماضي"
+      },
+      {
+        "pattern": "〜つもりです",
+        "meaning": "ناوي أعمل..."
+      },
+      {
+        "pattern": "〜たいです",
+        "meaning": "عايز أعمل..."
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "きのう なにを しましたか？",
+        "romaji": "Kinou nani wo shimashita ka?",
+        "arabic": "إمبارح عملت إيه؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "ともだちと えいがを みました。",
+        "romaji": "Tomodachi to eiga wo mimashita.",
+        "arabic": "اتفرجت على فيلم مع صاحبتي."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "らいしゅう なにを するつもりですか？",
+        "romaji": "Raishuu nani wo suru tsumori desu ka?",
+        "arabic": "الأسبوع الجاي ناوي تعملي إيه؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "にほんごを べんきょうするつもりです！",
+        "romaji": "Nihongo wo benkyou suru tsumori desu!",
+        "arabic": "ناوية أذاكر ياباني!"
+      }
+    ],
+    "exercises": [
+      "رحت اليابان → にほんに _____",
+      "ماكلتش → たべ_____でした",
+      "عايز أسافر → りょこうし_____です"
+    ]
+  },
+  {
+    "id": 16,
+    "title": "في المطعم",
+    "japanese": "レストランで",
+    "romaji": "Resutoran de",
+    "vocabulary": [
+      {
+        "arabic": "مطعم",
+        "romaji": "resutoran",
+        "japanese": "レストラン"
+      },
+      {
+        "arabic": "قائمة",
+        "romaji": "menyu",
+        "japanese": "メニュー"
+      },
+      {
+        "arabic": "طلب",
+        "romaji": "chuumon",
+        "japanese": "ちゅうもん"
+      },
+      {
+        "arabic": "الحساب",
+        "romaji": "okaikei",
+        "japanese": "おかいけい"
+      },
+      {
+        "arabic": "شبعان",
+        "romaji": "onaka ippai",
+        "japanese": "おなか いっぱい"
+      },
+      {
+        "arabic": "جعان",
+        "romaji": "onaka suita",
+        "japanese": "おなか すいた"
+      },
+      {
+        "arabic": "حجز",
+        "romaji": "yoyaku",
+        "japanese": "よやく"
+      },
+      {
+        "arabic": "لذيذ جداً",
+        "romaji": "totemo oishii",
+        "japanese": "とても おいしい"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜を ひとつ おねがいします",
+        "meaning": "واحد من الـ... من فضلك"
+      },
+      {
+        "pattern": "おすすめは なんですか？",
+        "meaning": "إيه الأكلة المميزة؟"
+      },
+      {
+        "pattern": "おかいけい おねがいします",
+        "meaning": "الحساب من فضلك"
+      },
+      {
+        "pattern": "〜は アレルギーが あります",
+        "meaning": "عندي حساسية من..."
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "すみません、メニューを ください。",
+        "romaji": "Sumimasen, menyu wo kudasai.",
+        "arabic": "معذرة، القائمة من فضلك."
+      },
+      {
+        "speaker": "النادل",
+        "japanese": "はい、どうぞ。ごちゅうもんは？",
+        "romaji": "Hai, douzo. Gochuumon wa?",
+        "arabic": "تفضل. طلبك إيه؟"
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ラーメンを ひとつ おねがいします。",
+        "romaji": "Raamen wo hitotsu onegaishimasu.",
+        "arabic": "واحد راحن من فضلك."
+      },
+      {
+        "speaker": "النادل",
+        "japanese": "かしこまりました！",
+        "romaji": "Kashikomarimashita!",
+        "arabic": "حاضر!"
+      }
+    ],
+    "exercises": [
+      "القائمة من فضلك → _____を ください",
+      "واحد سوشي من فضلك → すしを ひとつ _____",
+      "الحساب من فضلك → おかいけい _____"
+    ]
+  },
+  {
+    "id": 17,
+    "title": "العمل والمهن",
+    "japanese": "しごとと しょくぎょう",
+    "romaji": "Shigoto to Shokugyou",
+    "vocabulary": [
+      {
+        "arabic": "شغل",
+        "romaji": "shigoto",
+        "japanese": "しごと"
+      },
+      {
+        "arabic": "مهندس",
+        "romaji": "enjinia",
+        "japanese": "エンジニア"
+      },
+      {
+        "arabic": "دكتور",
+        "romaji": "isha",
+        "japanese": "いしゃ"
+      },
+      {
+        "arabic": "مدرس",
+        "romaji": "sensei",
+        "japanese": "せんせい"
+      },
+      {
+        "arabic": "موظف",
+        "romaji": "kaishain",
+        "japanese": "かいしゃいん"
+      },
+      {
+        "arabic": "طالب",
+        "romaji": "gakusei",
+        "japanese": "がくせい"
+      },
+      {
+        "arabic": "شركة",
+        "romaji": "kaisha",
+        "japanese": "かいしゃ"
+      },
+      {
+        "arabic": "مكتب",
+        "romaji": "jimusho",
+        "japanese": "じむしょ"
+      },
+      {
+        "arabic": "إجازة",
+        "romaji": "yasumi",
+        "japanese": "やすみ"
+      },
+      {
+        "arabic": "بيشتغل",
+        "romaji": "hatarakimasu",
+        "japanese": "はたらきます"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "おしごとは なんですか？",
+        "meaning": "شغلتك إيه؟"
+      },
+      {
+        "pattern": "〜に つとめています",
+        "meaning": "بشتغل في شركة..."
+      },
+      {
+        "pattern": "〜として はたらいています",
+        "meaning": "بشتغل كـ..."
+      },
+      {
+        "pattern": "なんじから なんじまで？",
+        "meaning": "من الساعة كام لحد كام؟"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "おしごとは なんですか？",
+        "romaji": "Oshigoto wa nan desu ka?",
+        "arabic": "شغلتك إيه؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "エンジニアです。IT かいしゃに つとめています。",
+        "romaji": "Enjinia desu. IT kaisha ni tsutomete imasu.",
+        "arabic": "مهندسة. بشتغلي في شركة IT."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "なんじから なんじまで はたらきますか？",
+        "romaji": "Nanji kara nanji made hatarakimasu ka?",
+        "arabic": "بتشتغلي من كام لحد كام؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "くじから ごじまで です。",
+        "romaji": "Kuji kara goji made desu.",
+        "arabic": "من 9 لـ 5."
+      }
+    ],
+    "exercises": [
+      "شغلتك إيه؟ → おしごとは _____ですか？",
+      "أنا موظف → _____です",
+      "بشتغل في شركة → かいしゃに _____"
+    ]
+  },
+  {
+    "id": 18,
+    "title": "التعليم والجامعة",
+    "japanese": "きょういくと だいがく",
+    "romaji": "Kyouiku to Daigaku",
+    "vocabulary": [
+      {
+        "arabic": "جامعة",
+        "romaji": "daigaku",
+        "japanese": "だいがく"
+      },
+      {
+        "arabic": "محاضرة",
+        "romaji": "kougi",
+        "japanese": "こうぎ"
+      },
+      {
+        "arabic": "امتحان",
+        "romaji": "shiken",
+        "japanese": "しけん"
+      },
+      {
+        "arabic": "واجب",
+        "romaji": "shukudai",
+        "japanese": "しゅくだい"
+      },
+      {
+        "arabic": "مذاكرة",
+        "romaji": "benkyou",
+        "japanese": "べんきょう"
+      },
+      {
+        "arabic": "مكتبة",
+        "romaji": "toshokan",
+        "japanese": "としょかん"
+      },
+      {
+        "arabic": "تخرج",
+        "romaji": "sotsugyou",
+        "japanese": "そつぎょう"
+      },
+      {
+        "arabic": "درجة",
+        "romaji": "seiseki",
+        "japanese": "せいせき"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "なにを べんきょうしていますか？",
+        "meaning": "بتذاكر إيه؟"
+      },
+      {
+        "pattern": "〜を せんこうしています",
+        "meaning": "تخصصي هو الـ..."
+      },
+      {
+        "pattern": "しけんが あります",
+        "meaning": "عندي امتحان"
+      },
+      {
+        "pattern": "〜に ごうかくしました",
+        "meaning": "نجحت في الـ..."
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "だいがくで なにを べんきょうしていますか？",
+        "romaji": "Daigaku de nani wo benkyou shite imasu ka?",
+        "arabic": "بتذاكر إيه في الجامعة؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "にほんごを せんこうしています。",
+        "romaji": "Nihongo wo senkou shite imasu.",
+        "arabic": "تخصصي الياباني."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "しけんは むずかしいですか？",
+        "romaji": "Shiken wa muzukashii desu ka?",
+        "arabic": "الامتحانات صعبة؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "すこし むずかしいですが、たのしいです！",
+        "romaji": "Sukoshi muzukashii desu ga, tanoshii desu!",
+        "arabic": "صعبة شوية بس ممتعة!"
+      }
+    ],
+    "exercises": [
+      "عندي امتحان → しけんが _____",
+      "تخصصي هندسة → エンジニアリングを _____",
+      "المكتبة فين؟ → _____は どこですか？"
+    ]
+  },
+  {
+    "id": 19,
+    "title": "السفر والسياحة",
+    "japanese": "りょこうと かんこう",
+    "romaji": "Ryokou to Kankou",
+    "vocabulary": [
+      {
+        "arabic": "سفر",
+        "romaji": "ryokou",
+        "japanese": "りょこう"
+      },
+      {
+        "arabic": "فندق",
+        "romaji": "hoteru",
+        "japanese": "ホテル"
+      },
+      {
+        "arabic": "جواز سفر",
+        "romaji": "pasupooto",
+        "japanese": "パスポート"
+      },
+      {
+        "arabic": "تذكرة",
+        "romaji": "kippu",
+        "japanese": "きっぷ"
+      },
+      {
+        "arabic": "طيارة",
+        "romaji": "hikouki",
+        "japanese": "ひこうき"
+      },
+      {
+        "arabic": "حجز",
+        "romaji": "yoyaku",
+        "japanese": "よやく"
+      },
+      {
+        "arabic": "خريطة",
+        "romaji": "chizu",
+        "japanese": "ちず"
+      },
+      {
+        "arabic": "صورة",
+        "romaji": "shashin",
+        "japanese": "しゃしん"
+      },
+      {
+        "arabic": "تذكار",
+        "romaji": "omiyage",
+        "japanese": "おみやげ"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜に いきたいです",
+        "meaning": "عايز أروح..."
+      },
+      {
+        "pattern": "〜を みせてください",
+        "meaning": "وريني الـ... من فضلك"
+      },
+      {
+        "pattern": "〜まで きっぷを ください",
+        "meaning": "تذكرة لـ... من فضلك"
+      },
+      {
+        "pattern": "しゃしんを とっても いいですか？",
+        "meaning": "ممكن آخد صورة؟"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "にほんに いきたいです！",
+        "romaji": "Nihon ni ikitai desu!",
+        "arabic": "عايز أروح اليابان!"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "どこに いきたいですか？",
+        "romaji": "Doko ni ikitai desu ka?",
+        "arabic": "عايز تروح فين؟"
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "とうきょうと きょうとに いきたいです。",
+        "romaji": "Tokyo to Kyoto ni ikitai desu.",
+        "arabic": "عايز أروح طوكيو وكيوتو."
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "すばらしい！おみやげを かってきてね！",
+        "romaji": "Subarashii! Omiyage wo katte kite ne!",
+        "arabic": "رائع! هاتلي تذكار!"
+      }
+    ],
+    "exercises": [
+      "عايز أروح اليابان → にほんに _____",
+      "تذكرة لطوكيو من فضلك → とうきょうまで _____を ください",
+      "ممكن آخد صورة؟ → しゃしんを とっても _____か？"
+    ]
+  },
+  {
+    "id": 20,
+    "title": "التسوق والملابس",
+    "japanese": "かいもの と ふく",
+    "romaji": "Kaimono to Fuku",
+    "vocabulary": [
+      {
+        "arabic": "ملابس",
+        "romaji": "fuku",
+        "japanese": "ふく"
+      },
+      {
+        "arabic": "قميص",
+        "romaji": "shatsu",
+        "japanese": "シャツ"
+      },
+      {
+        "arabic": "بنطلون",
+        "romaji": "zubon",
+        "japanese": "ズボン"
+      },
+      {
+        "arabic": "فستان",
+        "romaji": "doresu",
+        "japanese": "ドレス"
+      },
+      {
+        "arabic": "جزمة",
+        "romaji": "kutsu",
+        "japanese": "くつ"
+      },
+      {
+        "arabic": "مقاس",
+        "romaji": "saizu",
+        "japanese": "サイズ"
+      },
+      {
+        "arabic": "كبير جداً",
+        "romaji": "ookisugiru",
+        "japanese": "おおきすぎる"
+      },
+      {
+        "arabic": "صغير جداً",
+        "romaji": "chiisasugiru",
+        "japanese": "ちいさすぎる"
+      },
+      {
+        "arabic": "بيناسب",
+        "romaji": "niau",
+        "japanese": "にあう"
+      },
+      {
+        "arabic": "خصم",
+        "romaji": "waribiki",
+        "japanese": "わりびき"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜を きても いいですか？",
+        "meaning": "ممكن أجرب الـ...؟"
+      },
+      {
+        "pattern": "〜サイズは ありますか？",
+        "meaning": "في مقاس...؟"
+      },
+      {
+        "pattern": "〜に よく にあいます",
+        "meaning": "بيناسبك جداً"
+      },
+      {
+        "pattern": "もっと やすいのは ありますか？",
+        "meaning": "في حاجة أرخص؟"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "このシャツを きても いいですか？",
+        "romaji": "Kono shatsu wo kite mo ii desu ka?",
+        "arabic": "ممكن أجرب القميص ده؟"
+      },
+      {
+        "speaker": "البائع",
+        "japanese": "もちろんです！どうぞ。",
+        "romaji": "Mochiron desu! Douzo.",
+        "arabic": "طبعاً! تفضل."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "すこし おおきいです。Mサイズは ありますか？",
+        "romaji": "Sukoshi ookii desu. M saizu wa arimasu ka?",
+        "arabic": "كبيرة شوية. في مقاس M؟"
+      },
+      {
+        "speaker": "البائع",
+        "japanese": "はい、こちらは どうですか？",
+        "romaji": "Hai, kochira wa dou desu ka?",
+        "arabic": "أيوه، ده إيه رأيك؟"
+      }
+    ],
+    "exercises": [
+      "ممكن أجرب ده؟ → これを きても _____か？",
+      "في مقاس L؟ → L_____は ありますか？",
+      "في حاجة أرخص؟ → もっと やすいのは _____か？"
+    ]
+  },
+  {
+    "id": 21,
+    "title": "المشاعر والأحاسيس",
+    "japanese": "きもちと かんじょう",
+    "romaji": "Kimochi to Kanjou",
+    "vocabulary": [
+      {
+        "arabic": "سعيد",
+        "romaji": "ureshii",
+        "japanese": "うれしい"
+      },
+      {
+        "arabic": "حزين",
+        "romaji": "kanashii",
+        "japanese": "かなしい"
+      },
+      {
+        "arabic": "زعلان",
+        "romaji": "okotte iru",
+        "japanese": "おこって いる"
+      },
+      {
+        "arabic": "خايف",
+        "romaji": "kowai",
+        "japanese": "こわい"
+      },
+      {
+        "arabic": "زهقان",
+        "romaji": "taikutsu",
+        "japanese": "たいくつ"
+      },
+      {
+        "arabic": "مبسوط",
+        "romaji": "tanoshii",
+        "japanese": "たのしい"
+      },
+      {
+        "arabic": "متفاجئ",
+        "romaji": "bikkuri shita",
+        "japanese": "びっくりした"
+      },
+      {
+        "arabic": "محرج",
+        "romaji": "hazukashii",
+        "japanese": "はずかしい"
+      },
+      {
+        "arabic": "تعبان",
+        "romaji": "tsukareta",
+        "japanese": "つかれた"
+      },
+      {
+        "arabic": "كويس",
+        "romaji": "daijoubu",
+        "japanese": "だいじょうぶ"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "どうしましたか？",
+        "meaning": "في إيه؟ / إيه اللي حصل؟"
+      },
+      {
+        "pattern": "〜て うれしいです",
+        "meaning": "أنا سعيد إن..."
+      },
+      {
+        "pattern": "〜て かなしいです",
+        "meaning": "أنا حزين إن..."
+      },
+      {
+        "pattern": "げんきですか？",
+        "meaning": "إنت/ي بخير؟"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "يوكو",
+        "japanese": "どうしましたか？かなしそうですね。",
+        "romaji": "Dou shimashita ka? Kanashi sou desu ne.",
+        "arabic": "في إيه؟ شايفاك حزين."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "しけんに おちました。とても かなしいです。",
+        "romaji": "Shiken ni ochimashita. Totemo kanashii desu.",
+        "arabic": "رسبت في الامتحان. حزين جداً."
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "だいじょうぶですよ！つぎは きっと うまく いきます！",
+        "romaji": "Daijoubu desu yo! Tsugi wa kitto umaku ikimasu!",
+        "arabic": "هيبقى كويس! المرة الجاية هتنجح!"
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ありがとう。すこし うれしく なりました！",
+        "romaji": "Arigatou. Sukoshi ureshiku narimashita!",
+        "arabic": "شكراً. حسيت بسعادة شوية!"
+      }
+    ],
+    "exercises": [
+      "أنا سعيد → _____です",
+      "في إيه؟ → どう_____か？",
+      "أنا تعبان → _____です"
+    ]
+  },
+  {
+    "id": 22,
+    "title": "طلب المساعدة",
+    "japanese": "たすけを もとめる",
+    "romaji": "Tasuke wo Motomeru",
+    "vocabulary": [
+      {
+        "arabic": "مساعدة",
+        "romaji": "tasukete",
+        "japanese": "たすけて"
+      },
+      {
+        "arabic": "مش فاهم",
+        "romaji": "wakarimasen",
+        "japanese": "わかりません"
+      },
+      {
+        "arabic": "تاني مرة",
+        "romaji": "mou ichido",
+        "japanese": "もう いちど"
+      },
+      {
+        "arabic": "ببطء",
+        "romaji": "yukkuri",
+        "japanese": "ゆっくり"
+      },
+      {
+        "arabic": "معناها إيه؟",
+        "romaji": "dou iu imi?",
+        "japanese": "どういう いみ？"
+      },
+      {
+        "arabic": "ممكن تساعدني؟",
+        "romaji": "tetsudatte kudasai",
+        "japanese": "てつだって ください"
+      },
+      {
+        "arabic": "ضيعت",
+        "romaji": "mayoimashita",
+        "japanese": "まよいました"
+      },
+      {
+        "arabic": "طوارئ",
+        "romaji": "kinkyuu",
+        "japanese": "きんきゅう"
+      },
+      {
+        "arabic": "بوليس",
+        "romaji": "keisatsu",
+        "japanese": "けいさつ"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜を もう いちど いって ください",
+        "meaning": "قول الـ... تاني مرة من فضلك"
+      },
+      {
+        "pattern": "ゆっくり はなして ください",
+        "meaning": "اتكلم ببطء من فضلك"
+      },
+      {
+        "pattern": "〜は にほんごで なんですか？",
+        "meaning": "إيه معنى الـ... بالياباني؟"
+      },
+      {
+        "pattern": "たすけて ください！",
+        "meaning": "ساعدني من فضلك!"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "すみません、まよいました。てつだって ください。",
+        "romaji": "Sumimasen, mayoimashita. Tetsudatte kudasai.",
+        "arabic": "معذرة، ضيعت. ساعدني من فضلك."
+      },
+      {
+        "speaker": "ياباني",
+        "japanese": "どこへ いきたいですか？",
+        "romaji": "Doko e ikitai desu ka?",
+        "arabic": "عايز تروح فين؟"
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ゆっくり はなして ください。わかりません。",
+        "romaji": "Yukkuri hanashite kudasai. Wakarimasen.",
+        "arabic": "اتكلم ببطء من فضلك. مش فاهم."
+      },
+      {
+        "speaker": "ياباني",
+        "japanese": "わかりました。いっしょに いきましょう！",
+        "romaji": "Wakarimashita. Issho ni ikimashou!",
+        "arabic": "فاهم. يالا نروح مع بعض!"
+      }
+    ],
+    "exercises": [
+      "مش فاهم → _____",
+      "اتكلم ببطء → ゆっくり _____ください",
+      "ساعدني → _____ください"
+    ]
+  },
+  {
+    "id": 23,
+    "title": "التكنولوجيا والإنترنت",
+    "japanese": "テクノロジーと インターネット",
+    "romaji": "Tekunorojii to Intaanetto",
+    "vocabulary": [
+      {
+        "arabic": "كمبيوتر",
+        "romaji": "pasokon",
+        "japanese": "パソコン"
+      },
+      {
+        "arabic": "موبايل",
+        "romaji": "sumaho",
+        "japanese": "スマホ"
+      },
+      {
+        "arabic": "إنترنت",
+        "romaji": "intaanetto",
+        "japanese": "インターネット"
+      },
+      {
+        "arabic": "ميل",
+        "romaji": "meeru",
+        "japanese": "メール"
+      },
+      {
+        "arabic": "بعتله",
+        "romaji": "okurimasu",
+        "japanese": "おくります"
+      },
+      {
+        "arabic": "دونلود",
+        "romaji": "daunroodo",
+        "japanese": "ダウンロード"
+      },
+      {
+        "arabic": "أبليكيشن",
+        "romaji": "apuri",
+        "japanese": "アプリ"
+      },
+      {
+        "arabic": "باسوورد",
+        "romaji": "pasuwado",
+        "japanese": "パスワード"
+      },
+      {
+        "arabic": "مكالمة فيديو",
+        "romaji": "bideo tsuuwa",
+        "japanese": "ビデオ つうわ"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜を つかっています",
+        "meaning": "بستخدم الـ..."
+      },
+      {
+        "pattern": "〜に メールを おくりました",
+        "meaning": "بعتله ميل"
+      },
+      {
+        "pattern": "アプリを ダウンロードしてください",
+        "meaning": "حمّل الأبليكيشن من فضلك"
+      },
+      {
+        "pattern": "インターネットが つながりません",
+        "meaning": "الإنترنت مش شغال"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "すみません、WIFIの パスワードは なんですか？",
+        "romaji": "Sumimasen, WIFI no pasuwado wa nan desu ka?",
+        "arabic": "معذرة، باسوورد الواي فاي إيه؟"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "nihongo123 です。",
+        "romaji": "nihongo123 desu.",
+        "arabic": "nihongo123."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ありがとう！アプリを ダウンロードしたいです。",
+        "romaji": "Arigatou! Apuri wo daunroodo shitai desu.",
+        "arabic": "شكراً! عايز أحمّل أبليكيشن."
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "どんな アプリですか？",
+        "romaji": "Donna apuri desu ka?",
+        "arabic": "أبليكيشن إيه؟"
+      }
+    ],
+    "exercises": [
+      "بستخدم موبايل → スマホを _____",
+      "الإنترنت مش شغال → インターネットが _____",
+      "بعتله ميل → メールを _____"
+    ]
+  },
+  {
+    "id": 24,
+    "title": "الطبيعة والبيئة",
+    "japanese": "しぜんと かんきょう",
+    "romaji": "Shizen to Kankyou",
+    "vocabulary": [
+      {
+        "arabic": "طبيعة",
+        "romaji": "shizen",
+        "japanese": "しぜん"
+      },
+      {
+        "arabic": "بحر",
+        "romaji": "umi",
+        "japanese": "うみ"
+      },
+      {
+        "arabic": "جبل",
+        "romaji": "yama",
+        "japanese": "やま"
+      },
+      {
+        "arabic": "نهر",
+        "romaji": "kawa",
+        "japanese": "かわ"
+      },
+      {
+        "arabic": "غابة",
+        "romaji": "mori",
+        "japanese": "もり"
+      },
+      {
+        "arabic": "زهرة",
+        "romaji": "hana",
+        "japanese": "はな"
+      },
+      {
+        "arabic": "شجرة",
+        "romaji": "ki",
+        "japanese": "き"
+      },
+      {
+        "arabic": "حيوان",
+        "romaji": "doubutsu",
+        "japanese": "どうぶつ"
+      },
+      {
+        "arabic": "بيئة",
+        "romaji": "kankyou",
+        "japanese": "かんきょう"
+      },
+      {
+        "arabic": "زهر الكرز",
+        "romaji": "sakura",
+        "japanese": "さくら"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜は きれいですね",
+        "meaning": "الـ... جميل، مش كده؟"
+      },
+      {
+        "pattern": "〜が みたいです",
+        "meaning": "عايز أشوف الـ..."
+      },
+      {
+        "pattern": "しぜんが すきです",
+        "meaning": "بحب الطبيعة"
+      },
+      {
+        "pattern": "〜を たいせつに しましょう",
+        "meaning": "خلينا نحافظ على الـ..."
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "أحمد",
+        "japanese": "にほんの しぜんは きれいですね！",
+        "romaji": "Nihon no shizen wa kirei desu ne!",
+        "arabic": "طبيعة اليابان جميلة!"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "そうですね！はるに さくらが きれいですよ。",
+        "romaji": "Sou desu ne! Haru ni sakura ga kirei desu yo.",
+        "arabic": "أيوه! في الربيع زهر الكرز بيبقى جميل."
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "さくらを みたいです！",
+        "romaji": "Sakura wo mitai desu!",
+        "arabic": "عايز أشوف زهر الكرز!"
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "ぜひ はるに きて ください！",
+        "romaji": "Zehi haru ni kite kudasai!",
+        "arabic": "لازم تيجي في الربيع!"
+      }
+    ],
+    "exercises": [
+      "البحر جميل → うみは _____",
+      "عايز أشوف الجبل → やまが _____",
+      "بحب الطبيعة → しぜんが _____"
+    ]
+  },
+  {
+    "id": 25,
+    "title": "مراجعة شاملة",
+    "japanese": "ふくしゅう",
+    "romaji": "Fukushuu",
+    "vocabulary": [
+      {
+        "arabic": "مراجعة",
+        "romaji": "fukushuu",
+        "japanese": "ふくしゅう"
+      },
+      {
+        "arabic": "فاهم",
+        "romaji": "wakarimasu",
+        "japanese": "わかります"
+      },
+      {
+        "arabic": "ذاكرت",
+        "romaji": "benkyou shimashita",
+        "japanese": "べんきょう しました"
+      },
+      {
+        "arabic": "تقدمت",
+        "romaji": "jouzu ni narimashita",
+        "japanese": "じょうずに なりました"
+      },
+      {
+        "arabic": "استمر",
+        "romaji": "tsuzukemasu",
+        "japanese": "つづけます"
+      },
+      {
+        "arabic": "هدف",
+        "romaji": "mokuhyou",
+        "japanese": "もくひょう"
+      },
+      {
+        "arabic": "حلم",
+        "romaji": "yume",
+        "japanese": "ゆめ"
+      },
+      {
+        "arabic": "نجاح",
+        "romaji": "seikou",
+        "japanese": "せいこう"
+      },
+      {
+        "arabic": "شكراً جزيلاً",
+        "romaji": "arigatou gozaimashita",
+        "japanese": "ありがとう ございました"
+      },
+      {
+        "arabic": "إلى اللقاء",
+        "romaji": "sayounara",
+        "japanese": "さようなら"
+      }
+    ],
+    "grammar": [
+      {
+        "pattern": "〜ように なりました",
+        "meaning": "أصبحت قادر على... (تقدم)"
+      },
+      {
+        "pattern": "〜を つづけて ください",
+        "meaning": "استمر في الـ..."
+      },
+      {
+        "pattern": "もくひょうは なんですか？",
+        "meaning": "إيه هدفك؟"
+      },
+      {
+        "pattern": "ゆめを あきらめないで！",
+        "meaning": "متتخليش عن حلمك!"
+      }
+    ],
+    "dialogue": [
+      {
+        "speaker": "يوكو",
+        "japanese": "にほんごが じょうずに なりましたね！",
+        "romaji": "Nihongo ga jouzu ni narimashita ne!",
+        "arabic": "ياباني بتاعك اتحسن!"
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "ありがとうございます！まだまだ べんきょうします。",
+        "romaji": "Arigatou gozaimasu! Mada mada benkyou shimasu.",
+        "arabic": "شكراً! هكمل أذاكر."
+      },
+      {
+        "speaker": "يوكو",
+        "japanese": "もくひょうは なんですか？",
+        "romaji": "Mokuhyou wa nan desu ka?",
+        "arabic": "إيه هدفك؟"
+      },
+      {
+        "speaker": "أحمد",
+        "japanese": "にほんで はたらきたいです！ゆめを あきらめません！",
+        "romaji": "Nihon de hatarakitai desu! Yume wo akiramemasen!",
+        "arabic": "عايز أشتغل في اليابان! مش هتخلى عن حلمي!"
+      }
+    ],
+    "exercises": [
+      "ياباني بتاعي اتحسن → にほんごが じょうずに _____",
+      "هكمل أذاكر → べんきょうを _____",
+      "إيه هدفك؟ → _____は なんですか？"
+    ]
   }
-
-  function renderLesson(l) {
-    document.title = `درس ${l.id} – ${l.title}`;
-    document.getElementById('header-title').textContent = l.title;
-    document.getElementById('header-badge').textContent = `درس ${l.id}`;
-
-    const isDone = completed.includes(l.id);
-    const nextLesson = lessons.find(x => x.id === l.id + 1);
-
-    let html = '';
-
-    // Title card
-    html += `
-      <div class="title-card">
-        <div class="jp-big">${l.japanese}</div>
-        <div class="rom">${l.romaji}</div>
-        <div class="ar-title">${l.title}</div>
-      </div>`;
-
-    // Vocabulary
-    html += `
-      <div class="card">
-        <div class="card-title">📚 المفردات</div>
-        <table>
-          <thead><tr>
-            <th>العربي</th><th>Romaji</th><th>الياباني</th><th>🔊</th>
-          </tr></thead>
-          <tbody>
-            ${l.vocabulary.map(v => `
-              <tr>
-                <td>${v.arabic}</td>
-                <td>${v.romaji}</td>
-                <td class="jp-cell">${v.japanese}</td>
-                <td><button class="tts" onclick="speak('${v.japanese.replace(/'/g,"\\'")}')">🔊</button></td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
-      </div>`;
-
-    // Grammar
-    html += `<div class="card"><div class="card-title">📖 القاعدة النحوية</div>`;
-    l.grammar.forEach(g => {
-      html += `
-        <div class="grammar-box">
-          <div class="pat">${g.pattern}</div>
-          <div class="mng">${g.meaning}</div>
-        </div>`;
-    });
-    html += `</div>`;
-
-    // Dialogue
-    html += `<div class="card"><div class="card-title">💬 الحوار</div>`;
-    l.dialogue.forEach(d => {
-      html += `
-        <div class="dlg-line">
-          <div class="spk">${d.speaker}</div>
-          <div class="speech">
-            <div class="jp">${d.japanese}
-              <button class="tts" onclick="speak('${d.japanese.replace(/'/g,"\\'")}')">🔊</button>
-            </div>
-            <div class="rm">${d.romaji}</div>
-            <div class="ar">${d.arabic}</div>
-          </div>
-        </div>`;
-    });
-    html += `</div>`;
-
-    // Exercises
-    html += `<div class="card"><div class="card-title">✏️ تمارين</div>`;
-    l.exercises.forEach((ex, i) => {
-      html += `
-        <div class="ex-item">
-          <div class="ex-num">${i+1}</div>
-          <div>${ex}</div>
-        </div>`;
-    });
-    html += `</div>`;
-
-    // Bottom buttons
-    html += `
-      <div class="bottom-btns">
-        <button class="btn-done ${isDone ? 'done-state' : ''}"
-                id="done-btn"
-                onclick="toggleDone(${l.id})">
-          ${isDone ? '✅ تم الدرس' : '☑️ خلصت الدرس'}
-        </button>
-        <button class="btn-next"
-                onclick="window.location.href='lesson.html?id=${l.id + 1}'"
-                ${!nextLesson ? 'disabled' : ''}>
-          ${nextLesson ? `التالي: ${nextLesson.title} ←` : '🎉 آخر درس!'}
-        </button>
-      </div>`;
-
-    document.getElementById('content').innerHTML = html;
-  }
-
-  function toggleDone(id) {
-    const btn = document.getElementById('done-btn');
-    if (completed.includes(id)) {
-      completed = completed.filter(x => x !== id);
-      btn.textContent = '☑️ خلصت الدرس';
-      btn.classList.remove('done-state');
-    } else {
-      completed.push(id);
-      btn.textContent = '✅ تم الدرس';
-      btn.classList.add('done-state');
-    }
-    localStorage.setItem('completedLessons', JSON.stringify(completed));
-  }
-
-  function speak(text) {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ja-JP';
-      speechSynthesis.speak(u);
-    }
-  }
-
-  loadLesson();
-</script>
-</body>
-</html>
+]
