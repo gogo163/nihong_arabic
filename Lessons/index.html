@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NihongoArabic – الدروس</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #fff0f5;
+      min-height: 100vh;
+      color: #2d2d2d;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #e91e8c, #ff6eb4);
+      color: white;
+      padding: 20px 16px 30px;
+      text-align: center;
+    }
+    header .logo { font-size: 40px; margin-bottom: 6px; }
+    header h1 { font-size: 22px; font-weight: bold; margin-bottom: 4px; }
+    header p { font-size: 14px; opacity: 0.85; }
+
+    /* PROGRESS BAR */
+    .progress-section {
+      background: white;
+      margin: 16px;
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(233,30,140,0.08);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .progress-header span { font-size: 13px; color: #888; }
+    .progress-header strong { color: #e91e8c; font-size: 15px; }
+    .progress-bar {
+      background: #ffd6e8;
+      border-radius: 10px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #e91e8c, #ff6eb4);
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    /* SEARCH */
+    .search-box {
+      margin: 0 16px 14px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px 12px 40px;
+      border: 2px solid #ffd6e8;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: white;
+      direction: rtl;
+    }
+    .search-box input:focus { border-color: #e91e8c; }
+    .search-box .icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #e91e8c;
+      font-size: 16px;
+    }
+
+    /* LESSONS GRID */
+    .lessons-grid {
+      padding: 0 16px 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .lesson-card {
+      background: white;
+      border-radius: 14px;
+      padding: 14px 12px;
+      box-shadow: 0 2px 8px rgba(233,30,140,0.08);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    .lesson-card:hover {
+      border-color: #e91e8c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(233,30,140,0.15);
+    }
+    .lesson-card.completed {
+      background: linear-gradient(135deg, #fff0f5, #ffe4f0);
+      border-color: #ffb3d9;
+    }
+    .lesson-card .num {
+      font-size: 11px;
+      color: #e91e8c;
+      font-weight: bold;
+      margin-bottom: 4px;
+      opacity: 0.7;
+    }
+    .lesson-card .jp {
+      font-size: 16px;
+      color: #c2185b;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .lesson-card .ar {
+      font-size: 13px;
+      color: #555;
+      font-weight: bold;
+    }
+    .lesson-card .check {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 22px; height: 22px;
+      background: #e91e8c;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .lesson-card.completed .check { opacity: 1; }
+
+    /* EMPTY SEARCH */
+    .no-results {
+      text-align: center;
+      padding: 30px;
+      color: #999;
+      font-size: 15px;
+      display: none;
+      grid-column: 1/-1;
+    }
+
+    /* LOADING */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #e91e8c;
+      font-size: 18px;
+      grid-column: 1/-1;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🎌</div>
+  <h1>にほんご مع العربي</h1>
+  <p>٢٥ درس من الصفر للمحادثة</p>
+</header>
+
+<!-- PROGRESS -->
+<div class="progress-section">
+  <div class="progress-header">
+    <strong id="progress-text">٠ / ٢٥ درس</strong>
+    <span id="progress-pct">٠٪</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-box">
+  <span class="icon">🔍</span>
+  <input type="text" id="search" placeholder="ابحث عن درس..."/>
+</div>
+
+<!-- LESSONS -->
+<div class="lessons-grid" id="lessons-grid">
+  <div class="loading">⏳ جاري التحميل...</div>
+</div>
+
+<script>
+  let lessons = [];
+  let completed = JSON.parse(localStorage.getItem('completedLessons') || '[]');
+
+  async function loadLessons() {
+    try {
+      const res = await fetch('lessons.json');
+      lessons = await res.json();
+      renderLessons(lessons);
+      updateProgress();
+    } catch(e) {
+      document.getElementById('lessons-grid').innerHTML =
+        '<div class="loading">❌ تعذر تحميل الدروس</div>';
+    }
+  }
+
+  function renderLessons(list) {
+    const grid = document.getElementById('lessons-grid');
+    if (list.length === 0) {
+      grid.innerHTML = '<div class="no-results" style="display:block">مفيش نتايج 😅</div>';
+      return;
+    }
+    grid.innerHTML = list.map(l => `
+      <a class="lesson-card ${completed.includes(l.id) ? 'completed' : ''}"
+         href="lesson.html?id=${l.id}">
+        <div class="check">✓</div>
+        <div class="num">درس ${l.id}</div>
+        <span class="jp">${l.japanese}</span>
+        <div class="ar">${l.title}</div>
+      </a>
+    `).join('');
+  }
+
+  function updateProgress() {
+    const done = completed.length;
+    const total = 25;
+    const pct = Math.round((done / total) * 100);
+    document.getElementById('progress-text').textContent = `${done} / ${total} درس`;
+    document.getElementById('progress-pct').textContent = `${pct}٪`;
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  // Search
+  document.getElementById('search').addEventListener('input', function() {
+    const q = this.value.trim();
+    if (!q) { renderLessons(lessons); return; }
+    const filtered = lessons.filter(l =>
+      l.title.includes(q) || l.japanese.includes(q) || String(l.id).includes(q)
+    );
+    renderLessons(filtered);
+  });
+
+  loadLessons();
+</script>
+</body>
+</html>
