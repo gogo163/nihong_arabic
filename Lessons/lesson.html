@@ -233,7 +233,7 @@
 
   async function loadLesson() {
     try {
-      const res = await fetch('lessons.json');
+      const res = await fetch('Lessons.json');
       lessons = await res.json();
       const lesson = lessons.find(l => l.id === lessonId);
       if (!lesson) {
