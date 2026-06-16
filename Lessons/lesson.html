@@ -144,11 +144,30 @@ function toggleDone(id) {
 }
 
 function speak(text) {
+  // Try Android interface first (MIT App Inventor bridge)
+  if (window.AppInventor) {
+    try { window.AppInventor.dispatchEvent("speak", text); return; } catch(e){}
+  }
+  // Try speechSynthesis
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "ja-JP";
-    speechSynthesis.speak(u);
+    // Wait for voices to load
+    const trySpeak = () => {
+      const voices = speechSynthesis.getVoices();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "ja-JP";
+      u.rate = 0.9;
+      // Try to find Japanese voice
+      const jpVoice = voices.find(v => v.lang.startsWith("ja"));
+      if (jpVoice) u.voice = jpVoice;
+      speechSynthesis.speak(u);
+    };
+    if (speechSynthesis.getVoices().length > 0) {
+      trySpeak();
+    } else {
+      speechSynthesis.addEventListener("voiceschanged", trySpeak, {once: true});
+      setTimeout(trySpeak, 1000); // fallback
+    }
   }
 }
 </script>
