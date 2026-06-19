@@ -146,7 +146,7 @@ function toggleDone(id) {
 function speak(text) {
   // Try Android interface first (MIT App Inventor bridge)
   if (window.AppInventor) {
-    try { window.AppInventor.dispatchEvent("speak", text); return; } catch(e){}
+    try { window.AppInventor.setWebViewString(text); return; } catch(e){}
   }
   // Try speechSynthesis
   if ("speechSynthesis" in window) {
