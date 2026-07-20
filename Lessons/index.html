@@ -6,40 +6,73 @@
   <title>NihongoArabic – الدروس</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Segoe UI", Tahoma, sans-serif; background: #fff0f5; min-height: 100vh; color: #2d2d2d; }
-    header { background: linear-gradient(135deg, #e91e8c, #ff6eb4); color: white; padding: 20px 16px 30px; text-align: center; }
+    :root {
+      --page-bg: #fff0f5;
+      --text-main: #2d2d2d;
+      --card-bg: #ffffff;
+      --card-border: #ffd6e8;
+      --muted: #888888;
+      --shadow: 0 2px 8px rgba(233,30,140,0.08);
+    }
+    body.dark-mode {
+      --page-bg: #150e18;
+      --text-main: #f0e6f5;
+      --card-bg: #201824;
+      --card-border: #3a2a44;
+      --muted: #a08aa8;
+      --shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    body { font-family: "Segoe UI", Tahoma, sans-serif; background: var(--page-bg); min-height: 100vh; color: var(--text-main); transition: background 0.3s ease, color 0.3s ease; }
+    header { background: linear-gradient(135deg, #e91e8c, #ff6eb4); color: white; padding: 20px 16px 30px; text-align: center; position: relative; }
     header .logo { font-size: 40px; margin-bottom: 6px; }
     header h1 { font-size: 22px; font-weight: bold; margin-bottom: 4px; }
     header p { font-size: 14px; opacity: 0.85; }
-    .progress-section { background: white; margin: 16px; border-radius: 14px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(233,30,140,0.08); }
+    .theme-toggle { position: absolute; top: 14px; left: 14px; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .stats-bar { display: flex; justify-content: space-around; align-items: center; background: var(--card-bg); margin: 16px 16px 0; border-radius: 14px; padding: 14px 10px; box-shadow: var(--shadow); transition: background 0.3s ease; }
+    .stats-bar .stat { text-align: center; }
+    .stats-bar .stat .val { font-size: 15px; font-weight: 900; color: var(--text-main); }
+    .stats-bar .stat .lbl { font-size: 10px; color: var(--muted); }
+    .stats-sep { width: 1px; height: 32px; background: var(--card-border); }
+    .progress-section { background: var(--card-bg); margin: 16px; border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); transition: background 0.3s ease; }
     .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .progress-header span { font-size: 13px; color: #888; }
+    .progress-header span { font-size: 13px; color: var(--muted); }
     .progress-header strong { color: #e91e8c; font-size: 15px; }
     .progress-bar { background: #ffd6e8; border-radius: 10px; height: 10px; overflow: hidden; }
+    body.dark-mode .progress-bar { background: #3a2a44; }
     .progress-fill { background: linear-gradient(90deg, #e91e8c, #ff6eb4); height: 100%; border-radius: 10px; transition: width 0.5s ease; }
     .search-box { margin: 0 16px 14px; position: relative; }
-    .search-box input { width: 100%; padding: 12px 16px 12px 40px; border: 2px solid #ffd6e8; border-radius: 12px; font-size: 14px; font-family: inherit; outline: none; background: white; direction: rtl; }
+    .search-box input { width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--card-border); border-radius: 12px; font-size: 14px; font-family: inherit; outline: none; background: var(--card-bg); color: var(--text-main); direction: rtl; }
     .search-box input:focus { border-color: #e91e8c; }
     .search-box .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #e91e8c; font-size: 16px; }
     .lessons-grid { padding: 0 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .lesson-card { background: white; border-radius: 14px; padding: 14px 12px; box-shadow: 0 2px 8px rgba(233,30,140,0.08); cursor: pointer; text-decoration: none; color: inherit; display: block; border: 2px solid transparent; position: relative; overflow: hidden; transition: all 0.2s; }
+    .lesson-card { background: var(--card-bg); border-radius: 14px; padding: 14px 12px; box-shadow: var(--shadow); cursor: pointer; text-decoration: none; color: inherit; display: block; border: 2px solid transparent; position: relative; overflow: hidden; transition: all 0.2s; }
     .lesson-card:hover { border-color: #e91e8c; transform: translateY(-2px); }
     .lesson-card.completed { background: linear-gradient(135deg, #fff0f5, #ffe4f0); border-color: #ffb3d9; }
+    body.dark-mode .lesson-card.completed { background: linear-gradient(135deg, #2a1f2a, #331f2c); }
     .lesson-card .num { font-size: 11px; color: #e91e8c; font-weight: bold; margin-bottom: 4px; opacity: 0.7; }
     .lesson-card .jp { font-size: 16px; color: #c2185b; margin-bottom: 4px; display: block; }
-    .lesson-card .ar { font-size: 13px; color: #555; font-weight: bold; }
+    body.dark-mode .lesson-card .jp { color: #ff8fc4; }
+    .lesson-card .ar { font-size: 13px; color: var(--text-main); font-weight: bold; }
     .lesson-card .check { position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; background: #e91e8c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; opacity: 0; transition: opacity 0.2s; }
     .lesson-card.completed .check { opacity: 1; }
-    .no-results { text-align: center; padding: 30px; color: #999; font-size: 15px; grid-column: 1/-1; }
+    .no-results { text-align: center; padding: 30px; color: var(--muted); font-size: 15px; grid-column: 1/-1; }
   </style>
 </head>
 <body>
 <header>
   <a href="../index.html" style="display:inline-block;background:rgba(255,255,255,0.2);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:18px;text-decoration:none;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">→</a>
+  <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
   <div class="logo">🎌</div>
   <h1>にほんご مع العربي</h1>
   <p>٢٥ درس من الصفر للمحادثة</p>
 </header>
+<div class="stats-bar">
+  <div class="stat"><div class="val">🔥 <span id="streakVal">0</span></div><div class="lbl">يوم متواصل</div></div>
+  <div class="stats-sep"></div>
+  <div class="stat"><div class="val">⭐ <span id="pointsVal">0</span></div><div class="lbl">نقطة</div></div>
+  <div class="stats-sep"></div>
+  <div class="stat"><div class="val">🏆 <span id="levelVal">1</span></div><div class="lbl">المستوى</div></div>
+</div>
 <div class="progress-section">
   <div class="progress-header">
     <strong id="progress-text">٠ / ٢٥ درس</strong>
@@ -87,6 +120,89 @@
 
   renderLessons(lessons);
   updateProgress();
+
+  /* ==================== الوضع الليلي (مشترك مع باقي صفحات التطبيق) ==================== */
+  function loadTheme() {
+    return localStorage.getItem('nihongo_theme') === 'dark' ? 'dark' : 'light';
+  }
+  function applyTheme() {
+    const mode = loadTheme();
+    document.body.classList.toggle('dark-mode', mode === 'dark');
+    document.getElementById('themeToggleBtn').textContent = mode === 'dark' ? '☀️' : '🌙';
+  }
+  function toggleTheme() {
+    const next = loadTheme() === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('nihongo_theme', next);
+    applyTheme();
+  }
+
+  /* ==================== Streak / نقاط / مستوى (مشترك مع باقي صفحات التطبيق) ==================== */
+  const POINTS_PER_NEW_LESSON = 10;
+  const POINTS_PER_LEVEL = 50;
+
+  function loadVisited() {
+    try { return JSON.parse(localStorage.getItem('nihongo_visited') || '[]'); }
+    catch(e) { return []; }
+  }
+  function saveVisited(arr) {
+    localStorage.setItem('nihongo_visited', JSON.stringify(arr));
+  }
+  function loadPoints() {
+    return parseInt(localStorage.getItem('nihongo_points') || '0', 10);
+  }
+  function savePoints(p) {
+    localStorage.setItem('nihongo_points', String(p));
+  }
+  function getLevel(points) {
+    return Math.floor(points / POINTS_PER_LEVEL) + 1;
+  }
+  function updateStreakOnLoad() {
+    const today = new Date().toDateString();
+    const lastVisit = localStorage.getItem('nihongo_last_visit');
+    let streak = parseInt(localStorage.getItem('nihongo_streak') || '0', 10);
+
+    if (lastVisit === today) return streak || 1;
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (lastVisit === yesterday.toDateString()) streak += 1;
+    else streak = 1;
+
+    localStorage.setItem('nihongo_streak', String(streak));
+    localStorage.setItem('nihongo_last_visit', today);
+    return streak;
+  }
+  function renderStats() {
+    document.getElementById('streakVal').textContent = localStorage.getItem('nihongo_streak') || '0';
+    document.getElementById('pointsVal').textContent = loadPoints();
+    document.getElementById('levelVal').textContent = getLevel(loadPoints());
+  }
+
+  // بيدّي نقاط لأي درس اتعلّم "تم" (سواء من هنا أو من صفحة الدرس نفسها) ولسه ماخدش نقاطه
+  function syncLessonPoints() {
+    const visited = loadVisited();
+    let changed = false;
+    let points = loadPoints();
+    completed.forEach(id => {
+      const key = 'lesson25_' + id;
+      if (!visited.includes(key)) {
+        visited.push(key);
+        points += POINTS_PER_NEW_LESSON;
+        changed = true;
+      }
+    });
+    if (changed) {
+      saveVisited(visited);
+      savePoints(points);
+    }
+  }
+
+  // تشغيل عند فتح الصفحة
+  applyTheme();
+  updateStreakOnLoad();
+  syncLessonPoints();
+  renderStats();
 </script>
 </body>
 </html>
