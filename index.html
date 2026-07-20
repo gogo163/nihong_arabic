@@ -66,9 +66,7 @@
   ">📚 الدروس المنظمة – ٢٥ درس</a>
   <div id="root" style="padding-bottom:60px"></div>
   <script type="text/babel">
-    const { useState } = React;
-
-    const GEMINI_KEY = "AIzaSyBb1wddhzjcL4qfo_AmbD8CaW0Dcv-OV1o";
+    const { useState, useEffect } = React;
 
     const lessons = [
       {
@@ -471,6 +469,99 @@
       "ン": "audio/kana/katakana_46.wav",
     };
 
+    // ==================== الوضع الليلي ====================
+    const LIGHT_THEME = {
+      pageBg: "linear-gradient(160deg,#fff8f8 0%,#fff0f5 40%,#f5f0ff 70%,#f0f8ff 100%)",
+      cardBg: "#ffffff",
+      cardBorder: "#ffd6e0",
+      textMain: "#3d1f2f",
+      textSub: "#6b3a5a",
+      textFooter: "#c09aaa",
+      statsBg: "#ffffff",
+      statsShadow: "0 4px 16px rgba(0,0,0,0.08)",
+      modalBg: "linear-gradient(160deg,#fdf8ff,#fff0f8)",
+      modalHeaderText: "#fff",
+      bubbleAssistantBg: "#ffffff",
+      bubbleAssistantText: "#2d1a3d",
+      bubbleAssistantBorder: "1px solid #e8d5f0",
+      inputBg: "#fdf8ff",
+      inputText: "#2d1a3d",
+      inputBorder: "2px solid #d8b8f0",
+      progressTrack: "#f0dbe6",
+    };
+
+    const DARK_THEME = {
+      pageBg: "linear-gradient(160deg,#1a1420 0%,#201526 40%,#160f1e 70%,#100c18 100%)",
+      cardBg: "#1e1626",
+      cardBorder: "#3a2a44",
+      textMain: "#f0e6f5",
+      textSub: "#d8b8dd",
+      textFooter: "#8a6f95",
+      statsBg: "#241a2e",
+      statsShadow: "0 4px 16px rgba(0,0,0,0.4)",
+      modalBg: "linear-gradient(160deg,#1e1626,#241a2e)",
+      modalHeaderText: "#fff",
+      bubbleAssistantBg: "#2a1f34",
+      bubbleAssistantText: "#f0e6f5",
+      bubbleAssistantBorder: "1px solid #3a2a44",
+      inputBg: "#1a1420",
+      inputText: "#f0e6f5",
+      inputBorder: "2px solid #4a3556",
+      progressTrack: "#332740",
+    };
+
+    function loadTheme() {
+      return localStorage.getItem("nihongo_theme") === "dark" ? "dark" : "light";
+    }
+    function saveTheme(mode) {
+      localStorage.setItem("nihongo_theme", mode);
+    }
+
+    // ==================== Streak / نقاط / مستوى ====================
+    const POINTS_PER_NEW_LESSON = 10;
+    const POINTS_PER_LEVEL = 50;
+    const TOTAL_TOPICS = lessons.length;
+
+    function loadVisitedLessons() {
+      try { return JSON.parse(localStorage.getItem("nihongo_visited") || "[]"); }
+      catch(e) { return []; }
+    }
+    function saveVisitedLessons(arr) {
+      localStorage.setItem("nihongo_visited", JSON.stringify(arr));
+    }
+    function loadPoints() {
+      return parseInt(localStorage.getItem("nihongo_points") || "0", 10);
+    }
+    function savePoints(points) {
+      localStorage.setItem("nihongo_points", String(points));
+    }
+    function getLevel(points) {
+      return Math.floor(points / POINTS_PER_LEVEL) + 1;
+    }
+    // بتتنادى مرة واحدة عند فتح التطبيق، بترجع رقم الـ streak المحدّث
+    function updateStreakOnLoad() {
+      const today = new Date().toDateString();
+      const lastVisit = localStorage.getItem("nihongo_last_visit");
+      let streak = parseInt(localStorage.getItem("nihongo_streak") || "0", 10);
+
+      if (lastVisit === today) {
+        return streak || 1;
+      }
+
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      if (lastVisit === yesterday.toDateString()) {
+        streak += 1;
+      } else {
+        streak = 1;
+      }
+
+      localStorage.setItem("nihongo_streak", String(streak));
+      localStorage.setItem("nihongo_last_visit", today);
+      return streak;
+    }
+
     function SpeakBtn({text, color, small}) {
       const [speaking, setSpeaking] = React.useState(false);
 
@@ -572,6 +663,41 @@
       const [aiInput, setAiInput] = useState("");
       const [aiLoading, setAiLoading] = useState(false);
 
+      const [themeMode, setThemeMode] = useState("light");
+      const [visited, setVisited] = useState([]);
+      const [points, setPoints] = useState(0);
+      const [streak, setStreak] = useState(0);
+
+      useEffect(() => {
+        setThemeMode(loadTheme());
+        setVisited(loadVisitedLessons());
+        setPoints(loadPoints());
+        setStreak(updateStreakOnLoad());
+      }, []);
+
+      const theme = themeMode === "dark" ? DARK_THEME : LIGHT_THEME;
+
+      const toggleTheme = () => {
+        const next = themeMode === "dark" ? "light" : "dark";
+        setThemeMode(next);
+        saveTheme(next);
+      };
+
+      const level = getLevel(points);
+      const progressPercent = Math.round((visited.length / TOTAL_TOPICS) * 100);
+
+      const openLesson = (id) => {
+        setActiveLesson(id);
+        if (!visited.includes(id)) {
+          const updated = [...visited, id];
+          setVisited(updated);
+          saveVisitedLessons(updated);
+          const newPoints = points + POINTS_PER_NEW_LESSON;
+          setPoints(newPoints);
+          savePoints(newPoints);
+        }
+      };
+
       const toggleFlip = (key) => setFlipped(prev=>({...prev,[key]:!prev[key]}));
 
       const japaneseKnowledge = {
@@ -652,11 +778,12 @@
 
       const rootStyle = {
         minHeight:"100vh",
-        background:"linear-gradient(160deg,#fff8f8 0%,#fff0f5 40%,#f5f0ff 70%,#f0f8ff 100%)",
+        background: theme.pageBg,
         fontFamily:"'Tajawal',sans-serif",
         direction:"rtl",
         position:"relative",
         overflow:"hidden",
+        transition:"background 0.3s ease",
       };
 
       return (
@@ -665,6 +792,14 @@
             <div key={p.id} style={{position:"fixed",top:"-40px",left:p.left,pointerEvents:"none",
               animation:`fall ${p.dur} ${p.delay} linear infinite`,zIndex:0,opacity:0.75,fontSize:p.size}}>🌸</div>
           ))}
+
+          <button onClick={toggleTheme} title="الوضع الليلي / النهاري"
+            style={{position:"fixed",top:14,left:14,width:44,height:44,borderRadius:"50%",
+              border:`2px solid ${theme.cardBorder}`,background:theme.cardBg,color:theme.textMain,
+              fontSize:20,cursor:"pointer",zIndex:1001,display:"flex",alignItems:"center",justifyContent:"center",
+              boxShadow:theme.statsShadow,transition:"all 0.2s ease"}}>
+            {themeMode==="dark" ? "☀️" : "🌙"}
+          </button>
 
           <div style={{maxWidth:700,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
             {/* Header */}
@@ -679,19 +814,61 @@
               <h1 className="shimmer-text" style={{fontSize:36,fontWeight:900,marginBottom:8,fontFamily:"'Noto Sans JP','Tajawal',sans-serif"}}>
                 にほんご مع العربي
               </h1>
-              <p style={{color:"#6b3a5a",fontSize:16,fontWeight:600}}>تعلّم اليابانية بسهولة وبالعربي الفصيح 🌸</p>
+              <p style={{color:theme.textSub,fontSize:16,fontWeight:600}}>تعلّم اليابانية بسهولة وبالعربي الفصيح 🌸</p>
+            </div>
+
+            {/* شريط الإحصائيات: Streak + نقاط + مستوى */}
+            <div style={{display:"flex",justifyContent:"space-around",alignItems:"center",
+              background:theme.statsBg,borderRadius:16,padding:"14px 10px",marginBottom:16,
+              boxShadow:theme.statsShadow,transition:"background 0.3s ease"}}>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:20}}>🔥</div>
+                <div style={{fontSize:15,fontWeight:900,color:theme.textMain}}>{streak}</div>
+                <div style={{fontSize:10,color:theme.textSub}}>يوم متواصل</div>
+              </div>
+              <div style={{width:1,height:32,background:theme.cardBorder}}/>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:20}}>⭐</div>
+                <div style={{fontSize:15,fontWeight:900,color:theme.textMain}}>{points}</div>
+                <div style={{fontSize:10,color:theme.textSub}}>نقطة</div>
+              </div>
+              <div style={{width:1,height:32,background:theme.cardBorder}}/>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:20}}>🏆</div>
+                <div style={{fontSize:15,fontWeight:900,color:theme.textMain}}>{level}</div>
+                <div style={{fontSize:10,color:theme.textSub}}>المستوى</div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div style={{marginBottom:20}}>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:12,fontWeight:700,
+                color:theme.textSub,marginBottom:6}}>
+                <span>{visited.length} / {TOTAL_TOPICS} موضوع</span>
+                <span>{progressPercent}%</span>
+              </div>
+              <div style={{width:"100%",height:10,background:theme.progressTrack,borderRadius:10,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${progressPercent}%`,borderRadius:10,
+                  background:"linear-gradient(90deg,#e91e8c,#ff6eb4)",transition:"width 0.5s ease"}}/>
+              </div>
             </div>
 
             {/* Lesson List */}
             {!activeLesson && (
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:8}}>
                 {lessons.map((l,i)=>(
-                  <button key={l.id} className="lesson-btn" onClick={()=>setActiveLesson(l.id)}
+                  <button key={l.id} className="lesson-btn" onClick={()=>openLesson(l.id)}
                     style={{border:"none",borderRadius:18,padding:"20px 16px",display:"flex",flexDirection:"column",
                       alignItems:"center",gap:8,color:"#fff",textShadow:"0 1px 4px rgba(0,0,0,0.2)",
                       boxShadow:"0 4px 18px rgba(0,0,0,0.10)",
                       background:`linear-gradient(135deg,${l.color}dd,${l.color}88)`,
-                      animation:`fadeUp 0.5s ${i*0.08}s ease forwards`,opacity:0}}>
+                      animation:`fadeUp 0.5s ${i*0.08}s ease forwards`,opacity:0,
+                      position:"relative"}}>
+                    {visited.includes(l.id) && (
+                      <span style={{position:"absolute",top:8,left:8,fontSize:14,
+                        background:"rgba(255,255,255,0.9)",borderRadius:"50%",width:22,height:22,
+                        display:"flex",alignItems:"center",justifyContent:"center"}}>✅</span>
+                    )}
                     <span style={{fontSize:36}}>{l.icon}</span>
                     <span style={{fontSize:15,fontWeight:700,textAlign:"center"}}>{l.title}</span>
                     <span style={{fontSize:18,opacity:0.85}}>←</span>
@@ -792,7 +969,7 @@
             {lesson && (
               <div style={{animation:"fadeUp 0.4s ease"}}>
                 <button onClick={()=>{setActiveLesson(null);setFlipped({});}}
-                  style={{background:"#fff",border:"2px solid #DC2626",color:"#DC2626",borderRadius:12,
+                  style={{background:theme.cardBg,border:"2px solid #DC2626",color:"#DC2626",borderRadius:12,
                     padding:"10px 20px",cursor:"pointer",fontSize:15,marginBottom:16,
                     fontFamily:"'Tajawal',sans-serif",fontWeight:700,boxShadow:"0 2px 8px rgba(220,38,38,0.10)"}}>
                   ← العودة للقائمة
@@ -806,10 +983,10 @@
                 </div>
 
                 {lesson.isIntro && (
-                  <div style={{background:"#fff",borderRadius:18,padding:"24px 20px",border:"2px solid #ffd6e0",
-                    marginBottom:20,boxShadow:"0 4px 20px rgba(220,38,38,0.07)"}}>
+                  <div style={{background:theme.cardBg,borderRadius:18,padding:"24px 20px",border:`2px solid ${theme.cardBorder}`,
+                    marginBottom:20,boxShadow:theme.statsShadow,transition:"background 0.3s ease"}}>
                     {lesson.content.trim().split("\n\n").map((para,i)=>(
-                      <p key={i} style={{color:"#3d1f2f",fontSize:15,lineHeight:2,marginBottom:16,whiteSpace:"pre-line"}}>{para.trim()}</p>
+                      <p key={i} style={{color:theme.textMain,fontSize:15,lineHeight:2,marginBottom:16,whiteSpace:"pre-line"}}>{para.trim()}</p>
                     ))}
                   </div>
                 )}
@@ -826,7 +1003,7 @@
                 {lesson.groups && lesson.groups.map((group,gi)=>(
                   <div key={gi} style={{marginBottom:24}}>
                     <div style={{fontSize:13,fontWeight:700,borderRight:`4px solid ${lesson.color}88`,
-                      paddingRight:10,marginBottom:10,textAlign:"right",color:lesson.color}}>
+                      paddingRight:10,marginBottom:10,textAlign:"right",color:themeMode==="dark" ? theme.textMain : lesson.color}}>
                       {group.label}
                     </div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
@@ -838,13 +1015,13 @@
                   </div>
                 ))}
 
-                <p style={{textAlign:"center",color:"#a0607a",fontSize:13,marginTop:8,marginBottom:20}}>
+                <p style={{textAlign:"center",color:theme.textSub,fontSize:13,marginTop:8,marginBottom:20}}>
                   💡 اضغط على أي بطاقة لتقلبها وترى المعنى بالعربي
                 </p>
               </div>
             )}
 
-            <div style={{textAlign:"center",color:"#c09aaa",fontSize:12,marginTop:32}}>
+            <div style={{textAlign:"center",color:theme.textFooter,fontSize:12,marginTop:32}}>
               🌸 にほんごアラビア語 • تعلم اليابانية بالعربي 🌸
             </div>
           </div>
@@ -854,9 +1031,9 @@
             <div onClick={e=>e.target===e.currentTarget&&setShowAI(false)}
               style={{position:"fixed",inset:0,background:"rgba(30,10,50,0.45)",backdropFilter:"blur(4px)",
                 zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-              <div style={{background:"linear-gradient(160deg,#fdf8ff,#fff0f8)",borderRadius:"24px 24px 0 0",
+              <div style={{background:theme.modalBg,borderRadius:"24px 24px 0 0",
                 width:"100%",maxWidth:700,height:"80vh",display:"flex",flexDirection:"column",
-                boxShadow:"0 -8px 40px rgba(124,58,237,0.18)",border:"2px solid #e8d0f8",borderBottom:"none",overflow:"hidden"}}>
+                boxShadow:"0 -8px 40px rgba(124,58,237,0.18)",border:`2px solid ${theme.cardBorder}`,borderBottom:"none",overflow:"hidden",transition:"background 0.3s ease"}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px",
   background:"linear-gradient(135deg,#7C3AED,#A855F7)",color:"#fff",fontWeight:900,fontSize:17,direction:"rtl",flexShrink:0}}>
                   <span>🤖 المساعد الذكي</span>
@@ -868,10 +1045,10 @@
                     <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-start":"flex-end",marginBottom:10}}>
                       <div style={{maxWidth:"82%",padding:"10px 14px",
                         borderRadius:m.role==="user"?"18px 18px 18px 4px":"18px 18px 4px 18px",
-                        background:m.role==="user"?"linear-gradient(135deg,#7C3AED,#A855F7)":"#fff",
-                        color:m.role==="user"?"#fff":"#2d1a3d",fontSize:14,lineHeight:1.7,
+                        background:m.role==="user"?"linear-gradient(135deg,#7C3AED,#A855F7)":theme.bubbleAssistantBg,
+                        color:m.role==="user"?"#fff":theme.bubbleAssistantText,fontSize:14,lineHeight:1.7,
                         boxShadow:"0 2px 8px rgba(0,0,0,0.10)",
-                        border:m.role==="assistant"?"1px solid #e8d5f0":"none",
+                        border:m.role==="assistant"?theme.bubbleAssistantBorder:"none",
                         whiteSpace:"pre-wrap",textAlign:"right",direction:"rtl",fontFamily:"'Tajawal',sans-serif"}}>
                         {m.text}
                       </div>
@@ -884,7 +1061,7 @@
                     </div>
                   )}
                 </div>
-                <div style={{display:"flex",gap:8,padding:"12px 14px 16px",borderTop:"1px solid #f0d8f8",background:"#fff",direction:"rtl",flexShrink:0}}>
+                <div style={{display:"flex",gap:8,padding:"12px 14px 16px",borderTop:`1px solid ${theme.cardBorder}`,background:theme.cardBg,direction:"rtl",flexShrink:0}}>
                   <button onClick={sendAIMessage} disabled={aiLoading||!aiInput.trim()}
                     style={{background:"linear-gradient(135deg,#7C3AED,#A855F7)",border:"none",borderRadius:12,
                       color:"#fff",padding:"10px 18px",fontWeight:700,fontSize:14,cursor:"pointer",
@@ -894,9 +1071,9 @@
                     onKeyDown={e=>e.key==="Enter"&&sendAIMessage()}
                     placeholder="اكتب سؤالك عن اليابانية..."
                     dir="rtl"
-                    style={{flex:1,border:"2px solid #d8b8f0",borderRadius:12,padding:"10px 14px",
+                    style={{flex:1,border:theme.inputBorder,borderRadius:12,padding:"10px 14px",
                       fontSize:14,fontFamily:"'Tajawal',sans-serif",outline:"none",
-                      background:"#fdf8ff",color:"#2d1a3d",direction:"rtl"}}/>
+                      background:theme.inputBg,color:theme.inputText,direction:"rtl"}}/>
                 </div>
               </div>
             </div>
