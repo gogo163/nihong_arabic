@@ -79,6 +79,13 @@
 
     const categories = ["الكل", ...new Set(animeWords.map(w=>w.cat))];
 
+    // خريطة الصوت: كل كلمة بترتيبها في animeWords ليها ملف anime_01.wav لحد anime_20.wav
+    const ANIME_AUDIO_MAP = {};
+    animeWords.forEach((w, i) => {
+      const num = String(i + 1).padStart(2, "0");
+      ANIME_AUDIO_MAP[w.jp] = `audio/anime/anime_${num}.wav`;
+    });
+
     const petals = Array.from({length:18},(_,i)=>({
       id:i, left:`${Math.random()*100}%`,
       delay:`${Math.random()*8}s`, dur:`${6+Math.random()*6}s`,
@@ -119,13 +126,14 @@
 
     function SpeakBtn({text, color, small}) {
       const [speaking, setSpeaking] = React.useState(false);
-      const handleSpeak = (e) => {
-        e.stopPropagation();
+
+      const fallbackSpeak = (text) => {
+        setSpeaking(true);
+        setTimeout(() => setSpeaking(false), 2000);
         try {
           if (window.AppInventor) { window.AppInventor.setWebViewString(text); return; }
         } catch(err) {}
-        if (!window.speechSynthesis) return;
-        setSpeaking(true);
+        if (!window.speechSynthesis) { setSpeaking(false); return; }
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = "ja-JP"; utter.rate = 0.85; utter.pitch = 1.1;
@@ -137,6 +145,23 @@
           window.speechSynthesis.speak(utter);
         };
         window.speechSynthesis.getVoices().length > 0 ? trySpeak() : (window.speechSynthesis.onvoiceschanged = trySpeak);
+      };
+
+      const handleSpeak = (e) => {
+        e.stopPropagation();
+        setSpeaking(true);
+
+        // الأولوية: ملف صوت مسجّل مسبقًا من audio/anime/
+        const audioPath = ANIME_AUDIO_MAP[text];
+        if (audioPath) {
+          const audio = new Audio(audioPath);
+          audio.onended = () => setSpeaking(false);
+          audio.onerror = () => { setSpeaking(false); fallbackSpeak(text); };
+          audio.play().catch(() => { setSpeaking(false); fallbackSpeak(text); });
+          return;
+        }
+
+        fallbackSpeak(text);
       };
       const size = small ? 26 : 32;
       return (
