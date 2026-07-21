@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>アニメ日本語 – تعلم اليابانية من الأنمي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Tajawal', sans-serif; }
+    @keyframes fall {
+      0% { transform: translateY(-60px) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    .card-flip { transition: transform 0.5s; transform-style: preserve-3d; }
+    .card-flip.flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .card-back { transform: rotateY(180deg); }
+    .flip-card:hover { transform: scale(1.04); }
+    .flip-card { transition: transform 0.2s ease; cursor: pointer; }
+    .chip-btn { transition: all 0.2s ease; cursor: pointer; }
+    .shimmer-text {
+      background: linear-gradient(90deg, #DC2626, #e85d9a, #7c3aed, #DC2626);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 4s linear infinite;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="
+    display:block; margin:0; background:linear-gradient(135deg,#e91e8c,#ff6eb4);
+    color:white; text-align:center; padding:16px; font-family:Tajawal,sans-serif;
+    font-size:18px; font-weight:bold; text-decoration:none;
+    position:fixed; bottom:0; left:0; right:0; z-index:999;
+    box-shadow:0 -4px 20px rgba(233,30,140,0.3);
+  ">🏠 الرئيسية</a>
+  <div id="root" style="padding-bottom:60px"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // الكلمات هنا شائعة في ثقافة الأنمي بشكل عام (مش منسوبة لعمل معيّن) احترامًا لحقوق الملكية الفكرية
+    const animeWords = [
+      {jp:"おはよう",rom:"Ohayou",ar:"صباح الخير",ctx:"تحية غير رسمية بين الأصدقاء أول الصبح",cat:"تحيات"},
+      {jp:"ありがとう",rom:"Arigatou",ar:"شكرًا",ctx:"من أكثر الكلمات اللي هتسمعها في أي مشهد",cat:"تحيات"},
+      {jp:"いってきます",rom:"Itte kimasu",ar:"أنا رايح وهرجع",ctx:"بتتقال قبل الخروج من البيت",cat:"تحيات"},
+      {jp:"ただいま",rom:"Tadaima",ar:"وصلت (رجعت)",ctx:"بتتقال لما ترجع البيت",cat:"تحيات"},
+      {jp:"いただきます",rom:"Itadakimasu",ar:"بسم الله (قبل الأكل)",ctx:"بتتقال دايمًا قبل بدء الوجبة",cat:"طعام"},
+      {jp:"すごい",rom:"Sugoi",ar:"رهيب / مذهل",ctx:"تعبير تعجب شائع جدًا",cat:"مشاعر"},
+      {jp:"やばい",rom:"Yabai",ar:"خطير! / وحش! (حسب الموقف)",ctx:"ممكن تبقى إيجابية أو سلبية حسب النبرة",cat:"مشاعر"},
+      {jp:"かわいい",rom:"Kawaii",ar:"لطيف / كيوت",ctx:"من أشهر الكلمات المنتشرة عالميًا",cat:"مشاعر"},
+      {jp:"うそ",rom:"Uso",ar:"مش معقول / كدب",ctx:"رد فعل تعجب أو رفض تصديق حاجة",cat:"مشاعر"},
+      {jp:"まじで",rom:"Majide",ar:"بجد؟! / فعلاً؟",ctx:"للتعبير عن الدهشة أو التأكيد",cat:"مشاعر"},
+      {jp:"がんばれ",rom:"Ganbare",ar:"يلا بقى! / ابذل مجهودك",ctx:"تشجيع شائع في مشاهد التدريب والمعارك",cat:"معارك"},
+      {jp:"やめろ",rom:"Yamero",ar:"بلاش! / استحمل!",ctx:"لوقف فعل معين بشكل حاد",cat:"معارك"},
+      {jp:"覚悟しろ",rom:"Kakugo shiro",ar:"استعد! (لمواجهة)",ctx:"عبارة تحدي شائعة قبل المعارك",cat:"معارك"},
+      {jp:"負けない",rom:"Makenai",ar:"مش هستسلم / مش هخسر",ctx:"عبارة إصرار شهيرة",cat:"معارك"},
+      {jp:"先輩",rom:"Senpai",ar:"الزميل الأكبر / الأقدم",ctx:"لقب للزميل الأكبر سنًا أو خبرة",cat:"ألقاب"},
+      {jp:"後輩",rom:"Kouhai",ar:"الزميل الأصغر",ctx:"عكس سينباي، للأصغر أو الأحدث",cat:"ألقاب"},
+      {jp:"先生",rom:"Sensei",ar:"أستاذ / معلّم",ctx:"يستخدم مع المعلمين والأطباء والخبراء",cat:"ألقاب"},
+      {jp:"馬鹿",rom:"Baka",ar:"غبي / أهبل",ctx:"بتتقال بمزاح أو بجد حسب الموقف",cat:"مشاعر"},
+      {jp:"がんばります",rom:"Ganbarimasu",ar:"هبذل قصارى جهدي",ctx:"وعد بمحاولة الأفضل قبل تحدي",cat:"معارك"},
+      {jp:"よろしくお願いします",rom:"Yoroshiku onegaishimasu",ar:"تشرفنا / أتمنى تعاون طيب",ctx:"بتتقال عند أول لقاء أو بداية شراكة",cat:"تحيات"},
+    ];
+
+    const categories = ["الكل", ...new Set(animeWords.map(w=>w.cat))];
+
+    const petals = Array.from({length:18},(_,i)=>({
+      id:i, left:`${Math.random()*100}%`,
+      delay:`${Math.random()*8}s`, dur:`${6+Math.random()*6}s`,
+      size:`${10+Math.random()*14}px`
+    }));
+
+    const LIGHT_THEME = {
+      pageBg: "linear-gradient(160deg,#fff8f8 0%,#fff0f5 40%,#f5f0ff 70%,#f0f8ff 100%)",
+      cardBg: "#ffffff", cardBorder: "#ffd6e0",
+      textMain: "#3d1f2f", textSub: "#6b3a5a", textFooter: "#c09aaa",
+      statsBg: "#ffffff", statsShadow: "0 4px 16px rgba(0,0,0,0.08)",
+      progressTrack: "#f0dbe6",
+    };
+    const DARK_THEME = {
+      pageBg: "linear-gradient(160deg,#1a1420 0%,#201526 40%,#160f1e 70%,#100c18 100%)",
+      cardBg: "#1e1626", cardBorder: "#3a2a44",
+      textMain: "#f0e6f5", textSub: "#d8b8dd", textFooter: "#8a6f95",
+      statsBg: "#241a2e", statsShadow: "0 4px 16px rgba(0,0,0,0.4)",
+      progressTrack: "#332740",
+    };
+
+    function loadTheme() {
+      return localStorage.getItem("nihongo_theme") === "dark" ? "dark" : "light";
+    }
+    function saveTheme(mode) { localStorage.setItem("nihongo_theme", mode); }
+
+    const POINTS_PER_WORD = 5;
+    const POINTS_PER_LEVEL = 50;
+
+    function loadLearnedWords() {
+      try { return JSON.parse(localStorage.getItem("anime_words_learned") || "[]"); }
+      catch(e) { return []; }
+    }
+    function saveLearnedWords(arr) { localStorage.setItem("anime_words_learned", JSON.stringify(arr)); }
+    function loadPoints() { return parseInt(localStorage.getItem("nihongo_points") || "0", 10); }
+    function savePoints(points) { localStorage.setItem("nihongo_points", String(points)); }
+    function getLevel(points) { return Math.floor(points / POINTS_PER_LEVEL) + 1; }
+
+    function SpeakBtn({text, color, small}) {
+      const [speaking, setSpeaking] = React.useState(false);
+      const handleSpeak = (e) => {
+        e.stopPropagation();
+        try {
+          if (window.AppInventor) { window.AppInventor.setWebViewString(text); return; }
+        } catch(err) {}
+        if (!window.speechSynthesis) return;
+        setSpeaking(true);
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "ja-JP"; utter.rate = 0.85; utter.pitch = 1.1;
+        const trySpeak = () => {
+          const voices = window.speechSynthesis.getVoices();
+          const jaVoice = voices.find(v => v.lang && v.lang.startsWith("ja"));
+          if (jaVoice) utter.voice = jaVoice;
+          utter.onend = () => setSpeaking(false);
+          window.speechSynthesis.speak(utter);
+        };
+        window.speechSynthesis.getVoices().length > 0 ? trySpeak() : (window.speechSynthesis.onvoiceschanged = trySpeak);
+      };
+      const size = small ? 26 : 32;
+      return (
+        <button onClick={handleSpeak}
+          style={{width:size,height:size,borderRadius:"50%",border:`2px solid ${color||"#dc2626"}88`,
+            background: speaking ? (color||"#dc2626") : "rgba(255,255,255,0.85)",
+            color: speaking ? "#fff" : (color||"#dc2626"), fontSize: small ? 12 : 14,
+            cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+            transition:"all 0.2s", flexShrink:0,
+            boxShadow: speaking ? `0 2px 8px ${color||"#dc2626"}55` : "none"}}>
+          {speaking ? "🔊" : "🔈"}
+        </button>
+      );
+    }
+
+    function WordCard({word, idx, learned, toggleLearn, flipped, toggleFlip}) {
+      const key = `word-${idx}`;
+      const isFlipped = flipped[key];
+      const isLearned = learned.includes(idx);
+      const color = "#dc2626";
+      return (
+        <div style={{position:"relative"}}>
+          <div className="flip-card" onClick={()=>toggleFlip(key)}
+            style={{height:150,perspective:600,cursor:"pointer",borderRadius:16,overflow:"hidden",
+              boxShadow: isLearned ? "0 3px 14px rgba(242,165,65,0.35)" : "0 3px 14px rgba(0,0,0,0.10)"}}>
+            <div className={`card-flip${isFlipped?" flipped":""}`} style={{position:"relative",width:"100%",height:"100%"}}>
+              <div className="card-front" style={{position:"absolute",inset:0,borderRadius:16,display:"flex",
+                flexDirection:"column",alignItems:"center",justifyContent:"center",gap:5,padding:12,
+                background: isLearned ? "linear-gradient(135deg,#fff 55%,#f2a54122)" : `linear-gradient(135deg,#fff 60%,${color}18)`,
+                border: isLearned ? "2px solid #f2a541" : `2px solid ${color}55`}}>
+                <div style={{fontSize:20,fontFamily:"'Noto Sans JP',sans-serif",color:"#1a0a12",fontWeight:700,textAlign:"center"}}>{word.jp}</div>
+                <div style={{fontSize:11,color:"#7a4060",fontStyle:"italic",textAlign:"center"}}>{word.rom}</div>
+                <div style={{display:"flex",alignItems:"center",gap:6,marginTop:2}}>
+                  <SpeakBtn text={word.jp} color={color} small={true}/>
+                  <span style={{fontSize:9,color:"#b07090"}}>اضغط للقلب 👆</span>
+                </div>
+                <span style={{fontSize:9,background:"#f0dbe6",color:"#7a4060",padding:"2px 8px",borderRadius:10,marginTop:2}}>{word.cat}</span>
+              </div>
+              <div className="card-back" style={{position:"absolute",inset:0,borderRadius:16,display:"flex",
+                flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6,padding:10,
+                background:`linear-gradient(135deg,${color}99,${color}cc)`}}>
+                <div style={{fontSize:15,fontWeight:900,color:"#fff",textAlign:"center",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>{word.ar}</div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.9)",textAlign:"center",lineHeight:1.5}}>{word.ctx}</div>
+                <SpeakBtn text={word.jp} color="#fff" small={true}/>
+              </div>
+            </div>
+          </div>
+          <button onClick={(e)=>{e.stopPropagation();toggleLearn(idx);}}
+            style={{position:"absolute",top:6,right:6,width:26,height:26,borderRadius:"50%",border:"none",
+              background: isLearned ? "#f2a541" : "rgba(255,255,255,0.85)",
+              color: isLearned ? "#fff" : "#999", fontSize:13,cursor:"pointer",
+              display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 6px rgba(0,0,0,0.15)"}}>
+            {isLearned ? "✔️" : "➕"}
+          </button>
+        </div>
+      );
+    }
+
+    function App() {
+      const [themeMode, setThemeMode] = useState("light");
+      const [learned, setLearned] = useState([]);
+      const [points, setPoints] = useState(0);
+      const [flipped, setFlipped] = useState({});
+      const [activeCat, setActiveCat] = useState("الكل");
+
+      useEffect(() => {
+        setThemeMode(loadTheme());
+        setLearned(loadLearnedWords());
+        setPoints(loadPoints());
+      }, []);
+
+      const theme = themeMode === "dark" ? DARK_THEME : LIGHT_THEME;
+      const toggleTheme = () => {
+        const next = themeMode === "dark" ? "light" : "dark";
+        setThemeMode(next); saveTheme(next);
+      };
+
+      const level = getLevel(points);
+      const progressPercent = Math.round((learned.length / animeWords.length) * 100);
+
+      const toggleLearn = (idx) => {
+        const isLearned = learned.includes(idx);
+        let updated, newPoints;
+        if (isLearned) {
+          updated = learned.filter(i=>i!==idx);
+          newPoints = Math.max(0, points - POINTS_PER_WORD);
+        } else {
+          updated = [...learned, idx];
+          newPoints = points + POINTS_PER_WORD;
+        }
+        setLearned(updated); saveLearnedWords(updated);
+        setPoints(newPoints); savePoints(newPoints);
+      };
+
+      const toggleFlip = (key) => setFlipped(prev=>({...prev,[key]:!prev[key]}));
+
+      const filteredWords = animeWords.map((w,i)=>({...w,idx:i}))
+        .filter(w=>activeCat==="الكل"||w.cat===activeCat);
+
+      const rootStyle = {
+        minHeight:"100vh", background: theme.pageBg, fontFamily:"'Tajawal',sans-serif",
+        direction:"rtl", position:"relative", overflow:"hidden", transition:"background 0.3s ease",
+      };
+
+      return (
+        <div style={rootStyle}>
+          {petals.map(p=>(
+            <div key={p.id} style={{position:"fixed",top:"-40px",left:p.left,pointerEvents:"none",
+              animation:`fall ${p.dur} ${p.delay} linear infinite`,zIndex:0,opacity:0.75,fontSize:p.size}}>🍥</div>
+          ))}
+
+          <button onClick={toggleTheme} title="الوضع الليلي / النهاري"
+            style={{position:"fixed",top:14,left:14,width:44,height:44,borderRadius:"50%",
+              border:`2px solid ${theme.cardBorder}`,background:theme.cardBg,color:theme.textMain,
+              fontSize:20,cursor:"pointer",zIndex:1001,display:"flex",alignItems:"center",justifyContent:"center",
+              boxShadow:theme.statsShadow,transition:"all 0.2s ease"}}>
+            {themeMode==="dark" ? "☀️" : "🌙"}
+          </button>
+
+          <div style={{maxWidth:700,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
+            <div style={{textAlign:"center",padding:"36px 20px 28px",position:"relative",marginBottom:8}}>
+              <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:320,height:320,
+                background:"radial-gradient(circle,rgba(220,38,38,0.08) 0%,transparent 70%)",borderRadius:"50%",pointerEvents:"none"}}/>
+              <div style={{fontSize:36,marginBottom:8}}>🎌</div>
+              <h1 className="shimmer-text" style={{fontSize:30,fontWeight:900,marginBottom:8,fontFamily:"'Noto Sans JP','Tajawal',sans-serif"}}>
+                アニメ日本語
+              </h1>
+              <p style={{color:theme.textSub,fontSize:15,fontWeight:600}}>تعلّم اليابانية من أشهر تعبيرات الأنمي 🌸</p>
+            </div>
+
+            <div style={{display:"flex",justifyContent:"space-around",alignItems:"center",
+              background:theme.statsBg,borderRadius:16,padding:"14px 10px",marginBottom:16,
+              boxShadow:theme.statsShadow,transition:"background 0.3s ease"}}>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:20}}>⭐</div>
+                <div style={{fontSize:15,fontWeight:900,color:theme.textMain}}>{points}</div>
+                <div style={{fontSize:10,color:theme.textSub}}>نقطة إجمالية</div>
+              </div>
+              <div style={{width:1,height:32,background:theme.cardBorder}}/>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:20}}>🏆</div>
+                <div style={{fontSize:15,fontWeight:900,color:theme.textMain}}>{level}</div>
+                <div style={{fontSize:10,color:theme.textSub}}>المستوى</div>
+              </div>
+              <div style={{width:1,height:32,background:theme.cardBorder}}/>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:20}}>📖</div>
+                <div style={{fontSize:15,fontWeight:900,color:theme.textMain}}>{learned.length}/{animeWords.length}</div>
+                <div style={{fontSize:10,color:theme.textSub}}>كلمة اتعلمتها</div>
+              </div>
+            </div>
+
+            <div style={{marginBottom:16}}>
+              <div style={{width:"100%",height:10,background:theme.progressTrack,borderRadius:10,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${progressPercent}%`,borderRadius:10,
+                  background:"linear-gradient(90deg,#dc2626,#f97316)",transition:"width 0.5s ease"}}/>
+              </div>
+            </div>
+
+            <div style={{background:theme.cardBg,borderRadius:14,padding:"12px 14px",marginBottom:16,
+              border:`1px dashed ${theme.cardBorder}`,fontSize:12,color:theme.textSub,lineHeight:1.8}}>
+              ⚠️ الكلمات هنا شائعة في ثقافة الأنمي بشكل عام، مش منسوبة لعمل معيّن، احترامًا لحقوق الملكية. اضغط ➕ جنب أي كلمة تحفظها عشان تكسب نقاط.
+            </div>
+
+            <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:12,marginBottom:8}}>
+              {categories.map(c=>(
+                <div key={c} className="chip-btn" onClick={()=>setActiveCat(c)}
+                  style={{whiteSpace:"nowrap",padding:"7px 16px",borderRadius:20,fontSize:13,fontWeight:700,
+                    background: activeCat===c ? "linear-gradient(135deg,#dc2626,#f97316)" : theme.cardBg,
+                    color: activeCat===c ? "#fff" : theme.textMain,
+                    border: `1px solid ${activeCat===c ? "transparent" : theme.cardBorder}`}}>
+                  {c}
+                </div>
+              ))}
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:8}}>
+              {filteredWords.map((w,i)=>(
+                <div key={w.idx} style={{animation:`fadeUp 0.4s ${i*0.05}s ease forwards`,opacity:0}}>
+                  <WordCard word={w} idx={w.idx} learned={learned} toggleLearn={toggleLearn}
+                    flipped={flipped} toggleFlip={toggleFlip}/>
+                </div>
+              ))}
+            </div>
+
+            <p style={{textAlign:"center",color:theme.textSub,fontSize:13,marginTop:20,marginBottom:8}}>
+              💡 اضغط على أي بطاقة لتقلبها، واضغط ➕ لو حفظتها
+            </p>
+
+            <div style={{textAlign:"center",color:theme.textFooter,fontSize:12,marginTop:24}}>
+              🎌 アニメ日本語 • تعلم اليابانية من عالم الأنمي 🎌
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>
