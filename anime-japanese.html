@@ -79,11 +79,11 @@
 
     const categories = ["الكل", ...new Set(animeWords.map(w=>w.cat))];
 
-    // خريطة الصوت: كل كلمة بترتيبها في animeWords ليها ملف anime_01.wav لحد anime_20.wav
+    // خريطة الصوت: كل كلمة بترتيبها في animeWords ليها ملف anime_01 1.wav لحد anime_20 1.wav
     const ANIME_AUDIO_MAP = {};
     animeWords.forEach((w, i) => {
       const num = String(i + 1).padStart(2, "0");
-      ANIME_AUDIO_MAP[w.jp] = `audio/anime/anime_${num}.wav`;
+      ANIME_AUDIO_MAP[w.jp] = `audio/anime/anime_${num} 1.wav`;
     });
 
     const petals = Array.from({length:18},(_,i)=>({
