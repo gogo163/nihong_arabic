@@ -18,12 +18,49 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  body.dark-mode {
+    --pink: #ff8fc4;
+    --light-pink: #2a1f30;
+    --dark-pink: #ff6eb4;
+    --white: #201824;
+    --soft-gray: #150e18;
+    --text: #f0e6f5;
+    --accent: #ff6eb4;
+  }
+
   body {
     font-family: 'Noto Naskh Arabic', serif;
     background: var(--soft-gray);
     color: var(--text);
     min-height: 100vh;
+    transition: background 0.3s ease, color 0.3s ease;
   }
+
+  .theme-toggle {
+    margin-right: auto;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: none; background: rgba(255,255,255,0.2); color: white;
+    font-size: 16px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .stats-bar {
+    display: flex; justify-content: space-around; align-items: center;
+    background: var(--white); border-radius: 14px; padding: 14px 10px;
+    margin-bottom: 14px; box-shadow: 0 2px 10px rgba(233,30,140,0.08);
+    transition: background 0.3s ease;
+  }
+  .stats-bar .stat { text-align: center; }
+  .stats-bar .stat .val { font-size: 15px; font-weight: 900; color: var(--text); }
+  .stats-bar .stat .lbl { font-size: 10px; color: #999; }
+  body.dark-mode .stats-bar .stat .lbl { color: #a08aa8; }
+  .stats-sep { width: 1px; height: 32px; background: var(--light-pink); }
+
+  .tab-progress-wrap { margin-bottom: 16px; }
+  .tab-progress-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #999; margin-bottom: 6px; }
+  body.dark-mode .tab-progress-info { color: #a08aa8; }
+  .tab-progress-track { width: 100%; height: 10px; background: var(--light-pink); border-radius: 10px; overflow: hidden; }
+  .tab-progress-fill { height: 100%; width: 0%; border-radius: 10px; background: linear-gradient(90deg,var(--pink),var(--accent)); transition: width 0.5s ease; }
 
   /* Header */
   .header {
@@ -47,7 +84,7 @@
   .tabs {
     display: flex;
     overflow-x: auto;
-    background: white;
+    background: var(--white);
     border-bottom: 2px solid var(--light-pink);
     padding: 0 8px;
     gap: 4px;
@@ -91,7 +128,7 @@
   }
 
   .category-card {
-    background: white;
+    background: var(--white);
     border-radius: 16px;
     padding: 18px 14px;
     text-align: center;
@@ -142,7 +179,7 @@
   }
 
   .word-card {
-    background: white;
+    background: var(--white);
     border-radius: 14px;
     padding: 14px;
     border: 1.5px solid var(--light-pink);
@@ -208,7 +245,7 @@
 
   /* Grammar Section */
   .grammar-card {
-    background: white;
+    background: var(--white);
     border-radius: 16px;
     padding: 18px;
     margin-bottom: 14px;
@@ -259,7 +296,7 @@
 
   /* Phrases */
   .phrase-card {
-    background: white;
+    background: var(--white);
     border-radius: 14px;
     padding: 16px;
     margin-bottom: 10px;
@@ -301,7 +338,7 @@
 
   /* Quiz */
   .quiz-container {
-    background: white;
+    background: var(--white);
     border-radius: 16px;
     padding: 20px;
     border: 1.5px solid var(--light-pink);
@@ -338,7 +375,7 @@
     font-family: 'Noto Naskh Arabic', serif;
     font-size: 15px;
     font-weight: 600;
-    background: white;
+    background: var(--white);
     transition: all 0.2s;
   }
 
@@ -424,6 +461,25 @@
   }
 
   .quiz-opt.correct { animation: pop 0.3s ease; }
+
+  /* تجاوزات الوضع الليلي للنصوص الرمادية والحدود */
+  body.dark-mode .tab { color: #a08aa8; }
+  body.dark-mode .category-card p,
+  body.dark-mode .word-card .reading,
+  body.dark-mode .example-reading,
+  body.dark-mode .phrase-reading,
+  body.dark-mode .quiz-hint,
+  body.dark-mode .quiz-score,
+  body.dark-mode .rule-desc,
+  body.dark-mode .words-container p { color: #a08aa8; }
+  body.dark-mode .category-card,
+  body.dark-mode .word-card,
+  body.dark-mode .grammar-card,
+  body.dark-mode .phrase-card,
+  body.dark-mode .quiz-container,
+  body.dark-mode .quiz-opt { border-color: #3a2a44; }
+  body.dark-mode .words-title { background: linear-gradient(135deg, #2a1f30, #201824); }
+  body.dark-mode .quiz-score { background: #201824; }
 </style>
 </head>
 <body>
@@ -442,6 +498,7 @@
     <h1>دروس اليابانية</h1>
     <p>NihongoArabic · にほんごアラビック</p>
   </div>
+  <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
 </div>
 
 <!-- Tabs -->
@@ -454,6 +511,22 @@
 
 <!-- Content -->
 <div class="content">
+
+  <div class="stats-bar">
+    <div class="stat"><div class="val">🔥 <span id="streakVal">0</span></div><div class="lbl">يوم متواصل</div></div>
+    <div class="stats-sep"></div>
+    <div class="stat"><div class="val">⭐ <span id="pointsVal">0</span></div><div class="lbl">نقطة</div></div>
+    <div class="stats-sep"></div>
+    <div class="stat"><div class="val">🏆 <span id="levelVal">1</span></div><div class="lbl">المستوى</div></div>
+  </div>
+
+  <div class="tab-progress-wrap">
+    <div class="tab-progress-info">
+      <span id="tabProgressText">0 / 4 أقسام</span>
+      <span id="tabProgressPercent">0%</span>
+    </div>
+    <div class="tab-progress-track"><div class="tab-progress-fill" id="tabProgressFill"></div></div>
+  </div>
 
   <!-- VOCABULARY SECTION -->
   <div class="section active" id="section-vocab">
@@ -955,6 +1028,7 @@ function showTab(tab) {
   event.target.classList.add('active');
 
   if (tab === 'quiz') loadQuiz();
+  markVisited(tab);
 }
 
 function showVocab(category) {
@@ -1054,6 +1128,91 @@ function nextQuestion() {
   }
   loadQuiz();
 }
+
+/* ==================== الوضع الليلي (مشترك مع باقي صفحات التطبيق) ==================== */
+function loadTheme() {
+  return localStorage.getItem('nihongo_theme') === 'dark' ? 'dark' : 'light';
+}
+function applyTheme() {
+  const mode = loadTheme();
+  document.body.classList.toggle('dark-mode', mode === 'dark');
+  document.getElementById('themeToggleBtn').textContent = mode === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  const next = loadTheme() === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('nihongo_theme', next);
+  applyTheme();
+}
+
+/* ==================== Streak / نقاط / مستوى (مشترك مع باقي صفحات التطبيق) ==================== */
+const POINTS_PER_NEW_ITEM = 10;
+const POINTS_PER_LEVEL = 50;
+const LESSON_TAB_IDS = ['vocab', 'phrases', 'grammar', 'quiz'];
+
+function loadVisited() {
+  try { return JSON.parse(localStorage.getItem('nihongo_visited') || '[]'); }
+  catch(e) { return []; }
+}
+function saveVisited(arr) {
+  localStorage.setItem('nihongo_visited', JSON.stringify(arr));
+}
+function loadPoints() {
+  return parseInt(localStorage.getItem('nihongo_points') || '0', 10);
+}
+function savePoints(p) {
+  localStorage.setItem('nihongo_points', String(p));
+}
+function getLevel(points) {
+  return Math.floor(points / POINTS_PER_LEVEL) + 1;
+}
+function updateStreakOnLoad() {
+  const today = new Date().toDateString();
+  const lastVisit = localStorage.getItem('nihongo_last_visit');
+  let streak = parseInt(localStorage.getItem('nihongo_streak') || '0', 10);
+
+  if (lastVisit === today) return streak || 1;
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (lastVisit === yesterday.toDateString()) streak += 1;
+  else streak = 1;
+
+  localStorage.setItem('nihongo_streak', String(streak));
+  localStorage.setItem('nihongo_last_visit', today);
+  return streak;
+}
+function renderStats() {
+  document.getElementById('streakVal').textContent = localStorage.getItem('nihongo_streak') || '0';
+  document.getElementById('pointsVal').textContent = loadPoints();
+  document.getElementById('levelVal').textContent = getLevel(loadPoints());
+}
+function renderTabProgress() {
+  const visited = loadVisited();
+  const visitedTabs = LESSON_TAB_IDS.filter(id => visited.includes('lessons_' + id));
+  const percent = Math.round((visitedTabs.length / LESSON_TAB_IDS.length) * 100);
+  document.getElementById('tabProgressText').textContent = `${visitedTabs.length} / ${LESSON_TAB_IDS.length} أقسام`;
+  document.getElementById('tabProgressPercent').textContent = percent + '%';
+  document.getElementById('tabProgressFill').style.width = percent + '%';
+}
+function markVisited(tabId) {
+  const key = 'lessons_' + tabId;
+  const visited = loadVisited();
+  if (!visited.includes(key)) {
+    visited.push(key);
+    saveVisited(visited);
+    savePoints(loadPoints() + POINTS_PER_NEW_ITEM);
+    renderStats();
+  }
+  renderTabProgress();
+}
+
+// تشغيل عند فتح الصفحة
+applyTheme();
+updateStreakOnLoad();
+renderStats();
+renderTabProgress();
+markVisited('vocab'); // أول تبويب مفتوح افتراضيًا
 
 // Init quiz
 loadQuiz();
