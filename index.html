@@ -229,10 +229,10 @@
       },
     ];
 
-    const petals = Array.from({length:18},(_,i)=>({
+    const petals = Array.from({length:8},(_,i)=>({
       id:i, left:`${Math.random()*100}%`,
       delay:`${Math.random()*8}s`, dur:`${6+Math.random()*6}s`,
-      size:`${10+Math.random()*14}px`
+      size:`${8+Math.random()*10}px`
     }));
 
     const AUDIO_MAP = {
@@ -697,7 +697,7 @@
       };
 
       const level = getLevel(points);
-      const progressPercent = Math.round((visited.length / TOTAL_TOPICS) * 100);
+      const progressPercent = Math.min(100, Math.round((visited.length / TOTAL_TOPICS) * 100));
       const nextLesson = lessons.find(l => !visited.includes(l.id)) || lessons[0];
       const allLessonsDone = visited.length >= lessons.length;
 
@@ -805,7 +805,7 @@
         <div style={rootStyle}>
           {petals.map(p=>(
             <div key={p.id} style={{position:"fixed",top:"-40px",left:p.left,pointerEvents:"none",
-              animation:`fall ${p.dur} ${p.delay} linear infinite`,zIndex:0,opacity:0.75,fontSize:p.size}}>🌸</div>
+              animation:`fall ${p.dur} ${p.delay} linear infinite`,zIndex:0,opacity:0.4,fontSize:p.size}}>🌸</div>
           ))}
 
           <button onClick={toggleTheme} title="الوضع الليلي / النهاري"
@@ -838,7 +838,7 @@
               <h1 className="shimmer-text" style={{fontSize:36,fontWeight:900,marginBottom:8,fontFamily:"'Noto Sans JP','Tajawal',sans-serif"}}>
                 にほんご مع العربي
               </h1>
-              <p style={{color:theme.textSub,fontSize:16,fontWeight:600}}>تعلّم اليابانية بسهولة وبالعربي الفصيح 🌸</p>
+              <p style={{color:theme.textSub,fontSize:16,fontWeight:600}}>تعلّم اليابانية بسهولة وبالعربية الفصحى 🌸</p>
             </div>
 
             {/* شريط الإحصائيات: Streak + نقاط + مستوى */}
