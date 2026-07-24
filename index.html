@@ -817,6 +817,15 @@
           </button>
 
           <div style={{maxWidth:700,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
+            {/* Welcome badge */}
+            <div style={{display:"flex",justifyContent:"center",marginTop:4}}>
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,background:theme.cardBg,
+                color:theme.textMain,fontSize:13,fontWeight:800,padding:"7px 16px",borderRadius:999,
+                boxShadow:theme.statsShadow,border:`1px solid ${theme.cardBorder}`}}>
+                👋 أهلاً بك
+              </div>
+            </div>
+
             {/* Header */}
             <div style={{textAlign:"center",padding:"36px 20px 28px",position:"relative",marginBottom:8}}>
               <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:320,height:320,
@@ -929,10 +938,10 @@
                   {[
                     {href:"lessons.html", icon:"📚", title:"دروس جديدة!", sub:"مفردات • جمل • قواعد • اختبار", cat:"#7c5cff"},
                     {href:"jlpt_n5.html", icon:"📝", title:"اختبار JLPT N5", sub:"مفردات • قواعد • قراءة • نتيجة فورية", cat:"#7c5cff"},
-                    {href:"writing.html", icon:"✍️", title:"تدريب الكتابة", sub:"هيراغانا • كاتاكانا • ارسمي بإصبعك", cat:"#2fae8b"},
-                    {href:"japan.html", icon:"⛩️", title:"اكتشف اليابان", sub:"عادات • حقائق • مطبخ • أنيمي", cat:"#e08a2f"},
                     {href:"anime-japanese.html", icon:"🎌", title:"تعلم اليابانية من الأنمي", sub:"أشهر التعبيرات • بطاقات تفاعلية • نقاط", cat:"#e08a2f"},
+                    {href:"writing.html", icon:"✍️", title:"تدريب الكتابة", sub:"هيراغانا • كاتاكانا • ارسمي بإصبعك", cat:"#2fae8b"},
                     {href:"conversations.html", icon:"💬", title:"محادثات يومية", sub:"مطعم • فندق • مطار • تسوق", cat:"#0ea5b8"},
+                    {href:"japan.html", icon:"⛩️", title:"اكتشف اليابان", sub:"عادات • حقائق • مطبخ • أنيمي", cat:"#e08a2f"},
                   ].map((card,i)=>(
                     <a key={card.href} href={card.href} style={{textDecoration:"none"}}>
                       <button className="lesson-btn" style={{width:"100%",border:`1px solid ${theme.cardBorder}`,
