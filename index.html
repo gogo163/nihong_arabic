@@ -483,6 +483,58 @@
     };
 
     // ==================== الوضع الليلي ====================
+    // ==================== كلمة اليوم ====================
+    const WORD_OF_DAY_LIST = [
+      { jp: "おはよう", rom: "Ohayou", ar: "صباح الخير", example: "おはようございます！ (Ohayou gozaimasu!) — صباح الخير (رسمي)" },
+      { jp: "ありがとう", rom: "Arigatou", ar: "شكراً", example: "ありがとうございます (Arigatou gozaimasu) — شكراً جزيلاً" },
+      { jp: "みず", rom: "Mizu", ar: "ماء", example: "みずをください (Mizu wo kudasai) — من فضلك أعطني ماء" },
+      { jp: "たべもの", rom: "Tabemono", ar: "طعام", example: "たべものがすきです (Tabemono ga suki desu) — أحب الطعام" },
+      { jp: "がっこう", rom: "Gakkou", ar: "مدرسة", example: "がっこうへいきます (Gakkou e ikimasu) — أذهب إلى المدرسة" },
+      { jp: "ともだち", rom: "Tomodachi", ar: "صديق", example: "かれはともだちです (Kare wa tomodachi desu) — هو صديقي" },
+      { jp: "げんき", rom: "Genki", ar: "بخير / نشيط", example: "げんきですか (Genki desu ka؟) — هل أنت بخير؟" },
+      { jp: "たのしい", rom: "Tanoshii", ar: "ممتع", example: "とてもたのしいです (Totemo tanoshii desu) — هذا ممتع جداً" },
+      { jp: "すき", rom: "Suki", ar: "أحب / أفضّل", example: "アニメがすきです (Anime ga suki desu) — أحب الأنيمي" },
+      { jp: "きれい", rom: "Kirei", ar: "جميل", example: "とてもきれいです (Totemo kirei desu) — هذا جميل جداً" },
+      { jp: "はやい", rom: "Hayai", ar: "سريع / مبكر", example: "でんしゃははやいです (Densha wa hayai desu) — القطار سريع" },
+      { jp: "あさ", rom: "Asa", ar: "صباح", example: "まいあさおきます (Mai asa okimasu) — أستيقظ كل صباح" },
+      { jp: "よる", rom: "Yoru", ar: "ليل", example: "よるはさむいです (Yoru wa samui desu) — الليل بارد" },
+      { jp: "たいせつ", rom: "Taisetsu", ar: "مهم / عزيز", example: "かぞくはたいせつです (Kazoku wa taisetsu desu) — العائلة مهمة" },
+      { jp: "がんばって", rom: "Ganbatte", ar: "بالتوفيق / حاول بجد", example: "がんばってください (Ganbatte kudasai) — حاول بجد من فضلك" },
+      { jp: "しあわせ", rom: "Shiawase", ar: "سعادة", example: "いまとてもしあわせです (Ima totemo shiawase desu) — أنا سعيد جداً الآن" },
+      { jp: "ゆめ", rom: "Yume", ar: "حلم", example: "ゆめをかなえる (Yume wo kanaeru) — تحقيق الحلم" },
+      { jp: "かぞく", rom: "Kazoku", ar: "عائلة", example: "かぞくとすんでいます (Kazoku to sundeimasu) — أعيش مع عائلتي" },
+      { jp: "しごと", rom: "Shigoto", ar: "عمل / وظيفة", example: "しごとがいそがしいです (Shigoto ga isogashii desu) — العمل مزدحم" },
+      { jp: "べんきょう", rom: "Benkyou", ar: "دراسة", example: "にほんごをべんきょうします (Nihongo wo benkyou shimasu) — أدرس اليابانية" },
+      { jp: "あめ", rom: "Ame", ar: "مطر", example: "きょうはあめです (Kyou wa ame desu) — اليوم فيه مطر" },
+      { jp: "うみ", rom: "Umi", ar: "بحر", example: "うみがすきです (Umi ga suki desu) — أحب البحر" },
+      { jp: "たいへん", rom: "Taihen", ar: "صعب / متعب", example: "しごとがたいへんです (Shigoto ga taihen desu) — العمل متعب" },
+      { jp: "しんせつ", rom: "Shinsetsu", ar: "لطيف / طيب", example: "かれはしんせつです (Kare wa shinsetsu desu) — هو شخص لطيف" },
+      { jp: "いそがしい", rom: "Isogashii", ar: "مشغول", example: "きょうはいそがしいです (Kyou wa isogashii desu) — اليوم أنا مشغول" },
+      { jp: "しずか", rom: "Shizuka", ar: "هادئ", example: "このまちはしずかです (Kono machi wa shizuka desu) — هذه المدينة هادئة" },
+      { jp: "おいしい", rom: "Oishii", ar: "لذيذ", example: "とてもおいしいです (Totemo oishii desu) — لذيذ جداً" },
+      { jp: "たのしみ", rom: "Tanoshimi", ar: "متشوق / أتطلع لـ", example: "りょこうがたのしみです (Ryokou ga tanoshimi desu) — متشوق للرحلة" },
+      { jp: "だいじょうぶ", rom: "Daijoubu", ar: "لا بأس / تمام", example: "だいじょうぶですか (Daijoubu desu ka؟) — هل أنت بخير؟" },
+      { jp: "ゆっくり", rom: "Yukkuri", ar: "ببطء / براحتك", example: "ゆっくりはなしてください (Yukkuri hanashite kudasai) — تكلم ببطء من فضلك" },
+    ];
+
+    function getDayOfYear(date) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      const diff = date - start;
+      return Math.floor(diff / 86400000);
+    }
+
+    function getWordOfDay() {
+      const dayIndex = getDayOfYear(new Date());
+      return WORD_OF_DAY_LIST[dayIndex % WORD_OF_DAY_LIST.length];
+    }
+
+    function loadWotdClaimedDate() {
+      return localStorage.getItem("nihongo_wotd_date") || "";
+    }
+    function saveWotdClaimedDate(dateStr) {
+      localStorage.setItem("nihongo_wotd_date", dateStr);
+    }
+
     const LIGHT_THEME = {
       pageBg: "linear-gradient(160deg,#fff8f8 0%,#fff0f5 40%,#f5f0ff 70%,#f0f8ff 100%)",
       cardBg: "#ffffff",
@@ -533,6 +585,7 @@
     // ==================== Streak / نقاط / مستوى ====================
     const POINTS_PER_NEW_LESSON = 10;
     const POINTS_PER_LEVEL = 50;
+    const WOTD_BONUS_POINTS = 3;
     const TOTAL_TOPICS = lessons.length;
 
     function loadVisitedLessons() {
@@ -680,12 +733,26 @@
       const [visited, setVisited] = useState([]);
       const [points, setPoints] = useState(0);
       const [streak, setStreak] = useState(0);
+      const [wordOfDay] = useState(getWordOfDay);
+      const [wotdClaimed, setWotdClaimed] = useState(true);
 
       useEffect(() => {
         setThemeMode(loadTheme());
         setVisited(loadVisitedLessons());
-        setPoints(loadPoints());
         setStreak(updateStreakOnLoad());
+
+        const today = new Date().toDateString();
+        const alreadyClaimed = loadWotdClaimedDate() === today;
+        let currentPoints = loadPoints();
+        if (!alreadyClaimed) {
+          currentPoints += WOTD_BONUS_POINTS;
+          savePoints(currentPoints);
+          saveWotdClaimedDate(today);
+          setWotdClaimed(false);
+        } else {
+          setWotdClaimed(true);
+        }
+        setPoints(currentPoints);
       }, []);
 
       const theme = themeMode === "dark" ? DARK_THEME : LIGHT_THEME;
@@ -876,6 +943,38 @@
                   background:"linear-gradient(90deg,#e91e8c,#ff6eb4)",transition:"width 0.5s ease"}}/>
               </div>
             </div>
+
+            {/* كلمة اليوم */}
+            {!activeLesson && (
+              <div style={{
+                borderRadius:18, padding:"16px 18px", marginBottom:16,
+                background: theme.cardBg, border:`2px solid ${theme.cardBorder}`,
+                boxShadow: theme.statsShadow, transition:"background 0.3s ease"
+              }}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                  <span style={{fontSize:12.5,fontWeight:800,color:theme.textSub}}>📅 كلمة اليوم</span>
+                  {!wotdClaimed && (
+                    <span style={{fontSize:11,fontWeight:800,color:"#e91e8c",background:"#ffe3ef",
+                      padding:"3px 10px",borderRadius:999}}>+{WOTD_BONUS_POINTS} ⭐</span>
+                  )}
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:14}}>
+                  <div style={{flex:1,textAlign:"right"}}>
+                    <div style={{fontSize:22,fontWeight:900,fontFamily:"'Noto Sans JP',sans-serif",color:theme.textMain}}>
+                      {wordOfDay.jp}
+                    </div>
+                    <div style={{fontSize:13,color:theme.textSub,fontWeight:700,marginTop:2}}>
+                      {wordOfDay.rom} — {wordOfDay.ar}
+                    </div>
+                  </div>
+                  <SpeakBtn text={wordOfDay.jp} color="#e91e8c"/>
+                </div>
+                <div style={{fontSize:12.5,color:theme.textSub,marginTop:10,lineHeight:1.7,
+                  borderTop:`1px solid ${theme.cardBorder}`,paddingTop:10,textAlign:"right"}}>
+                  {wordOfDay.example}
+                </div>
+              </div>
+            )}
 
             {/* Continue / Start Here banner */}
             {!activeLesson && !allLessonsDone && (
