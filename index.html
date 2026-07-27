@@ -842,18 +842,33 @@
         return `سؤال ممتاز! 🌸\n\nللإجابة على سؤالك عن "${question}"، إليك نصيحة:\n\nاليابانية لغة رائعة وممتعة. استمري في التعلم خطوة خطوة!\n\nجربي تسأليني عن:\n• معنى كلمة بالعربي\n• كيف تقولي جملة باليابانية\n• الفرق بين هيراغانا وكاتاكانا\n• أرقام أو تحيات يابانية 🎌`;
       };
 
-      const sendAIMessage = () => {
+      const AI_WORKER_URL = "https://gemini-proxy.gsayed95.workers.dev";
+
+      const sendAIMessage = async () => {
         const text = aiInput.trim();
         if (!text || aiLoading) return;
         const userMsg = {role:"user", text};
         setAiMessages(prev=>[...prev, userMsg]);
         setAiInput("");
         setAiLoading(true);
-        setTimeout(() => {
+
+        try {
+          const response = await fetch(AI_WORKER_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text }),
+          });
+          if (!response.ok) throw new Error("worker error");
+          const data = await response.json();
+          const reply = data.reply || getSmartReply(text);
+          setAiMessages(prev=>[...prev,{role:"assistant",text:reply}]);
+        } catch (err) {
+          // لو النت مقطوع أو الـ Worker ما استجابش، نرجع للردود المحفوظة محلياً
           const reply = getSmartReply(text);
           setAiMessages(prev=>[...prev,{role:"assistant",text:reply}]);
+        } finally {
           setAiLoading(false);
-        }, 800);
+        }
       };
 
       const lesson = lessons.find(l=>l.id===activeLesson);
