@@ -55,6 +55,10 @@
       -webkit-text-fill-color: transparent;
       animation: shimmer 4s linear infinite;
     }
+    .review-badge-dot {
+      position: absolute; top: 8px; left: 8px; width: 10px; height: 10px;
+      border-radius: 50%; background: #e91e8c; box-shadow: 0 0 0 2px #fff;
+    }
   </style>
 </head>
 <body>
@@ -76,7 +80,7 @@
     border-radius:999px;
     z-index:999;
     box-shadow:0 6px 16px rgba(233,30,140,0.4);
-  ">📚 الدروس المنظمة</a>
+  ">📚 الدروس المنظمة <span style="background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:999px;font-size:10px;margin-right:2px;">📥 أوفلاين</span></a>
   <div id="root" style="padding-bottom:70px"></div>
   <script type="text/babel">
     const { useState, useEffect } = React;
@@ -482,8 +486,6 @@
       "ン": "audio/kana/katakana_46.wav",
     };
 
-    // ==================== الوضع الليلي ====================
-    // ==================== كلمة اليوم ====================
     const WORD_OF_DAY_LIST = [
       { jp: "おはよう", rom: "Ohayou", ar: "صباح الخير", example: "おはようございます！ (Ohayou gozaimasu!) — صباح الخير (رسمي)" },
       { jp: "ありがとう", rom: "Arigatou", ar: "شكراً", example: "ありがとうございます (Arigatou gozaimasu) — شكراً جزيلاً" },
@@ -523,9 +525,14 @@
       return Math.floor(diff / 86400000);
     }
 
+    // ⭐ نختار بس من الكلمات اللي عندها ملف صوت مسجّل فعليًا في AUDIO_MAP
+    // (بدل ما نسيب الكلمة تروح لنطق المتصفح الافتراضي لو مفيش صوت ياباني متثبت على الجهاز)
+    const WORD_OF_DAY_AVAILABLE = WORD_OF_DAY_LIST.filter(w => AUDIO_MAP[w.jp]);
+
     function getWordOfDay() {
+      const pool = WORD_OF_DAY_AVAILABLE.length > 0 ? WORD_OF_DAY_AVAILABLE : WORD_OF_DAY_LIST;
       const dayIndex = getDayOfYear(new Date());
-      return WORD_OF_DAY_LIST[dayIndex % WORD_OF_DAY_LIST.length];
+      return pool[dayIndex % pool.length];
     }
 
     function loadWotdClaimedDate() {
@@ -582,7 +589,6 @@
       localStorage.setItem("nihongo_theme", mode);
     }
 
-    // ==================== Streak / نقاط / مستوى ====================
     const POINTS_PER_NEW_LESSON = 10;
     const POINTS_PER_LEVEL = 50;
     const WOTD_BONUS_POINTS = 3;
@@ -604,7 +610,6 @@
     function getLevel(points) {
       return Math.floor(points / POINTS_PER_LEVEL) + 1;
     }
-    // بتتنادى مرة واحدة عند فتح التطبيق، بترجع رقم الـ streak المحدّث
     function updateStreakOnLoad() {
       const today = new Date().toDateString();
       const lastVisit = localStorage.getItem("nihongo_last_visit");
@@ -628,6 +633,19 @@
       return streak;
     }
 
+    // ⭐ عدد الكلمات المستحقة للمراجعة (نظام المراجعة بالتكرار المتباعد، مخزّن في Lessons/review.js)
+    function loadReviewDataHome() {
+      try { return JSON.parse(localStorage.getItem("nihongo_review_words") || "{}"); }
+      catch(e) { return {}; }
+    }
+    function countDueWordsHome() {
+      const data = loadReviewDataHome();
+      const now = Date.now();
+      let count = 0;
+      Object.keys(data).forEach(k => { if (data[k].nextDue <= now) count++; });
+      return count;
+    }
+
     function SpeakBtn({text, color, small}) {
       const [speaking, setSpeaking] = React.useState(false);
 
@@ -635,7 +653,6 @@
         setSpeaking(true);
         setTimeout(() => setSpeaking(false), 2000);
 
-        // طريقة 1: Android App Inventor
         try {
           if (window.AppInventor) {
             window.AppInventor.setWebViewString(text);
@@ -643,7 +660,6 @@
           }
         } catch(err) {}
 
-        // طريقة 2: Web Speech API (للاب)
         if (!window.speechSynthesis) { setSpeaking(false); return; }
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
@@ -664,7 +680,6 @@
         e.stopPropagation();
         setSpeaking(true);
 
-        // طريقة 0 (جديدة): ملف صوت مسجّل مسبقًا
         const audioPath = AUDIO_MAP[text];
         if (audioPath) {
           const audio = new Audio(audioPath);
@@ -735,11 +750,13 @@
       const [streak, setStreak] = useState(0);
       const [wordOfDay] = useState(getWordOfDay);
       const [wotdClaimed, setWotdClaimed] = useState(true);
+      const [dueReviewCount, setDueReviewCount] = useState(0);
 
       useEffect(() => {
         setThemeMode(loadTheme());
         setVisited(loadVisitedLessons());
         setStreak(updateStreakOnLoad());
+        setDueReviewCount(countDueWordsHome());
 
         const today = new Date().toDateString();
         const alreadyClaimed = loadWotdClaimedDate() === today;
@@ -791,7 +808,7 @@
         "نعم": "نعم باليابانية: はい (Hai) ✅",
         "لا": "لا باليابانية: いいえ (Iie) ❌",
         "اسمي": "اسمي ... باليابانية: わたしは [اسمك] です (Watashi wa [ismak] desu) 😊",
-        "كيف حالك": "كيف حالك باليابانية: おげんきですか (Ogenki desu ka؟) والجواب: げんきです (Genki desu) — أنا بخير 💚",
+        "كيف حالك": "كيف حالك باليابانية: おげんきですか (Ogenki desu ka؟) والجواب: げنきです (Genki desu) — أنا بخير 💚",
         "ماء": "ماء باليابانية: みず (Mizu) 💧",
         "طعام": "طعام باليابانية: たべもの (Tabemono) 🍱",
         "سوشي": "سوشي باليابانية: すし (Sushi) 🍣 — من أشهر الأطعمة اليابانية!",
@@ -829,7 +846,6 @@
         for (const [keyword, answer] of Object.entries(japaneseKnowledge)) {
           if (q.includes(keyword)) return answer;
         }
-        // Default helpful responses
         if (q.includes("كيف") && q.includes("تعلم")) {
           return "أفضل طريقة لتعلم اليابانية:\n1️⃣ ابدئي بهيراغانا (أسبوع)\n2️⃣ ثم كاتاكانا (أسبوع)\n3️⃣ تعلمي 10 كلمات يومياً\n4️⃣ استمعي لأغاني وأنيمي ياباني\n5️⃣ تدربي على المحادثة 🌸";
         }
@@ -863,7 +879,6 @@
           const reply = data.reply || getSmartReply(text);
           setAiMessages(prev=>[...prev,{role:"assistant",text:reply}]);
         } catch (err) {
-          // لو النت مقطوع أو الـ Worker ما استجابش، نرجع للردود المحفوظة محلياً
           const reply = getSmartReply(text);
           setAiMessages(prev=>[...prev,{role:"assistant",text:reply}]);
         } finally {
@@ -899,7 +914,6 @@
           </button>
 
           <div style={{maxWidth:700,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
-            {/* Welcome badge */}
             <div style={{display:"flex",justifyContent:"center",marginTop:4}}>
               <div style={{display:"inline-flex",alignItems:"center",gap:6,background:theme.cardBg,
                 color:theme.textMain,fontSize:13,fontWeight:800,padding:"7px 16px",borderRadius:999,
@@ -908,7 +922,6 @@
               </div>
             </div>
 
-            {/* Header */}
             <div style={{textAlign:"center",padding:"36px 20px 28px",position:"relative",marginBottom:8}}>
               <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:320,height:320,
                 background:"radial-gradient(circle,rgba(220,38,38,0.08) 0%,transparent 70%)",borderRadius:"50%",pointerEvents:"none"}}/>
@@ -923,7 +936,6 @@
               <p style={{color:theme.textSub,fontSize:16,fontWeight:600}}>تعلّم اليابانية بسهولة وبالعربية الفصحى 🌸</p>
             </div>
 
-            {/* شريط الإحصائيات: Streak + نقاط + مستوى */}
             <div style={{display:"flex",justifyContent:"space-around",alignItems:"center",
               background:theme.statsBg,borderRadius:16,padding:"14px 10px",marginBottom:16,
               boxShadow:theme.statsShadow,transition:"background 0.3s ease"}}>
@@ -946,7 +958,6 @@
               </div>
             </div>
 
-            {/* Progress Bar */}
             <div style={{marginBottom:20}}>
               <div style={{display:"flex",justifyContent:"space-between",fontSize:12,fontWeight:700,
                 color:theme.textSub,marginBottom:6}}>
@@ -959,7 +970,6 @@
               </div>
             </div>
 
-            {/* كلمة اليوم */}
             {!activeLesson && (
               <div style={{
                 borderRadius:18, padding:"16px 18px", marginBottom:16,
@@ -991,7 +1001,6 @@
               </div>
             )}
 
-            {/* Continue / Start Here banner */}
             {!activeLesson && !allLessonsDone && (
               <button onClick={()=>openLesson(nextLesson.id)}
                 style={{width:"100%",border:"none",borderRadius:18,padding:"16px 18px",
@@ -1017,7 +1026,6 @@
               </div>
             )}
 
-            {/* Lesson Path */}
             {!activeLesson && (
               <div>
                 <div style={{fontSize:13,fontWeight:800,color:theme.textSub,marginBottom:18,textAlign:"center"}}>
@@ -1051,6 +1059,7 @@
                 <div style={{display:"flex",flexDirection:"column",gap:10}}>
                   {[
                     {href:"lessons.html", icon:"📚", title:"دروس جديدة!", sub:"مفردات • جمل • قواعد • اختبار", cat:"#7c5cff"},
+                    {href:"Lessons/review.html", icon:"🔄", title:"مراجعة الكلمات", sub:dueReviewCount>0 ? `عندك ${dueReviewCount} كلمة مستحقة اليوم` : "راجع كلماتك القديمة", cat:"#e91e8c"},
                     {href:"jlpt_n5.html", icon:"📝", title:"اختبار JLPT N5", sub:"مفردات • قواعد • قراءة • نتيجة فورية", cat:"#7c5cff"},
                     {href:"anime-japanese.html", icon:"🎌", title:"تعلم اليابانية من الأنمي", sub:"أشهر التعبيرات • بطاقات تفاعلية • نقاط", cat:"#e08a2f"},
                     {href:"writing.html", icon:"✍️", title:"تدريب الكتابة", sub:"هيراغانا • كاتاكانا • ارسمي بإصبعك", cat:"#2fae8b"},
@@ -1060,9 +1069,12 @@
                     <a key={card.href} href={card.href} style={{textDecoration:"none"}}>
                       <button className="lesson-btn" style={{width:"100%",border:`1px solid ${theme.cardBorder}`,
                         borderRadius:16,padding:"12px 16px",display:"flex",flexDirection:"row",
-                        justifyContent:"flex-start",alignItems:"center",gap:14,
+                        justifyContent:"flex-start",alignItems:"center",gap:14,position:"relative",
                         background:theme.cardBg,boxShadow:theme.statsShadow,
                         animation:`fadeUp 0.4s ${i*0.05}s ease forwards`,opacity:0}}>
+                        {card.href==="Lessons/review.html" && dueReviewCount>0 && (
+                          <span className="review-badge-dot"></span>
+                        )}
                         <div style={{width:44,height:44,borderRadius:13,background:card.cat,color:"#fff",
                           display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{card.icon}</div>
                         <div style={{textAlign:"right",flex:1}}>
@@ -1091,7 +1103,6 @@
               </div>
             )}
 
-            {/* Lesson Detail */}
             {lesson && (
               <div style={{animation:"fadeUp 0.4s ease"}}>
                 <button onClick={()=>{setActiveLesson(null);setFlipped({});}}
@@ -1152,7 +1163,6 @@
             </div>
           </div>
 
-          {/* AI Modal */}
           {showAI && (
             <div onClick={e=>e.target===e.currentTarget&&setShowAI(false)}
               style={{position:"fixed",inset:0,background:"rgba(30,10,50,0.45)",backdropFilter:"blur(4px)",
@@ -1210,5 +1220,7 @@
 
     ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
   </script>
+
+
 </body>
 </html>
