@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>مراجعة الكلمات</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :root {
+    --page-bg:#fff0f5; --text-main:#2d2d2d; --card-bg:#ffffff;
+    --card-border:#ffd6e8; --muted:#888;
+  }
+  body.dark-mode {
+    --page-bg:#150e18; --text-main:#f0e6f5; --card-bg:#201824;
+    --card-border:#3a2a44; --muted:#a08aa8;
+  }
+  body { font-family:"Segoe UI",Tahoma,sans-serif; background:var(--page-bg); color:var(--text-main);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:20px 16px; }
+  header { width:100%; max-width:420px; text-align:center; margin-bottom:20px; }
+  header h1 { font-size:20px; color:#e91e8c; }
+  .back { display:inline-block; margin-bottom:10px; color:#e91e8c; text-decoration:none; font-weight:bold; }
+  .counter { font-size:13px; color:var(--muted); margin-bottom:20px; }
+  .card { width:100%; max-width:420px; background:var(--card-bg); border:2px solid var(--card-border);
+    border-radius:20px; padding:40px 24px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.08);
+    min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+  .jp { font-size:26px; font-weight:bold; color:#c2185b; }
+  body.dark-mode .jp { color:#ff8fc4; }
+  .romaji { font-size:14px; color:var(--muted); font-style:italic; }
+  .ar { font-size:20px; font-weight:bold; margin-top:14px; display:none; }
+  .reveal-btn { margin-top:18px; background:#e91e8c; color:#fff; border:none; border-radius:12px;
+    padding:12px 28px; font-size:15px; cursor:pointer; font-weight:bold; }
+  .answer-btns { display:none; gap:12px; width:100%; max-width:420px; margin-top:18px; }
+  .answer-btns button { flex:1; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:bold; cursor:pointer; }
+  .btn-hard { background:#ffdde5; color:#c2185b; }
+  .btn-easy { background:#2fae8b; color:#fff; }
+  .empty { text-align:center; padding:60px 20px; color:var(--muted); }
+  .empty .icon { font-size:50px; margin-bottom:14px; }
+</style>
+</head>
+<body>
+<header>
+  <a class="back" href="lessons_index.html">→ رجوع</a>
+  <h1>🔄 مراجعة الكلمات</h1>
+</header>
+<div class="counter" id="counter"></div>
+<div id="content"></div>
+
+<script src="lessons-data.js"></script>
+<script src="review.js"></script>
+<script>
+  function loadTheme() { return localStorage.getItem('nihongo_theme') === 'dark' ? 'dark' : 'light'; }
+  document.body.classList.toggle('dark-mode', loadTheme() === 'dark');
+
+  let queue = getDueWords();
+  let currentIndex = 0;
+
+  function renderCard() {
+    const content = document.getElementById('content');
+    document.getElementById('counter').textContent =
+      queue.length ? `باقي ${queue.length - currentIndex} من ${queue.length}` : '';
+
+    if (currentIndex >= queue.length) {
+      content.innerHTML = `
+        <div class="empty">
+          <div class="icon">🎉</div>
+          <div>خلصت كل المراجعات المستحقة النهاردة!</div>
+        </div>`;
+      return;
+    }
+
+    const w = queue[currentIndex];
+    content.innerHTML = `
+      <div class="card">
+        <div class="jp">${w.japanese}</div>
+        <div class="romaji">${w.romaji}</div>
+        <div class="ar" id="answerText">${w.arabic}</div>
+        <button class="reveal-btn" id="revealBtn">وريني المعنى 👀</button>
+      </div>
+      <div class="answer-btns" id="answerBtns">
+        <button class="btn-hard" id="hardBtn">كانت صعبة 😓</button>
+        <button class="btn-easy" id="easyBtn">كانت سهلة 😄</button>
+      </div>`;
+
+    document.getElementById('revealBtn').onclick = () => {
+      document.getElementById('answerText').style.display = 'block';
+      document.getElementById('revealBtn').style.display = 'none';
+      document.getElementById('answerBtns').style.display = 'flex';
+    };
+    document.getElementById('hardBtn').onclick = () => { submitReview(w.wordId, false); nextCard(); };
+    document.getElementById('easyBtn').onclick = () => { submitReview(w.wordId, true); nextCard(); };
+  }
+
+  function nextCard() { currentIndex++; renderCard(); }
+  renderCard();
+</script>
+</body>
+</html>
