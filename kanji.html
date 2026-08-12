@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>الكانجي - تعلم اليابانية بالعربى</title>
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+<script src="kanji-data.js"></script>
+<style>
+  :root{
+    --washi:#F3EDE3;
+    --ink:#232323;
+    --aizome:#2C4770;
+    --aizome-light:#4A6A93;
+    --hanko:#B84A3E;
+    --gold:#C9A24B;
+    --card:#FFFFFF;
+    --border:#DCD2BE;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--washi); color:var(--ink);
+    font-family:'Segoe UI', Tahoma, sans-serif;
+    padding-bottom:40px;
+  }
+  header{
+    background:var(--aizome); color:#fff;
+    padding:18px 16px 16px; text-align:center;
+    position:sticky; top:0; z-index:10;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{margin:0; font-size:20px; letter-spacing:1px;}
+  header .sub{font-size:12px; opacity:.8; margin-top:4px;}
+
+  .level-tabs{
+    display:flex; gap:8px; justify-content:center;
+    padding:12px 16px 0;
+  }
+  .level-tabs button{
+    flex:1; max-width:120px; padding:8px 10px; border-radius:20px;
+    border:1.5px solid var(--aizome); background:transparent;
+    color:var(--aizome); font-weight:600; font-size:13px; cursor:pointer;
+  }
+  .level-tabs button.active{background:var(--aizome); color:#fff;}
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr));
+    gap:10px; padding:16px;
+  }
+  .tile{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+    font-size:28px; cursor:pointer; position:relative;
+    transition:transform .12s;
+  }
+  .tile:active{transform:scale(.94);}
+  .tile.done::after{
+    content:"◆"; position:absolute; top:3px; left:3px;
+    font-size:9px; color:var(--hanko);
+  }
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.55);
+    display:none; align-items:flex-end; justify-content:center; z-index:50;
+  }
+  .overlay.open{display:flex;}
+  .sheet{
+    background:var(--washi); width:100%; max-width:480px;
+    border-radius:18px 18px 0 0; padding:18px 18px 28px;
+    max-height:88vh; overflow-y:auto;
+  }
+  .sheet-top{display:flex; justify-content:space-between; align-items:center;}
+  .close-btn{
+    background:none; border:none; font-size:22px; color:var(--aizome); cursor:pointer;
+  }
+  .stroke-box{
+    width:200px; height:200px; margin:10px auto; background:var(--card);
+    border:2px solid var(--aizome); border-radius:12px;
+  }
+  .stroke-controls{
+    display:flex; gap:10px; justify-content:center; margin-top:10px;
+  }
+  .stroke-controls button{
+    background:var(--aizome); color:#fff; border:none; border-radius:8px;
+    padding:8px 14px; font-size:13px;
+  }
+  .readings{
+    display:flex; gap:20px; justify-content:center; margin:14px 0;
+    font-size:14px;
+  }
+  .readings .col strong{display:block; color:var(--aizome); margin-bottom:4px;}
+  .meaning{
+    text-align:center; font-size:18px; font-weight:700; color:var(--hanko);
+  }
+  .audio-btn{
+    display:block; margin:10px auto; background:var(--gold); border:none;
+    color:#232323; border-radius:20px; padding:8px 20px; font-weight:700;
+  }
+  .examples{margin-top:14px;}
+  .examples h3{font-size:14px; color:var(--aizome); margin-bottom:8px;}
+  .ex-item{
+    background:var(--card); border:1px solid var(--border); border-radius:8px;
+    padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between;
+    align-items:center;
+  }
+  .ex-item .jp{font-size:16px;}
+  .ex-item .reading{font-size:11px; color:#777; display:block;}
+  .ex-item .ar{font-size:13px; color:var(--hanko);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>حروف الكانجي</h1>
+  <div class="sub">اضغط على أي حرف لتتعلم ترتيب كتابته ومعناه</div>
+</header>
+
+<div class="level-tabs">
+  <button data-level="N5" class="active">N5</button>
+  <button data-level="N4">N4 (قريباً)</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="sheet-top">
+      <span style="font-size:12px;color:#777;" id="strokeCount"></span>
+      <button class="close-btn" id="closeBtn">✕</button>
+    </div>
+    <div class="stroke-box" id="strokeBox"></div>
+    <div class="stroke-controls">
+      <button id="animateBtn">▶ شغّل الترتيب</button>
+      <button id="quizBtn">✎ اختبرني</button>
+    </div>
+    <div class="meaning" id="meaning"></div>
+    <div class="readings">
+      <div class="col"><strong>أونيومي</strong><span id="onyomi"></span></div>
+      <div class="col"><strong>كونيومي</strong><span id="kunyomi"></span></div>
+    </div>
+    <button class="audio-btn" id="audioBtn">🔊 اسمع النطق</button>
+    <div class="examples">
+      <h3>أمثلة</h3>
+      <div id="exampleList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- تتبّع تقدّم المستخدم (نفس نمط progress.js في باقي التطبيق) ----
+const PROGRESS_KEY = "kanji_learned";
+function getLearned(){ try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || []; }catch(e){ return []; } }
+function markLearned(char){
+  const arr = getLearned();
+  if(!arr.includes(char)){ arr.push(char); localStorage.setItem(PROGRESS_KEY, JSON.stringify(arr)); }
+}
+
+let currentLevel = "N5";
+let writer = null;
+
+function renderGrid(){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  const learned = getLearned();
+  getKanjiByLevel(currentLevel).forEach(k=>{
+    const tile = document.createElement("div");
+    tile.className = "tile" + (learned.includes(k.char) ? " done" : "");
+    tile.textContent = k.char;
+    tile.onclick = () => openKanji(k.char);
+    grid.appendChild(tile);
+  });
+}
+
+function openKanji(char){
+  const k = findKanji(char);
+  if(!k) return;
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("strokeCount").textContent = k.strokes + " ضربة";
+  document.getElementById("meaning").textContent = k.meaning_ar;
+  document.getElementById("onyomi").textContent = k.onyomi.length ? k.onyomi.join("، ") : "—";
+  document.getElementById("kunyomi").textContent = k.kunyomi.length ? k.kunyomi.join("، ") : "—";
+
+  const exList = document.getElementById("exampleList");
+  exList.innerHTML = "";
+  k.examples.forEach(ex=>{
+    const div = document.createElement("div");
+    div.className = "ex-item";
+    div.innerHTML = `<div><span class="jp">${ex.word}</span><span class="reading">${ex.reading}</span></div><span class="ar">${ex.meaning_ar}</span>`;
+    exList.appendChild(div);
+  });
+
+  const box = document.getElementById("strokeBox");
+  box.innerHTML = "";
+  writer = HanziWriter.create(box, char, {
+    width:200, height:200, padding:10,
+    showOutline:true,
+    strokeAnimationSpeed:1,
+    delayBetweenStrokes:250,
+    strokeColor:"#2C4770",
+    outlineColor:"#DCD2BE"
+  });
+
+  document.getElementById("animateBtn").onclick = () => writer.animateCharacter();
+  document.getElementById("quizBtn").onclick = () => {
+    writer.quiz({
+      onComplete: () => markLearned(char)
+    });
+  };
+  document.getElementById("audioBtn").onclick = () => speakKanji(k);
+
+  markLearned(char); // فُتح على الأقل مرة
+  renderGrid();
+}
+
+// ---- الصوت: نفس النظام الهجين المستخدم في باقي التطبيق ----
+// أولوية لملف صوت جاهز لو موجود (لتوليده لاحقاً بنفس سكريبت Balabolka/Haruka)
+// وإلا يرجع تلقائي لـ speechSynthesis كحل احتياطي
+function speakKanji(k){
+  const audioPath = `audio/kanji/${k.char}.wav`;
+  const audio = new Audio(audioPath);
+  audio.onerror = () => fallbackSpeak(k);
+  audio.play().catch(() => fallbackSpeak(k));
+}
+function fallbackSpeak(k){
+  if(!window.speechSynthesis) return;
+  const text = k.kunyomi[0] ? k.kunyomi[0].split(" ")[0] : (k.onyomi[0] ? k.onyomi[0].split(" ")[0] : k.char);
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ja-JP";
+  window.speechSynthesis.speak(u);
+}
+
+document.getElementById("closeBtn").onclick = () => {
+  document.getElementById("overlay").classList.remove("open");
+};
+
+document.querySelectorAll(".level-tabs button").forEach(btn=>{
+  btn.onclick = () => {
+    if(btn.dataset.level !== "N5"){ return; } // N4 لسه مش متاح
+    document.querySelectorAll(".level-tabs button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentLevel = btn.dataset.level;
+    renderGrid();
+  };
+});
+
+renderGrid();
+</script>
+</body>
+</html>
