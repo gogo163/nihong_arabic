@@ -29,6 +29,17 @@
     position:sticky; top:0; z-index:10;
     box-shadow:0 2px 8px rgba(0,0,0,.15);
   }
+  .header-row{
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .back-btn{
+    position:absolute; right:0; top:50%; transform:translateY(-50%);
+    background:rgba(255,255,255,.15); border:none; color:#fff;
+    width:34px; height:34px; border-radius:50%; font-size:18px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; text-decoration:none;
+  }
   header h1{margin:0; font-size:20px; letter-spacing:1px;}
   header .sub{font-size:12px; opacity:.8; margin-top:4px;}
 
@@ -111,7 +122,10 @@
 <body>
 
 <header>
-  <h1>حروف الكانجي</h1>
+  <div class="header-row">
+    <h1>حروف الكانجي</h1>
+    <a href="index.html" class="back-btn" title="الرجوع للصفحة الرئيسية">→</a>
+  </div>
   <div class="sub">اضغط على أي حرف لتتعلم ترتيب كتابته ومعناه</div>
 </header>
 
