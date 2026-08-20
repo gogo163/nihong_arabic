@@ -62,7 +62,7 @@
   </style>
 </head>
 <body>
-  <a href="Lessons/index.html" title="الدروس المنظمة – ٢٥ درس" style="
+  <a id="lessonsPathBtn" href="Lessons/index.html" title="الدروس المنظمة – ٢٥ درس" onclick="return handleLessonsPathClick(event)" style="
     display:inline-flex;
     align-items:center;
     gap:7px;
@@ -80,8 +80,66 @@
     border-radius:999px;
     z-index:999;
     box-shadow:0 6px 16px rgba(233,30,140,0.4);
-  ">📚 الدروس المنظمة <span style="background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:999px;font-size:10px;margin-right:2px;">📥 أوفلاين</span></a>
+    transition:opacity 0.2s ease, filter 0.2s ease;
+  "><span id="lessonsPathLabel">📚 الدروس المنظمة</span> <span style="background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:999px;font-size:10px;margin-right:2px;">📥 أوفلاين</span></a>
   <div id="root" style="padding-bottom:70px"></div>
+  <div id="lessonsPathToast" style="
+    display:none; position:fixed; bottom:80px; left:50%; transform:translateX(-50%);
+    z-index:1000; background:#fff; border:2px solid #f0e4f2; border-radius:16px;
+    padding:14px 16px; box-shadow:0 10px 30px rgba(0,0,0,0.25); max-width:320px; width:88%;
+    text-align:center; font-family:Tajawal,sans-serif;
+  ">
+    <div style="font-size:13px;font-weight:800;color:#2b2438;margin-bottom:10px;line-height:1.6;">
+      🔒 لازم تخلّص هيراغانا وكاتاكانا الأول قبل ما تدخل الدروس المنظمة
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="hideLessonsPathToast()" style="flex:1;padding:9px 0;border-radius:10px;
+        border:1px solid #e6dcf2;background:transparent;color:#8a7e9b;font-weight:700;
+        font-size:12.5px;cursor:pointer;font-family:Tajawal,sans-serif;">تمام</button>
+      <button onclick="skipLettersAndGo()" style="flex:1;padding:9px 0;border-radius:10px;
+        border:none;background:linear-gradient(135deg,#e91e8c,#ff6eb4);color:#fff;font-weight:800;
+        font-size:12.5px;cursor:pointer;font-family:Tajawal,sans-serif;">تخطي وادخل الدروس ⏭</button>
+    </div>
+  </div>
+  <script>
+    const LETTER_PREREQS = ["hiragana", "katakana"];
+    function lettersDone() {
+      let visited = [];
+      try { visited = JSON.parse(localStorage.getItem("nihongo_visited") || "[]"); } catch (e) {}
+      return LETTER_PREREQS.every(id => visited.includes(id));
+    }
+    function refreshLessonsPathLock() {
+      const btn = document.getElementById("lessonsPathBtn");
+      const label = document.getElementById("lessonsPathLabel");
+      if (!btn) return;
+      if (lettersDone()) {
+        btn.style.opacity = "1";
+        btn.style.filter = "none";
+        label.textContent = "📚 الدروس المنظمة";
+      } else {
+        btn.style.opacity = "0.6";
+        btn.style.filter = "grayscale(35%)";
+        label.textContent = "🔒 الدروس المنظمة";
+      }
+    }
+    function handleLessonsPathClick(e) {
+      if (lettersDone()) return true;
+      e.preventDefault();
+      document.getElementById("lessonsPathToast").style.display = "block";
+      return false;
+    }
+    function hideLessonsPathToast() {
+      document.getElementById("lessonsPathToast").style.display = "none";
+    }
+    function skipLettersAndGo() {
+      let visited = [];
+      try { visited = JSON.parse(localStorage.getItem("nihongo_visited") || "[]"); } catch (e) {}
+      LETTER_PREREQS.forEach(id => { if (!visited.includes(id)) visited.push(id); });
+      localStorage.setItem("nihongo_visited", JSON.stringify(visited));
+      window.location.href = "Lessons/index.html";
+    }
+    document.addEventListener("DOMContentLoaded", refreshLessonsPathLock);
+  </script>
   <script type="text/babel">
     const { useState, useEffect } = React;
 
@@ -751,6 +809,7 @@
       const [wordOfDay] = useState(getWordOfDay);
       const [wotdClaimed, setWotdClaimed] = useState(true);
       const [dueReviewCount, setDueReviewCount] = useState(0);
+      const [lockToast, setLockToast] = useState("");
 
       useEffect(() => {
         setThemeMode(loadTheme());
@@ -780,13 +839,16 @@
         saveTheme(next);
       };
 
+      useEffect(() => {
+        if (typeof window.refreshLessonsPathLock === "function") window.refreshLessonsPathLock();
+      }, [visited]);
+
       const level = getLevel(points);
       const progressPercent = Math.min(100, Math.round((visited.length / TOTAL_TOPICS) * 100));
       const nextLesson = lessons.find(l => !visited.includes(l.id)) || lessons[0];
       const allLessonsDone = visited.length >= lessons.length;
 
-      const openLesson = (id) => {
-        setActiveLesson(id);
+      const markLessonVisited = (id) => {
         if (!visited.includes(id)) {
           const updated = [...visited, id];
           setVisited(updated);
@@ -796,6 +858,34 @@
           savePoints(newPoints);
           if (typeof checkRatingPrompt === "function") checkRatingPrompt();
         }
+      };
+
+      const openLesson = (id) => {
+        const isUnlocked = visited.includes(id) || (!allLessonsDone && id === nextLesson.id);
+        if (!isUnlocked) {
+          const target = lessons.find(l => l.id === id);
+          setLockToast({ id, title: target.title });
+          return;
+        }
+        setActiveLesson(id);
+        markLessonVisited(id);
+      };
+
+      const skipToLesson = (id) => {
+        // بيعتبر كل الدروس اللي قبله متعلّمة كمان عشان التقدّم يفضل متسق
+        const idx = lessons.findIndex(l => l.id === id);
+        const idsToAdd = lessons.slice(0, idx + 1).map(l => l.id).filter(lid => !visited.includes(lid));
+        if (idsToAdd.length) {
+          const updated = [...visited, ...idsToAdd];
+          setVisited(updated);
+          saveVisitedLessons(updated);
+          const newPoints = points + idsToAdd.length * POINTS_PER_NEW_LESSON;
+          setPoints(newPoints);
+          savePoints(newPoints);
+          if (typeof checkRatingPrompt === "function") checkRatingPrompt();
+        }
+        setActiveLesson(id);
+        setLockToast("");
       };
 
       const toggleFlip = (key) => setFlipped(prev=>({...prev,[key]:!prev[key]}));
@@ -1024,6 +1114,30 @@
               <div style={{textAlign:"center",background:theme.cardBg,borderRadius:16,padding:"14px 18px",
                 marginBottom:16,boxShadow:theme.statsShadow,color:theme.textMain,fontWeight:700,fontSize:14}}>
                 🎉 أنهيت كل الدروس الأساسية! راجعي أي درس تحبي من القائمة
+              </div>
+            )}
+
+            {!activeLesson && lockToast && (
+              <div style={{position:"fixed",bottom:20,left:"50%",transform:"translateX(-50%)",
+                zIndex:999,background:theme.cardBg,border:`2px solid ${theme.cardBorder}`,
+                borderRadius:16,padding:"14px 16px",boxShadow:"0 10px 30px rgba(0,0,0,0.25)",
+                maxWidth:320,width:"90%",textAlign:"center"}}>
+                <div style={{fontSize:13,fontWeight:800,color:theme.textMain,marginBottom:10,lineHeight:1.6}}>
+                  🔒 لازم تخلّص "{nextLesson.title}" الأول قبل "{lockToast.title}"
+                </div>
+                <div style={{display:"flex",gap:8}}>
+                  <button onClick={()=>setLockToast("")}
+                    style={{flex:1,padding:"9px 0",borderRadius:10,border:`1px solid ${theme.cardBorder}`,
+                      background:"transparent",color:theme.textSub,fontWeight:700,fontSize:12.5,cursor:"pointer"}}>
+                    تمام
+                  </button>
+                  <button onClick={()=>skipToLesson(lockToast.id)}
+                    style={{flex:1,padding:"9px 0",borderRadius:10,border:"none",
+                      background:"linear-gradient(135deg,#e91e8c,#ff6eb4)",color:"#fff",fontWeight:800,
+                      fontSize:12.5,cursor:"pointer"}}>
+                    تخطي وابدأ من هنا ⏭
+                  </button>
+                </div>
               </div>
             )}
 
