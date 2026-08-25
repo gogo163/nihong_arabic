@@ -221,9 +221,21 @@
           {jp:"おはよう",rom:"Ohayou",ar:"صباح الخير (عادي)"},
           {jp:"こんにちは",rom:"Konnichiwa",ar:"مرحباً / السلام"},
           {jp:"こんばんは",rom:"Konbanwa",ar:"مساء الخير"},
-          {jp:"さようなら",rom:"Sayounara",ar:"مع السلامة"},
+          {jp:"おやすみなさい",rom:"Oyasumi nasai",ar:"تصبح على خير (رسمي)"},
+          {jp:"おやすみ",rom:"Oyasumi",ar:"تصبح على خير (عادي)"},
+          {jp:"はじめまして",rom:"Hajimemashite",ar:"تشرفنا (أول مرة)"},
+          {jp:"よろしくお願いします",rom:"Yoroshiku onegaishimasu",ar:"يسعدني التعارف"},
+          {jp:"お元気ですか",rom:"Ogenki desu ka",ar:"إزيك؟"},
+          {jp:"元気です",rom:"Genki desu",ar:"أنا بخير"},
+          {jp:"お久しぶりです",rom:"Ohisashiburi desu",ar:"من زمان!"},
+          {jp:"いってきます",rom:"Ittekimasu",ar:"أنا رايح (بتقال وأنت خارج)"},
+          {jp:"いってらっしゃい",rom:"Itterasshai",ar:"مع السلامة (رد على اللي طالع)"},
+          {jp:"ただいま",rom:"Tadaima",ar:"وصلت (بتقال وأنت داخل)"},
+          {jp:"おかえりなさい",rom:"Okaeri nasai",ar:"أهلاً بيك (رد على اللي رجع)"},
           {jp:"ありがとう",rom:"Arigatou",ar:"شكراً"},
           {jp:"すみません",rom:"Sumimasen",ar:"عفواً / آسف"},
+          {jp:"さようなら",rom:"Sayounara",ar:"مع السلامة (رسمي/نهائي)"},
+          {jp:"じゃあね",rom:"Jaa ne",ar:"باي (غير رسمية)"},
           {jp:"はい",rom:"Hai",ar:"نعم"},
           {jp:"いいえ",rom:"Iie",ar:"لا"},
         ],
@@ -542,6 +554,22 @@
       "ワ": "audio/kana/katakana_44.wav",
       "ヲ": "audio/kana/katakana_45.wav",
       "ン": "audio/kana/katakana_46.wav",
+      "おはようございます": "audio/vocab/greetings_01.wav",
+      "おはよう": "audio/vocab/greetings_02.wav",
+      "こんにちは": "audio/vocab/greetings_03.wav",
+      "こんばんは": "audio/vocab/greetings_04.wav",
+      "おやすみなさい": "audio/vocab/greetings_05.wav",
+      "おやすみ": "audio/vocab/greetings_06.wav",
+      "はじめまして": "audio/vocab/greetings_07.wav",
+      "よろしくお願いします": "audio/vocab/greetings_08.wav",
+      "お元気ですか": "audio/vocab/greetings_09.wav",
+      "元気です": "audio/vocab/greetings_10.wav",
+      "お久しぶりです": "audio/vocab/greetings_11.wav",
+      "いってきます": "audio/vocab/greetings_12.wav",
+      "いってらっしゃい": "audio/vocab/greetings_13.wav",
+      "ただいま": "audio/vocab/greetings_14.wav",
+      "おかえりなさい": "audio/vocab/greetings_15.wav",
+      "じゃあね": "audio/vocab/greetings_16.wav",
     };
 
     const WORD_OF_DAY_LIST = [
@@ -899,7 +927,7 @@
         "نعم": "نعم باليابانية: はい (Hai) ✅",
         "لا": "لا باليابانية: いいえ (Iie) ❌",
         "اسمي": "اسمي ... باليابانية: わたしは [اسمك] です (Watashi wa [ismak] desu) 😊",
-        "كيف حالك": "كيف حالك باليابانية: おげんきですか (Ogenki desu ka؟) والجواب: げنきです (Genki desu) — أنا بخير 💚",
+        "كيف حالك": "كيف حالك باليابانية: おげنきですか (Ogenki desu ka؟) والجواب: げنきです (Genki desu) — أنا بخير 💚",
         "ماء": "ماء باليابانية: みず (Mizu) 💧",
         "طعام": "طعام باليابانية: たべもの (Tabemono) 🍱",
         "سوشي": "سوشي باليابانية: すし (Sushi) 🍣 — من أشهر الأطعمة اليابانية!",
@@ -1137,6 +1165,45 @@
                       fontSize:12.5,cursor:"pointer"}}>
                     تخطي وابدأ من هنا ⏭
                   </button>
+                </div>
+              </div>
+            )}
+
+            {!activeLesson && (
+              <div style={{marginBottom:26}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+                  <div style={{fontSize:14,fontWeight:900,color:theme.textMain}}>📍 مسار التعلم</div>
+                </div>
+                <div style={{fontSize:11.5,color:theme.textSub,marginBottom:12}}>
+                  ابدأ من الدرس الأول وتعلم بالترتيب
+                </div>
+                <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:8,
+                  scrollSnapType:"x mandatory",WebkitOverflowScrolling:"touch"}}>
+                  {lessons.map((l,i)=>{
+                    const isDone = visited.includes(l.id);
+                    const isCurrent = !allLessonsDone && l.id===nextLesson.id;
+                    const isLocked = !isDone && !isCurrent;
+                    return (
+                      <button key={l.id} onClick={()=>openLesson(l.id)}
+                        style={{flexShrink:0,scrollSnapAlign:"start",width:118,textAlign:"center",
+                          border:isCurrent?"2px solid #e91e8c":`1px solid ${theme.cardBorder}`,
+                          background:theme.cardBg,borderRadius:16,padding:"12px 10px",cursor:"pointer",
+                          opacity:isLocked?0.55:1,
+                          boxShadow:isCurrent?"0 6px 16px rgba(233,30,140,0.25)":"none"}}>
+                        <div style={{display:"flex",justifyContent:"center",marginBottom:6}}>
+                          <span style={{background:isDone?"#2ecc71":isCurrent?"#e91e8c":theme.cardBorder,
+                            color:"#fff",fontSize:11,fontWeight:800,borderRadius:999,
+                            width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                            {isDone ? "✓" : (i+1)}
+                          </span>
+                        </div>
+                        <div style={{fontSize:22,marginBottom:4}}>{isLocked ? "🔒" : l.icon}</div>
+                        <div style={{fontSize:11,fontWeight:800,color:theme.textMain,lineHeight:1.4}}>
+                          {l.title}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
