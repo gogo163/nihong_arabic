@@ -24,6 +24,14 @@
       0% { background-position: -200% center; }
       100% { background-position: 200% center; }
     }
+    @keyframes mascotBounce {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+    @keyframes mascotBlink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      96% { transform: scaleY(0.1); }
+    }
     .card-flip { transition: transform 0.5s; transform-style: preserve-3d; }
     .card-flip.flipped { transform: rotateY(180deg); }
     .card-front, .card-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
@@ -75,9 +83,56 @@
       {jp:"馬鹿",rom:"Baka",ar:"غبي / أهبل",ctx:"بتتقال بمزاح أو بجد حسب الموقف",cat:"مشاعر"},
       {jp:"がんばります",rom:"Ganbarimasu",ar:"هبذل قصارى جهدي",ctx:"وعد بمحاولة الأفضل قبل تحدي",cat:"معارك"},
       {jp:"よろしくお願いします",rom:"Yoroshiku onegaishimasu",ar:"تشرفنا / أتمنى تعاون طيب",ctx:"بتتقال عند أول لقاء أو بداية شراكة",cat:"تحيات"},
+      {jp:"おっす",rom:"Ossu",ar:"إيه الأخبار!",ctx:"تحية كاجوال جدًا بين الشباب",cat:"تحيات"},
+      {jp:"よっ",rom:"Yo",ar:"هاي!",ctx:"تحية سريعة وخفيفة جدًا",cat:"تحيات"},
+      {jp:"かっこいい",rom:"Kakkoii",ar:"كول / شكله جامد",ctx:"وصف شائع للشخصيات أو المواقف المثيرة للإعجاب",cat:"مشاعر"},
+      {jp:"がんばって",rom:"Ganbatte",ar:"بالتوفيق / يلا شد حيلك",ctx:"تشجيع لشخص تاني قبل تحدي",cat:"معارك"},
+      {jp:"がんばるぞ",rom:"Ganbaru zo",ar:"هشد حيلي!",ctx:"بيقولها البطل لنفسه قبل معركة أو تحدي",cat:"معارك"},
+      {jp:"待って",rom:"Matte",ar:"استنى!",ctx:"بتتقال لوقف حد أو طلب مهلة",cat:"مشاعر"},
+      {jp:"なんで",rom:"Nande",ar:"ليه؟!",ctx:"تعبير اندهاش أو استنكار شائع",cat:"مشاعر"},
+      {jp:"うるさい",rom:"Urusai",ar:"اسكت! / إزعاج",ctx:"بتتقال بعصبية أو بمزاح حسب الموقف",cat:"مشاعر"},
+      {jp:"だいじょうぶ",rom:"Daijoubu",ar:"إنت كويس؟ / تمام؟",ctx:"سؤال أو تطمين شائع بعد موقف صعب",cat:"مشاعر"},
+      {jp:"いくぞ",rom:"Ikuzo",ar:"يلا بينا!",ctx:"بتتقال قبل بدء حدث أو معركة",cat:"معارك"},
+      {jp:"まさか",rom:"Masaka",ar:"مستحيل! / معقول كده؟!",ctx:"رد فعل صدمة قوية على حدث غير متوقع",cat:"مشاعر"},
     ];
 
     const categories = ["الكل", ...new Set(animeWords.map(w=>w.cat))];
+
+    const MASCOT_BY_CAT = {
+      "الكل": "hello", "تحيات": "hello", "معارك": "determined",
+      "مشاعر": "surprised", "ألقاب": "determined", "طعام": "hello",
+    };
+
+    function Mascot({mood}) {
+      const eyesOpen = mood !== "surprised";
+      return (
+        <svg width="72" height="80" viewBox="0 0 72 80" style={{animation:"mascotBounce 2.4s ease-in-out infinite"}}>
+          <circle cx="36" cy="42" r="30" fill="#ffdcb8" stroke="#2b1f1a" strokeWidth="2.4"/>
+          <path d="M 10 38 Q 8 -2 36 -6 Q 64 -2 62 38 Q 52 10 36 8 Q 20 10 10 38 Z" fill="#e85d9a" stroke="#2b1f1a" strokeWidth="2.4"/>
+          {mood==="hello" && (<g style={{transformOrigin:"36px 42px",animation:"mascotBlink 3.5s ease-in-out infinite"}}>
+            <circle cx="24" cy="43" r="5" fill="#fff" stroke="#2b1f1a" strokeWidth="1.6"/>
+            <circle cx="25" cy="43" r="2.5" fill="#2b1f1a"/>
+            <circle cx="48" cy="43" r="5" fill="#fff" stroke="#2b1f1a" strokeWidth="1.6"/>
+            <circle cx="49" cy="43" r="2.5" fill="#2b1f1a"/>
+          </g>)}
+          {mood==="determined" && (<g>
+            <path d="M 16 40 L 28 44 L 16 48" fill="none" stroke="#2b1f1a" strokeWidth="2.4" strokeLinecap="round"/>
+            <path d="M 56 40 L 44 44 L 56 48" fill="none" stroke="#2b1f1a" strokeWidth="2.4" strokeLinecap="round"/>
+          </g>)}
+          {mood==="surprised" && (<g>
+            <circle cx="24" cy="43" r="6.5" fill="#fff" stroke="#2b1f1a" strokeWidth="1.6"/>
+            <circle cx="24" cy="43" r="3" fill="#2b1f1a"/>
+            <circle cx="48" cy="43" r="6.5" fill="#fff" stroke="#2b1f1a" strokeWidth="1.6"/>
+            <circle cx="48" cy="43" r="3" fill="#2b1f1a"/>
+          </g>)}
+          <ellipse cx="18" cy="58" rx="6" ry="3.5" fill="#ff9eb0" opacity="0.6"/>
+          <ellipse cx="54" cy="58" rx="6" ry="3.5" fill="#ff9eb0" opacity="0.6"/>
+          {mood==="surprised"
+            ? <circle cx="36" cy="62" r="5" fill="#2b1f1a"/>
+            : <path d="M 24 60 Q 36 70 48 60" fill="none" stroke="#2b1f1a" strokeWidth="2.4" strokeLinecap="round"/>}
+        </svg>
+      );
+    }
 
     // خريطة الصوت: كل كلمة بترتيبها في animeWords ليها ملف anime_01 1.wav لحد anime_20 1.wav
     const ANIME_AUDIO_MAP = {};
@@ -285,6 +340,9 @@
             <div style={{textAlign:"center",padding:"36px 20px 28px",position:"relative",marginBottom:8}}>
               <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:320,height:320,
                 background:"radial-gradient(circle,rgba(220,38,38,0.08) 0%,transparent 70%)",borderRadius:"50%",pointerEvents:"none"}}/>
+              <div style={{display:"flex",justifyContent:"center",marginBottom:4}}>
+                <Mascot mood={MASCOT_BY_CAT[activeCat] || "hello"}/>
+              </div>
               <div style={{fontSize:36,marginBottom:8}}>🎌</div>
               <h1 className="shimmer-text" style={{fontSize:30,fontWeight:900,marginBottom:8,fontFamily:"'Noto Sans JP','Tajawal',sans-serif"}}>
                 アニメ日本語
@@ -323,7 +381,7 @@
 
             <div style={{background:theme.cardBg,borderRadius:14,padding:"12px 14px",marginBottom:16,
               border:`1px dashed ${theme.cardBorder}`,fontSize:12,color:theme.textSub,lineHeight:1.8}}>
-              ⚠️ الكلمات هنا شائعة في ثقافة الأنمي بشكل عام، مش منسوبة لعمل معيّن، احترامًا لحقوق الملكية. اضغط ➕ جنب أي كلمة تحفظها عشان تكسب نقاط.
+              ⚠️ الكلمات هنا شائعة في ثقافة الأنمي بشكل عام، مش منسوبة لعمل معيّن، احترامًا لحقوق الملكية. بعضها كاجوال أو حاد النبرة، فاستخدمها بحذر في الواقع. اضغط ➕ جنب أي كلمة تحفظها عشان تكسب نقاط.
             </div>
 
             <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:12,marginBottom:8}}>

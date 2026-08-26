@@ -264,7 +264,7 @@
   <div class="logo" style="font-size:24px;">✍️</div>
   <div class="header-title">
     <h1>تدريب الكتابة</h1>
-    <p>ارسمي الحرف بإصبعك</p>
+    <p>ارسم الحرف بإصبعك</p>
   </div>
   <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
 </div>
@@ -285,7 +285,7 @@
     <div class="stat"><div class="val">🏆 <span id="levelVal">1</span></div><div class="lbl">المستوى</div></div>
   </div>
 
-  <div class="mode-complete-banner" id="mode-complete-banner">🎉 برافو! أتقنتي كل الحروف وأخدتي 10 نقاط!</div>
+  <div class="mode-complete-banner" id="mode-complete-banner">🎉 برافو! أتقنت كل الحروف وأخدت 10 نقاط!</div>
 
   <!-- Score row -->
   <div class="score-row">
@@ -310,7 +310,7 @@
   </div>
 
   <!-- Char selector -->
-  <div class="section-label">اختاري الحرف:</div>
+  <div class="section-label">اختار الحرف:</div>
   <div class="char-scroll" id="char-scroll"></div>
 
   <!-- Practice box -->
@@ -326,17 +326,17 @@
       <div class="ghost-char" id="ghost-char">あ</div>
     </div>
 
-    <div class="stroke-hint">💡 ارسمي الحرف بإصبعك في الإطار أعلاه</div>
+    <div class="stroke-hint">💡 ارسم الحرف بإصبعك في الإطار أعلاه</div>
 
     <div class="steps-box">
       <div class="steps-title">✏️ خطوات كتابة الحرف (<span id="steps-count">0</span> خطوط)</div>
       <div class="steps-list" id="steps-list"></div>
-      <div class="steps-note">وصف عام للاتجاه — للدقة الكاملة راجعي فيديو أو تطبيق متخصص في ترتيب الخطوط</div>
+      <div class="steps-note">وصف عام للاتجاه — للدقة الكاملة راجع فيديو أو تطبيق متخصص في ترتيب الخطوط</div>
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-clear" onclick="clearCanvas()">🗑️ امسحي</button>
-      <button class="btn btn-check" onclick="checkWriting()">✅ تحققي</button>
+      <button class="btn btn-clear" onclick="clearCanvas()">🗑️ امسح</button>
+      <button class="btn btn-check" onclick="checkWriting()">✅ تحقق</button>
     </div>
 
     <div class="result-box" id="result-box"></div>
@@ -535,15 +535,42 @@ function clearCanvas() {
 }
 
 // ========================
+// SHAPE TEMPLATE (للمقارنة الحقيقية بشكل الحرف)
+// ========================
+function buildTemplate(char, size) {
+  const tCanvas = document.createElement('canvas');
+  tCanvas.width = size;
+  tCanvas.height = size;
+  const tctx = tCanvas.getContext('2d');
+  tctx.fillStyle = '#000';
+  tctx.textAlign = 'center';
+  tctx.textBaseline = 'middle';
+  tctx.font = `${Math.round(size * 0.68)}px 'Noto Sans JP', sans-serif`;
+
+  // بنرسم الحرف عدة مرات بإزاحات بسيطة حوالين المركز عشان نعمل "منطقة سماح"
+  // (تولريرانس) حوالين شكل الحرف الأصلي، لأن خط اليد مش هيطابق فونت الكمبيوتر 100%
+  const tolerance = size * 0.07;
+  const steps = 10;
+  for (let i = 0; i < steps; i++) {
+    const angle = (i / steps) * 2 * Math.PI;
+    const dx = Math.cos(angle) * tolerance;
+    const dy = Math.sin(angle) * tolerance;
+    tctx.fillText(char, size / 2 + dx, size / 2 + dy);
+  }
+  tctx.fillText(char, size / 2, size / 2);
+
+  return tctx.getImageData(0, 0, size, size);
+}
+
+// ========================
 // CHECK WRITING
 // ========================
 function checkWriting() {
   if (!hasDrawn) {
-    showResult('try', '✏️ ارسمي الحرف الأول!');
+    showResult('try', '✏️ ارسم الحرف الأول!');
     return;
   }
 
-  // Check if canvas has meaningful strokes
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   let filledPixels = 0;
   for (let i = 3; i < imageData.data.length; i += 4) {
@@ -555,12 +582,35 @@ function checkWriting() {
   document.getElementById('score-total').textContent = scoreTotal;
 
   if (fillRatio < 0.005) {
-    showResult('try', '✏️ ارسمي أكتر! الخط خفيف جداً.');
+    showResult('try', '✏️ ارسم أكتر! الخط خفيف جداً.');
     return;
   }
 
-  // Good drawing - give positive feedback based on coverage
-  if (fillRatio > 0.005 && fillRatio < 0.5) {
+  if (fillRatio >= 0.55) {
+    scoreWrong++;
+    document.getElementById('score-wrong').textContent = scoreWrong;
+    showResult('good', '👀 كتير شوية! حاول ترسم الحرف بدقة أكتر.');
+    document.getElementById('btn-next').className = 'btn-next show';
+    return;
+  }
+
+  // مقارنة حقيقية بين شكل الرسمة وشكل الحرف الفعلي
+  const targetChar = currentData[currentIndex].jp;
+  const template = buildTemplate(targetChar, canvas.width);
+
+  let templateCount = 0;
+  let hits = 0;
+  for (let i = 3; i < imageData.data.length; i += 4) {
+    const inTemplate = template.data[i] > 20;
+    const userInked = imageData.data[i] > 50;
+    if (inTemplate) templateCount++;
+    if (inTemplate && userInked) hits++;
+  }
+
+  const recall = templateCount > 0 ? hits / templateCount : 0;
+  const precision = filledPixels > 0 ? hits / filledPixels : 0;
+
+  if (recall > 0.42 && precision > 0.32) {
     scoreCorrect++;
     mastered.add(currentIndex);
     document.getElementById('score-correct').textContent = scoreCorrect;
@@ -568,16 +618,20 @@ function checkWriting() {
 
     const msgs = [
       '🌸 ممتاز! الرسم كويس جداً!',
-      '✨ برافو! استمري!',
-      '🎌 رائع! أنتِ بتتعلمي بسرعة!',
-      '💪 أحسنتِ! الحرف واضح!',
-      '🌟 جميل جداً! كملي!',
+      '✨ برافو! استمر!',
+      '🎌 رائع! أنت بتتعلم بسرعة!',
+      '💪 أحسنت! الحرف واضح!',
+      '🌟 جميل جداً! كمل!',
     ];
     showResult('great', msgs[Math.floor(Math.random() * msgs.length)]);
-  } else if (fillRatio >= 0.5) {
+  } else if (recall > 0.22 || precision > 0.22) {
     scoreWrong++;
     document.getElementById('score-wrong').textContent = scoreWrong;
-    showResult('good', '👀 كتير شوية! حاولي ترسمي الحرف بدقة أكتر.');
+    showResult('good', '👀 قريب! بس الشكل مش مطابق تمامًا، حاول تاني.');
+  } else {
+    scoreWrong++;
+    document.getElementById('score-wrong').textContent = scoreWrong;
+    showResult('good', '❌ الشكل مش شبه الحرف. شوف خطوات الكتابة وحاول تاني.');
   }
 
   document.getElementById('btn-next').className = 'btn-next show';
