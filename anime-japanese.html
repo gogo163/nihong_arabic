@@ -134,11 +134,14 @@
       );
     }
 
-    // خريطة الصوت: كل كلمة بترتيبها في animeWords ليها ملف anime_XX.wav (بدون مسافة ولا أرقام زيادة)
+    // خريطة الصوت: الكلمات الأصلية (1-20) بتنسيق "anime_XX 1.wav" (المضمون إنه صح)،
+    // والكلمات الجديدة (21-31) بتنسيق بسيط "anime_XX.wav" (المولّدة حديثًا والمؤكدة)
     const ANIME_AUDIO_MAP = {};
     animeWords.forEach((w, i) => {
-      const num = String(i + 1).padStart(2, "0");
-      ANIME_AUDIO_MAP[w.jp] = `audio/anime/anime_${num}.wav`;
+      const idx = i + 1;
+      const num = String(idx).padStart(2, "0");
+      const filename = idx <= 20 ? `anime_${num} 1.wav` : `anime_${num}.wav`;
+      ANIME_AUDIO_MAP[w.jp] = `audio/anime/${filename}`;
     });
 
     const petals = Array.from({length:18},(_,i)=>({
