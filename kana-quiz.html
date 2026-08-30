@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>اختبار الحروف</title>
+<style>
+  :root{
+    --primary:#e91e8c;      /* نفس وردي هوية niهongo Arabic */
+    --primary-dark:#b8156d;
+    --accent:#ff6eb4;
+    --bg:#fff5f8;
+    --card:#ffffff;
+    --text:#222;
+    --muted:#888;
+    --correct:#2ecc71;
+    --wrong:#e74c3c;
+    --timer-danger:#e74c3c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Tahoma','Segoe UI',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:16px;
+  }
+  .top-bar{
+    width:100%;max-width:480px;
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:12px;
+  }
+  .back-btn{
+    background:none;border:none;font-size:22px;color:var(--text);cursor:pointer;
+  }
+  .total-timer-wrap{
+    width:100%;max-width:480px;
+    background:#eee;border-radius:20px;height:10px;overflow:hidden;margin-bottom:18px;
+  }
+  .total-timer-bar{
+    height:100%;background:var(--primary);border-radius:20px;
+    transition:width 0.2s linear, background 0.3s;
+    width:100%;
+  }
+  .score-row{
+    width:100%;max-width:480px;
+    display:flex;justify-content:space-between;
+    font-size:14px;color:var(--muted);margin-bottom:14px;
+  }
+  .card{
+    width:100%;max-width:480px;
+    background:var(--card);
+    border-radius:18px;
+    padding:24px 18px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.06);
+    text-align:center;
+  }
+  .q-timer-ring{
+    width:56px;height:56px;margin:0 auto 14px;
+    position:relative;
+  }
+  .q-timer-ring svg{transform:rotate(-90deg);width:56px;height:56px;}
+  .q-timer-ring circle{
+    fill:none;stroke-width:5;
+  }
+  .q-timer-bg{stroke:#eee;}
+  .q-timer-fg{
+    stroke:var(--primary);
+    stroke-linecap:round;
+    transition:stroke-dashoffset 0.2s linear, stroke 0.3s;
+  }
+  .q-timer-num{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:bold;font-size:16px;
+  }
+  .question-text{
+    font-size:26px;font-weight:bold;margin-bottom:6px;
+    min-height:34px;
+  }
+  .speaker-btn{
+    background:var(--card);border:2px solid var(--primary);border-radius:24px;
+    font-size:15px;color:var(--primary);cursor:pointer;
+    padding:8px 18px;margin-bottom:14px;opacity:0.95;transition:transform 0.15s;
+  }
+  .speaker-btn:active{transform:scale(0.95);}
+  .speaker-btn.speaking{animation:pulseSpeaker 0.6s infinite;}
+  @keyframes pulseSpeaker{
+    0%,100%{opacity:0.95;} 50%{opacity:0.5;}
+  }
+  .question-text.audio-mode{
+    font-size:44px;margin-bottom:2px;
+  }
+  .question-sub{
+    font-size:14px;color:var(--muted);margin-bottom:20px;
+  }
+  .options{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  }
+  .opt-btn{
+    padding:16px 8px;border-radius:12px;border:2px solid #eee;
+    background:#fff;font-size:16px;cursor:pointer;
+    transition:all 0.15s;
+  }
+  .opt-btn:active{transform:scale(0.97);}
+  .opt-btn.correct{background:var(--correct);border-color:var(--correct);color:#fff;}
+  .opt-btn.wrong{background:var(--wrong);border-color:var(--wrong);color:#fff;}
+  .opt-btn.disabled{pointer-events:none;opacity:0.85;}
+  .streak-badge{
+    display:inline-block;margin-top:14px;font-size:13px;color:var(--primary);font-weight:bold;
+  }
+  .result-screen{display:none;}
+  .result-screen.show{display:block;}
+  .result-emoji{font-size:56px;margin-bottom:10px;}
+  .result-title{font-size:22px;font-weight:bold;margin-bottom:6px;}
+  .result-stats{
+    display:flex;justify-content:space-around;margin:20px 0;
+  }
+  .result-stat b{display:block;font-size:22px;color:var(--primary);}
+  .result-stat span{font-size:12px;color:var(--muted);}
+  .action-btn{
+    display:block;width:100%;padding:14px;border:none;border-radius:12px;
+    background:var(--primary);color:#fff;font-size:16px;font-weight:bold;
+    margin-top:10px;cursor:pointer;
+  }
+  .action-btn.secondary{background:#f1f1f1;color:var(--text);}
+  .hidden{display:none !important;}
+
+  /* تأثيرات الإجابة */
+  @keyframes shakeWrong{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-8px);}
+    40%{transform:translateX(8px);}
+    60%{transform:translateX(-6px);}
+    80%{transform:translateX(6px);}
+  }
+  @keyframes pulseCorrect{
+    0%{transform:scale(1);}
+    30%{transform:scale(1.04);}
+    100%{transform:scale(1);}
+  }
+  .card.shake-wrong{animation:shakeWrong 0.4s ease;}
+  .card.pulse-correct{animation:pulseCorrect 0.35s ease;}
+
+  .opt-btn.correct{animation:pulseCorrect 0.35s ease;}
+  .opt-btn.wrong{animation:shakeWrong 0.4s ease;}
+
+  /* وميض خفيف للحدود حسب النتيجة */
+  .card.flash-correct{box-shadow:0 0 0 3px var(--correct), 0 4px 18px rgba(0,0,0,0.06);}
+  .card.flash-wrong{box-shadow:0 0 0 3px var(--wrong), 0 4px 18px rgba(0,0,0,0.06);}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <button class="back-btn" onclick="history.back()">→</button>
+  <strong>اختبار الحروف 🈴</strong>
+  <span style="width:22px"></span>
+</div>
+
+<div class="total-timer-wrap">
+  <div class="total-timer-bar" id="totalTimerBar"></div>
+</div>
+
+<div class="score-row">
+  <span id="progressLabel">سؤال 1 / 10</span>
+  <span id="scoreLabel">النقاط: 0</span>
+</div>
+
+<!-- شاشة السؤال -->
+<div class="card" id="quizCard">
+  <div class="q-timer-ring">
+    <svg viewBox="0 0 56 56">
+      <circle class="q-timer-bg" cx="28" cy="28" r="24"></circle>
+      <circle class="q-timer-fg" id="qTimerFg" cx="28" cy="28" r="24"
+              stroke-dasharray="150.8" stroke-dashoffset="0"></circle>
+    </svg>
+    <div class="q-timer-num" id="qTimerNum">10</div>
+  </div>
+
+  <div class="question-text" id="questionText"></div>
+  <button class="speaker-btn hidden" id="speakerBtn" onclick="playWordAudio(questions[currentIndex].jp)" title="اسمع تاني">🔊 اسمع تاني</button>
+  <div class="question-sub" id="questionSub">اختار النطق الصحيح (Romaji)</div>
+
+  <div class="options" id="optionsGrid"></div>
+
+  <div class="streak-badge hidden" id="streakBadge">🔥 سلسلة: 0</div>
+</div>
+
+<!-- شاشة النتيجة -->
+<div class="card result-screen" id="resultScreen">
+  <div class="result-emoji" id="resultEmoji">🎉</div>
+  <div class="result-title" id="resultTitle">أحسنت!</div>
+  <div class="result-stats">
+    <div class="result-stat"><b id="finalScore">0</b><span>نقطة</span></div>
+    <div class="result-stat"><b id="finalCorrect">0/0</b><span>إجابات صح</span></div>
+    <div class="result-stat"><b id="finalStreak">0</b><span>أعلى سلسلة</span></div>
+  </div>
+  <button class="action-btn" onclick="restartQuiz()">إعادة المحاولة</button>
+  <button class="action-btn secondary" onclick="history.back()">رجوع للدرس</button>
+</div>
+
+<script>
+// ==========================================================================
+// قائمة الحروف: هيراغانا + كاتاكانا (46 حرف أساسي لكل واحدة = 92 حرف)
+// نفس الترتيب المستخدم في ملفات الصوت عندك: audio/kana/hiragana_01.wav
+// إلى hiragana_46.wav، وكاتاكانا بنفس الترقيم katakana_01 إلى katakana_46
+// ==========================================================================
+const GOJUON = [
+  ["あ","ア","a"],["い","イ","i"],["う","ウ","u"],["え","エ","e"],["お","オ","o"],
+  ["か","カ","ka"],["き","キ","ki"],["く","ク","ku"],["け","ケ","ke"],["こ","コ","ko"],
+  ["さ","サ","sa"],["し","シ","shi"],["す","ス","su"],["せ","セ","se"],["そ","ソ","so"],
+  ["た","タ","ta"],["ち","チ","chi"],["つ","ツ","tsu"],["て","テ","te"],["と","ト","to"],
+  ["な","ナ","na"],["に","ニ","ni"],["ぬ","ヌ","nu"],["ね","ネ","ne"],["の","ノ","no"],
+  ["は","ハ","ha"],["ひ","ヒ","hi"],["ふ","フ","fu"],["へ","ヘ","he"],["ほ","ホ","ho"],
+  ["ま","マ","ma"],["み","ミ","mi"],["む","ム","mu"],["め","メ","me"],["も","モ","mo"],
+  ["や","ヤ","ya"],["ゆ","ユ","yu"],["よ","ヨ","yo"],
+  ["ら","ラ","ra"],["り","リ","ri"],["る","ル","ru"],["れ","レ","re"],["ろ","ロ","ro"],
+  ["わ","ワ","wa"],["を","ヲ","wo"],["ん","ン","n"]
+];
+
+const KANA_LIST = [];
+const KANA_AUDIO_MAP = {};
+GOJUON.forEach((row, i) => {
+  const num = String(i + 1).padStart(2, "0");
+  const [hira, kata, rom] = row;
+  KANA_LIST.push({ jp: hira, rom });
+  KANA_LIST.push({ jp: kata, rom });
+  KANA_AUDIO_MAP[hira] = `audio/kana/hiragana_${num}.wav`;
+  KANA_AUDIO_MAP[kata] = `audio/kana/katakana_${num}.wav`;
+});
+</script>
+
+<script>
+// ==========================================================================
+// إعدادات الكويز
+// ==========================================================================
+const CONFIG = {
+  TOTAL_TIME_SECONDS: 60,     // الوقت الإجمالي للكويز كله
+  PER_QUESTION_SECONDS: 10,   // الوقت المتاح لكل سؤال
+  QUESTION_COUNT: 15,         // عدد الأسئلة في الجولة (حروف أكتر من كويز المفردات)
+  POINTS_PER_CORRECT: 10,
+  STREAK_BONUS: 5              // نقط إضافية كل 3 إجابات صح متتالية
+};
+
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let correctCount = 0;
+let streak = 0;
+let maxStreak = 0;
+let totalTimeLeft = CONFIG.TOTAL_TIME_SECONDS;
+let qTimeLeft = CONFIG.PER_QUESTION_SECONDS;
+let totalTimerInterval = null;
+let qTimerInterval = null;
+let answered = false;
+
+const Q_CIRCUMFERENCE = 150.8; // 2 * PI * r(24)
+
+// ==========================================================================
+// جلب الأسئلة من KANA_LIST
+// ==========================================================================
+function buildQuestionSet() {
+  const pool = KANA_LIST;
+
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, Math.min(CONFIG.QUESTION_COUNT, shuffled.length));
+
+  return selected.map(q => {
+    const others = pool.filter(p => p.rom !== q.rom).map(p => p.rom);
+    const wrongOptions = [...new Set(others)].sort(() => Math.random() - 0.5).slice(0, 3);
+    const allOptions = [q.rom, ...wrongOptions].sort(() => Math.random() - 0.5);
+    const type = Math.random() < 0.5 ? "text" : "audio"; // نص السؤال هيبقى كتابة ولا سماع بس
+    return { jp: q.jp, correct: q.rom, options: allOptions, type };
+  });
+}
+
+// ==========================================================================
+// منطق اللعبة
+// ==========================================================================
+function startQuiz() {
+  questions = buildQuestionSet();
+  currentIndex = 0;
+  score = 0;
+  correctCount = 0;
+  streak = 0;
+  maxStreak = 0;
+  totalTimeLeft = CONFIG.TOTAL_TIME_SECONDS;
+
+  document.getElementById("resultScreen").classList.remove("show");
+  document.getElementById("quizCard").classList.remove("hidden");
+
+  startTotalTimer();
+  showQuestion();
+}
+
+function startTotalTimer() {
+  clearInterval(totalTimerInterval);
+  updateTotalBar();
+  totalTimerInterval = setInterval(() => {
+    totalTimeLeft -= 0.2;
+    if (totalTimeLeft <= 0) {
+      totalTimeLeft = 0;
+      updateTotalBar();
+      endQuiz();
+      return;
+    }
+    updateTotalBar();
+  }, 200);
+}
+
+function updateTotalBar() {
+  const pct = Math.max(0, (totalTimeLeft / CONFIG.TOTAL_TIME_SECONDS) * 100);
+  const bar = document.getElementById("totalTimerBar");
+  bar.style.width = pct + "%";
+  bar.style.background = pct < 20 ? "var(--timer-danger)" : "var(--primary)";
+}
+
+function showQuestion() {
+  if (currentIndex >= questions.length) { endQuiz(); return; }
+  answered = false;
+  qTimeLeft = CONFIG.PER_QUESTION_SECONDS;
+
+  const q = questions[currentIndex];
+  const textEl = document.getElementById("questionText");
+  const speakerBtn = document.getElementById("speakerBtn");
+  const subEl = document.getElementById("questionSub");
+
+  if (q.type === "audio") {
+    // سؤال سماع بس: مفيش نص ياباني ظاهر، الصوت بيشتغل تلقائي
+    textEl.textContent = "🔊";
+    textEl.classList.add("audio-mode");
+    speakerBtn.classList.remove("hidden");
+    subEl.textContent = "استمع واختار النطق الصحيح";
+    playWordAudio(q.jp);
+  } else {
+    // سؤال كتابة بس: النص ظاهر، مفيش صوت خالص
+    textEl.textContent = q.jp;
+    textEl.classList.remove("audio-mode");
+    speakerBtn.classList.add("hidden");
+    subEl.textContent = "اختار النطق الصحيح (Romaji)";
+  }
+
+  document.getElementById("progressLabel").textContent =
+    `سؤال ${currentIndex + 1} / ${questions.length}`;
+  document.getElementById("scoreLabel").textContent = `النقاط: ${score}`;
+
+  const grid = document.getElementById("optionsGrid");
+  grid.innerHTML = "";
+  q.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = opt;
+    btn.onclick = () => handleAnswer(btn, opt, q.correct);
+    grid.appendChild(btn);
+  });
+
+  startQuestionTimer();
+}
+
+function startQuestionTimer() {
+  clearInterval(qTimerInterval);
+  updateQRing();
+  qTimerInterval = setInterval(() => {
+    qTimeLeft -= 0.2;
+    if (qTimeLeft <= 0) {
+      qTimeLeft = 0;
+      updateQRing();
+      handleAnswer(null, null, questions[currentIndex].correct); // وقت انتهى = غلط
+      return;
+    }
+    updateQRing();
+  }, 200);
+}
+
+function updateQRing() {
+  const pct = qTimeLeft / CONFIG.PER_QUESTION_SECONDS;
+  const offset = Q_CIRCUMFERENCE * (1 - pct);
+  const fg = document.getElementById("qTimerFg");
+  fg.style.strokeDashoffset = offset;
+  fg.style.stroke = pct < 0.3 ? "var(--timer-danger)" : "var(--primary)";
+  document.getElementById("qTimerNum").textContent = Math.ceil(qTimeLeft);
+}
+
+function handleAnswer(btnEl, chosen, correctAnswer) {
+  if (answered) return;
+  answered = true;
+  clearInterval(qTimerInterval);
+
+  const allBtns = document.querySelectorAll(".opt-btn");
+  allBtns.forEach(b => {
+    b.classList.add("disabled");
+    if (b.textContent === correctAnswer) b.classList.add("correct");
+  });
+  if (btnEl && chosen !== correctAnswer) btnEl.classList.add("wrong");
+
+  const card = document.getElementById("quizCard");
+  const isCorrect = chosen === correctAnswer;
+  card.classList.remove("pulse-correct", "shake-wrong", "flash-correct", "flash-wrong");
+  // إعادة تشغيل الأنيميشن بإجبار reflow
+  void card.offsetWidth;
+  card.classList.add(isCorrect ? "pulse-correct" : "shake-wrong");
+  card.classList.add(isCorrect ? "flash-correct" : "flash-wrong");
+  setTimeout(() => {
+    card.classList.remove("flash-correct", "flash-wrong");
+  }, 600);
+
+  if (chosen === correctAnswer) {
+    correctCount++;
+    streak++;
+    maxStreak = Math.max(maxStreak, streak);
+    let points = CONFIG.POINTS_PER_CORRECT;
+    if (streak > 0 && streak % 3 === 0) points += CONFIG.STREAK_BONUS;
+    score += points;
+
+    const badge = document.getElementById("streakBadge");
+    if (streak >= 2) {
+      badge.textContent = `🔥 سلسلة: ${streak}`;
+      badge.classList.remove("hidden");
+    }
+  } else {
+    streak = 0;
+    document.getElementById("streakBadge").classList.add("hidden");
+  }
+
+  document.getElementById("scoreLabel").textContent = `النقاط: ${score}`;
+
+  setTimeout(() => {
+    currentIndex++;
+    showQuestion();
+  }, 900);
+}
+
+function endQuiz() {
+  clearInterval(totalTimerInterval);
+  clearInterval(qTimerInterval);
+
+  document.getElementById("quizCard").classList.add("hidden");
+  const result = document.getElementById("resultScreen");
+  result.classList.add("show");
+
+  const total = Math.max(currentIndex, 1);
+  const pct = correctCount / total;
+  document.getElementById("resultEmoji").textContent =
+    pct >= 0.8 ? "🏆" : pct >= 0.5 ? "🎉" : "💪";
+  document.getElementById("resultTitle").textContent =
+    pct >= 0.8 ? "ممتاز!" : pct >= 0.5 ? "أحسنت!" : "شد حيلك المرة الجاية";
+  document.getElementById("finalScore").textContent = score;
+  document.getElementById("finalCorrect").textContent = `${correctCount}/${currentIndex}`;
+  document.getElementById("finalStreak").textContent = maxStreak;
+
+  // ==========================================================================
+  // حفظ النقط في نفس مفتاح nihongo_points المستخدم في index.html
+  // ==========================================================================
+  try {
+    const current = parseInt(localStorage.getItem("nihongo_points") || "0", 10);
+    localStorage.setItem("nihongo_points", String(current + score));
+  } catch (e) {
+    console.warn("تعذّر حفظ النقط في localStorage:", e);
+  }
+}
+
+function restartQuiz() { startQuiz(); }
+
+// ==========================================================================
+// تشغيل النطق الياباني: نفس منطق SpeakBtn في index.html بالظبط —
+// أول حاجة يحاول ملف الصوت المسجّل من KANA_AUDIO_MAP (audio/kana/...)،
+// ولو مش موجود يرجع لـ Web Speech API بصوت ياباني
+// ==========================================================================
+function playWordAudio(word) {
+  if (!word) return;
+  const btn = document.getElementById("speakerBtn");
+  if (btn) btn.classList.add("speaking");
+  const doneSpeaking = () => { if (btn) btn.classList.remove("speaking"); };
+
+  const audioPath = KANA_AUDIO_MAP[word];
+  if (audioPath) {
+    const audio = new Audio(audioPath);
+    audio.onended = doneSpeaking;
+    audio.onerror = () => speakWithWebSpeech(word, doneSpeaking);
+    audio.play().catch(() => speakWithWebSpeech(word, doneSpeaking));
+    return;
+  }
+  speakWithWebSpeech(word, doneSpeaking);
+}
+
+function speakWithWebSpeech(word, onEnd) {
+  if (!("speechSynthesis" in window)) { if (onEnd) onEnd(); return; }
+  try {
+    speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = "ja-JP";
+    utter.rate = 0.85;
+    utter.pitch = 1.1;
+    const trySpeak = () => {
+      const voices = speechSynthesis.getVoices();
+      const jaVoice = voices.find(v => v.lang && v.lang.startsWith("ja"));
+      if (jaVoice) utter.voice = jaVoice;
+      utter.onend = onEnd;
+      utter.onerror = onEnd;
+      speechSynthesis.speak(utter);
+    };
+    speechSynthesis.getVoices().length > 0 ? trySpeak() : (speechSynthesis.onvoiceschanged = trySpeak);
+  } catch (e) {
+    console.warn("Web Speech API غير متاح:", e);
+    if (onEnd) onEnd();
+  }
+}
+
+// ابدأ الكويز أول ما الصفحة تفتح
+startQuiz();
+</script>
+
+</body>
+</html>
