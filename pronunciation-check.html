@@ -240,6 +240,8 @@ function resetRecordingUI() {
   document.getElementById("rateRow").style.display = "none";
   document.getElementById("closePill").style.display = "none";
   recordedBlobUrl = null;
+  nativeRecordingReady = false;
+  clearInterval(pollInterval);
   const recordBtn = document.getElementById("recordBtn");
   recordBtn.classList.remove("recording");
   recordBtn.textContent = "🎙️ سجّل صوتك";
@@ -279,15 +281,74 @@ function speakFallback(text) {
 }
 
 // ==========================================================================
-// تسجيل صوت المستخدم عن طريق المايك
+// تسجيل صوت المستخدم:
+// لو الصفحة شغالة جوه تطبيق Kodular (window.AppInventor موجود) —
+// بنستخدم جسر WebViewString عشان Kodular يسجّل بمكوّن Sound Recorder
+// الأصلي (مفيش إكستنشن، ومفيش مشكلة صلاحية مايك جوه الـWebView).
+// لو الصفحة مفتوحة من متصفح عادي (زي اللاب توب وقت التجربة) —
+// بيشتغل بـ getUserMedia زي الأول.
 // ==========================================================================
+const isInsideApp = typeof window.AppInventor !== "undefined";
+let nativeRecordingReady = false;
+let pollInterval = null;
+
 async function toggleRecording() {
+  if (isInsideApp) {
+    toggleRecordingNative();
+  } else {
+    toggleRecordingBrowser();
+  }
+}
+
+// ---- داخل تطبيق Kodular ----
+function toggleRecordingNative() {
+  if (isRecording) {
+    window.AppInventor.setWebViewString("RECORD_STOP");
+    isRecording = false;
+    const recordBtn = document.getElementById("recordBtn");
+    recordBtn.classList.remove("recording");
+    recordBtn.textContent = "⏳ بيجهّز التسجيل...";
+    startPollingForResult();
+    return;
+  }
+  nativeRecordingReady = false;
+  window.AppInventor.setWebViewString("RECORD_START");
+  isRecording = true;
+  const recordBtn = document.getElementById("recordBtn");
+  recordBtn.classList.add("recording");
+  recordBtn.textContent = "⏹️ وقف التسجيل";
+}
+
+// بعد "RECORD_STOP" بنستنى Kodular يحدّث الـWebViewString بـ "RECORDED:..."
+function startPollingForResult() {
+  clearInterval(pollInterval);
+  let tries = 0;
+  pollInterval = setInterval(() => {
+    tries++;
+    const val = window.AppInventor.getWebViewString();
+    if (val && val.indexOf("RECORDED:") === 0) {
+      clearInterval(pollInterval);
+      nativeRecordingReady = true;
+      document.getElementById("playbackBtn").disabled = false;
+      document.getElementById("rateRow").style.display = "flex";
+      const recordBtn = document.getElementById("recordBtn");
+      recordBtn.textContent = "🎙️ سجّل صوتك";
+    } else if (tries > 40) { // بعد حوالي 10 ثواني ننهي المحاولة
+      clearInterval(pollInterval);
+      const recordBtn = document.getElementById("recordBtn");
+      recordBtn.textContent = "🎙️ سجّل صوتك";
+      console.warn("لم يتم استلام تأكيد التسجيل من التطبيق");
+    }
+  }, 250);
+}
+
+// ---- متصفح عادي (تجربة على اللاب توب) ----
+function toggleRecordingBrowser() {
   if (isRecording) {
     mediaRecorder.stop();
     return;
   }
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
     audioChunks = [];
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
@@ -304,14 +365,18 @@ async function toggleRecording() {
     recordBtn.classList.add("recording");
     recordBtn.textContent = "⏹️ وقف التسجيل";
     document.getElementById("micWarning").style.display = "none";
-  } catch (e) {
+  }).catch(e => {
     console.warn("Mic error:", e);
     micAvailable = false;
     document.getElementById("micWarning").style.display = "block";
-  }
+  });
 }
 
 function playRecording() {
+  if (isInsideApp) {
+    if (nativeRecordingReady) window.AppInventor.setWebViewString("PLAY_LAST");
+    return;
+  }
   if (!recordedBlobUrl) return;
   const audio = new Audio(recordedBlobUrl);
   audio.play();
