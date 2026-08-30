@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>تدرّب على النطق</title>
+<style>
+  :root{
+    --primary:#e91e8c;
+    --primary-dark:#b8156d;
+    --accent:#ff6eb4;
+    --bg:#fff5f8;
+    --card:#ffffff;
+    --text:#222;
+    --muted:#888;
+    --good:#2ecc71;
+    --warn:#f39c12;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Tahoma','Segoe UI',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:16px;
+  }
+  .top-bar{
+    width:100%;max-width:480px;
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .back-btn{background:none;border:none;font-size:22px;color:var(--text);cursor:pointer;}
+
+  .filter-row{
+    width:100%;max-width:480px;display:flex;gap:8px;margin-bottom:16px;
+  }
+  .filter-btn{
+    flex:1;padding:9px 0;border-radius:12px;border:2px solid #f0d5e2;
+    background:#fff;color:var(--text);font-size:13px;font-weight:bold;cursor:pointer;
+  }
+  .filter-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+  .progress-row{
+    width:100%;max-width:480px;display:flex;justify-content:space-between;
+    font-size:13px;color:var(--muted);margin-bottom:10px;
+  }
+
+  .card{
+    width:100%;max-width:480px;background:var(--card);border-radius:20px;
+    padding:28px 20px;box-shadow:0 4px 18px rgba(0,0,0,0.07);text-align:center;
+  }
+  .item-jp{
+    font-size:52px;font-weight:bold;font-family:'Noto Sans JP',sans-serif;margin-bottom:6px;
+  }
+  .item-sub{font-size:14px;color:var(--muted);margin-bottom:22px;}
+
+  .btn-row{display:flex;flex-direction:column;gap:10px;}
+  .action-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px;border-radius:14px;border:none;font-size:16px;font-weight:bold;
+    cursor:pointer;transition:all 0.15s;
+  }
+  .action-btn:active{transform:scale(0.97);}
+  .btn-native{background:#f3e8ee;color:var(--primary);}
+  .btn-record{background:var(--primary);color:#fff;}
+  .btn-record.recording{background:var(--warn);animation:pulseRec 1s infinite;}
+  @keyframes pulseRec{0%,100%{opacity:1;}50%{opacity:0.6;}}
+  .btn-playback{background:#eef7f0;color:var(--good);}
+  .btn-playback:disabled{opacity:0.4;pointer-events:none;}
+
+  .rate-row{display:flex;gap:10px;margin-top:18px;}
+  .rate-btn{
+    flex:1;padding:12px 4px;border-radius:12px;border:2px solid #eee;
+    background:#fff;font-size:13px;font-weight:bold;cursor:pointer;
+  }
+  .rate-btn.good{border-color:var(--good);color:var(--good);}
+  .rate-btn.retry{border-color:var(--warn);color:var(--warn);}
+
+  .next-btn{
+    width:100%;max-width:480px;margin-top:16px;padding:14px;border:none;border-radius:14px;
+    background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;
+    font-size:15px;font-weight:bold;cursor:pointer;
+  }
+
+  .mic-warning{
+    width:100%;max-width:480px;background:#fff3e0;border:1px solid #f0c380;color:#8a5a00;
+    border-radius:14px;padding:12px 16px;font-size:13px;margin-bottom:14px;text-align:center;line-height:1.7;
+  }
+  .stat-pill{
+    display:inline-block;font-size:11px;font-weight:bold;color:var(--primary);
+    background:#fce8f2;padding:3px 10px;border-radius:999px;margin-top:6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <button class="back-btn" onclick="history.back()">→</button>
+  <strong>🎤 تدرّب على النطق</strong>
+  <span style="width:22px"></span>
+</div>
+
+<div id="micWarning" class="mic-warning" style="display:none">
+  ⚠️ المتصفح محتاج إذن استخدام المايك، أو المايك مش متاح على الجهاز ده.
+</div>
+
+<div class="filter-row">
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">الكل</button>
+  <button class="filter-btn" data-filter="kana" onclick="setFilter('kana')">الحروف</button>
+  <button class="filter-btn" data-filter="vocab" onclick="setFilter('vocab')">الكلمات</button>
+</div>
+
+<div class="progress-row">
+  <span id="progressLabel">عنصر 1 / 20</span>
+  <span id="attemptsLabel">محاولاتك: 0</span>
+</div>
+
+<div class="card">
+  <div class="item-jp" id="itemJp">あ</div>
+  <div class="item-sub" id="itemSub">a</div>
+
+  <div class="btn-row">
+    <button class="action-btn btn-native" id="nativeBtn" onclick="playNative()">🔊 اسمع النطق الأصلي</button>
+    <button class="action-btn btn-record" id="recordBtn" onclick="toggleRecording()">🎙️ سجّل صوتك</button>
+    <button class="action-btn btn-playback" id="playbackBtn" onclick="playRecording()" disabled>▶️ اسمع تسجيلك</button>
+  </div>
+
+  <div class="rate-row" id="rateRow" style="display:none">
+    <button class="rate-btn good" onclick="rateAttempt(true)">🙆‍♀️ قريب من الأصلي</button>
+    <button class="rate-btn retry" onclick="rateAttempt(false)">🙅‍♀️ محتاج تدريب أكتر</button>
+  </div>
+
+  <div><span class="stat-pill" id="closePill" style="display:none">+2 ⭐</span></div>
+</div>
+
+<button class="next-btn" onclick="nextItem()">التالي ←</button>
+
+<!--
+  ==========================================================================
+  quiz-vocab-data.js فيه QUIZ_VOCAB (كلمات التحيات والطعام) و AUDIO_MAP
+  (مسارات صوت الكلمات) — لازم يكون في نفس المجلد
+  ==========================================================================
+-->
+<script src="quiz-vocab-data.js"></script>
+
+<script>
+// ==========================================================================
+// قائمة الحروف: نفس ترقيم ملفات الصوت المستخدم في kana-quiz.html
+// ==========================================================================
+const GOJUON = [
+  ["あ","ア","a"],["い","イ","i"],["う","ウ","u"],["え","エ","e"],["お","オ","o"],
+  ["か","カ","ka"],["き","キ","ki"],["く","ク","ku"],["け","ケ","ke"],["こ","コ","ko"],
+  ["さ","サ","sa"],["し","シ","shi"],["す","ス","su"],["せ","セ","se"],["そ","ソ","so"],
+  ["た","タ","ta"],["ち","チ","chi"],["つ","ツ","tsu"],["て","テ","te"],["と","ト","to"],
+  ["な","ナ","na"],["に","ニ","ni"],["ぬ","ヌ","nu"],["ね","ネ","ne"],["の","ノ","no"],
+  ["は","ハ","ha"],["ひ","ヒ","hi"],["ふ","フ","fu"],["へ","ヘ","he"],["ほ","ホ","ho"],
+  ["ま","マ","ma"],["み","ミ","mi"],["む","ム","mu"],["め","メ","me"],["も","モ","mo"],
+  ["や","ヤ","ya"],["ゆ","ユ","yu"],["よ","ヨ","yo"],
+  ["ら","ラ","ra"],["り","リ","ri"],["る","ル","ru"],["れ","レ","re"],["ろ","ロ","ro"],
+  ["わ","ワ","wa"],["を","ヲ","wo"],["ん","ン","n"]
+];
+
+const KANA_AUDIO_MAP = {};
+const kanaItems = [];
+GOJUON.forEach((row, i) => {
+  const num = String(i + 1).padStart(2, "0");
+  const [hira, kata, rom] = row;
+  KANA_AUDIO_MAP[hira] = `audio/kana/hiragana_${num}.wav`;
+  KANA_AUDIO_MAP[kata] = `audio/kana/katakana_${num}.wav`;
+  kanaItems.push({ jp: hira, sub: rom, group: "kana" });
+  kanaItems.push({ jp: kata, sub: rom, group: "kana" });
+});
+
+// ==========================================================================
+// دمج الحروف مع كلمات QUIZ_VOCAB (من quiz-vocab-data.js)
+// ==========================================================================
+const vocabItems = (typeof QUIZ_VOCAB !== "undefined" ? QUIZ_VOCAB : [])
+  .map(v => ({ jp: v.jp, sub: v.ar, group: "vocab" }));
+
+function getAudioPath(jp) {
+  if (KANA_AUDIO_MAP[jp]) return KANA_AUDIO_MAP[jp];
+  if (typeof AUDIO_MAP !== "undefined" && AUDIO_MAP[jp]) return AUDIO_MAP[jp];
+  return null;
+}
+
+// ==========================================================================
+// حالة التطبيق
+// ==========================================================================
+let currentFilter = "all";
+let pool = [];
+let currentIndex = 0;
+let attemptsCount = 0;
+
+let mediaRecorder = null;
+let audioChunks = [];
+let recordedBlobUrl = null;
+let isRecording = false;
+let micAvailable = true;
+
+function buildPool() {
+  if (currentFilter === "kana") pool = [...kanaItems];
+  else if (currentFilter === "vocab") pool = [...vocabItems];
+  else pool = [...kanaItems, ...vocabItems];
+  pool.sort(() => Math.random() - 0.5);
+  currentIndex = 0;
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector(`.filter-btn[data-filter="${f}"]`).classList.add("active");
+  buildPool();
+  showItem();
+}
+
+function loadAttempts() {
+  return parseInt(localStorage.getItem("nihongo_pronunciation_attempts") || "0", 10);
+}
+function saveAttempts(n) {
+  localStorage.setItem("nihongo_pronunciation_attempts", String(n));
+}
+
+function showItem() {
+  if (!pool.length) return;
+  if (currentIndex >= pool.length) {
+    pool.sort(() => Math.random() - 0.5);
+    currentIndex = 0;
+  }
+  const item = pool[currentIndex];
+  document.getElementById("itemJp").textContent = item.jp;
+  document.getElementById("itemSub").textContent = item.sub;
+  document.getElementById("progressLabel").textContent = `عنصر ${currentIndex + 1} / ${pool.length}`;
+
+  resetRecordingUI();
+}
+
+function resetRecordingUI() {
+  document.getElementById("playbackBtn").disabled = true;
+  document.getElementById("rateRow").style.display = "none";
+  document.getElementById("closePill").style.display = "none";
+  recordedBlobUrl = null;
+  const recordBtn = document.getElementById("recordBtn");
+  recordBtn.classList.remove("recording");
+  recordBtn.textContent = "🎙️ سجّل صوتك";
+  isRecording = false;
+}
+
+function nextItem() {
+  currentIndex++;
+  showItem();
+}
+
+// ==========================================================================
+// تشغيل الصوت الأصلي (نفس منطق باقي التطبيق: ملف مسجّل ثم fallback)
+// ==========================================================================
+function playNative() {
+  const item = pool[currentIndex];
+  if (!item) return;
+  const path = getAudioPath(item.jp);
+  if (path) {
+    const audio = new Audio(path);
+    audio.play().catch(() => speakFallback(item.jp));
+    audio.onerror = () => speakFallback(item.jp);
+  } else {
+    speakFallback(item.jp);
+  }
+}
+
+function speakFallback(text) {
+  if (!("speechSynthesis" in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "ja-JP";
+    utter.rate = 0.85;
+    speechSynthesis.speak(utter);
+  } catch (e) { console.warn("Speech fallback error:", e); }
+}
+
+// ==========================================================================
+// تسجيل صوت المستخدم عن طريق المايك
+// ==========================================================================
+async function toggleRecording() {
+  if (isRecording) {
+    mediaRecorder.stop();
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunks, { type: "audio/webm" });
+      recordedBlobUrl = URL.createObjectURL(blob);
+      document.getElementById("playbackBtn").disabled = false;
+      document.getElementById("rateRow").style.display = "flex";
+      stream.getTracks().forEach(t => t.stop());
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    const recordBtn = document.getElementById("recordBtn");
+    recordBtn.classList.add("recording");
+    recordBtn.textContent = "⏹️ وقف التسجيل";
+    document.getElementById("micWarning").style.display = "none";
+  } catch (e) {
+    console.warn("Mic error:", e);
+    micAvailable = false;
+    document.getElementById("micWarning").style.display = "block";
+  }
+}
+
+function playRecording() {
+  if (!recordedBlobUrl) return;
+  const audio = new Audio(recordedBlobUrl);
+  audio.play();
+}
+
+function rateAttempt(isClose) {
+  attemptsCount++;
+  saveAttempts(loadAttempts() + 1);
+  document.getElementById("attemptsLabel").textContent = `محاولاتك: ${loadAttempts()}`;
+
+  if (isClose) {
+    const current = parseInt(localStorage.getItem("nihongo_points") || "0", 10);
+    localStorage.setItem("nihongo_points", String(current + 2));
+    document.getElementById("closePill").style.display = "inline-block";
+  }
+
+  setTimeout(nextItem, 700);
+}
+
+// ==========================================================================
+// البداية
+// ==========================================================================
+document.getElementById("attemptsLabel").textContent = `محاولاتك: ${loadAttempts()}`;
+buildPool();
+showItem();
+</script>
+
+</body>
+</html>
