@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>جدول الكانا الموسّع</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#e91e8c;
+    --pink-light:#fde6f2;
+    --bg:#ffffff;
+    --card-bg:#faf9fa;
+    --text:#2b2b2b;
+    --sub:#8a8a8a;
+    --border:#f0d9e8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Tajawal', sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding-bottom:90px;
+  }
+  header{
+    padding:22px 20px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  header h1{
+    font-size:22px;
+    font-weight:900;
+    color:var(--text);
+  }
+  header .back{
+    color:var(--pink);
+    font-size:22px;
+    font-weight:700;
+  }
+  .tabs{
+    display:flex;
+    margin:0 20px 18px;
+    background:var(--pink-light);
+    border-radius:14px;
+    padding:5px;
+    gap:5px;
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:10px 0;
+    border-radius:10px;
+    font-weight:700;
+    font-size:15px;
+    color:var(--pink);
+    cursor:pointer;
+    transition:.2s;
+  }
+  .tab.active{
+    background:var(--pink);
+    color:#fff;
+  }
+  .section-title{
+    margin:26px 20px 12px;
+    font-size:17px;
+    font-weight:900;
+    color:var(--pink);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .section-title::before{
+    content:"";
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--pink);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:8px;
+    margin:0 20px;
+  }
+  .grid.youon{
+    grid-template-columns:repeat(3, 1fr);
+  }
+  .kana-card{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px 4px 10px;
+    text-align:center;
+  }
+  .kana-card .glyph{
+    font-size:26px;
+    font-weight:500;
+    color:var(--text);
+    line-height:1.1;
+  }
+  .kana-card .romaji{
+    font-size:12px;
+    color:var(--sub);
+    margin-top:4px;
+    font-family:sans-serif;
+  }
+  .kana-card.done{
+    border-color:var(--pink);
+    background:var(--pink-light);
+  }
+  .kana-card.done .glyph{
+    color:var(--pink);
+  }
+  .legend{
+    display:flex;
+    justify-content:center;
+    gap:22px;
+    margin-top:30px;
+    font-size:13px;
+    color:var(--sub);
+  }
+  .legend span{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .dot{
+    width:12px; height:12px; border-radius:4px;
+    display:inline-block;
+  }
+  .dot.done{background:var(--pink);}
+  .dot.new{background:var(--card-bg); border:1px solid var(--border);}
+  .bottom-bar{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    background:#fff;
+    box-shadow:0 -4px 16px rgba(0,0,0,.06);
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .progress-text{
+    font-size:14px;
+    color:var(--sub);
+    font-weight:700;
+  }
+  .progress-text b{color:var(--pink);}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="back">←</span>
+  <h1 id="pageTitle">جدول الهيراغانا الموسّع</h1>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="hiragana" onclick="switchTab('hiragana')">هيراغانا</div>
+  <div class="tab" data-tab="katakana" onclick="switchTab('katakana')">كاتاكانا</div>
+</div>
+
+<div id="tableContent"></div>
+
+<div class="legend">
+  <span><i class="dot done"></i> متقن</span>
+  <span><i class="dot new"></i> جديد</span>
+</div>
+
+<div class="bottom-bar">
+  <span class="progress-text"><b id="progressCount">0</b> / <span id="progressTotal">0</span> متقن</span>
+</div>
+
+<script>
+const DATA = {
+  hiragana: {
+    dakuten: [
+      ["が","ga"],["ぎ","gi"],["ぐ","gu"],["げ","ge"],["ご","go"],
+      ["ざ","za"],["じ","ji"],["ず","zu"],["ぜ","ze"],["ぞ","zo"],
+      ["だ","da"],["ぢ","ji"],["づ","zu"],["で","de"],["ど","do"],
+      ["ば","ba"],["び","bi"],["ぶ","bu"],["べ","be"],["ぼ","bo"]
+    ],
+    handakuten: [
+      ["ぱ","pa"],["ぴ","pi"],["ぷ","pu"],["ぺ","pe"],["ぽ","po"]
+    ],
+    youon: [
+      ["きゃ","kya"],["きゅ","kyu"],["きょ","kyo"],
+      ["しゃ","sha"],["しゅ","shu"],["しょ","sho"],
+      ["ちゃ","cha"],["ちゅ","chu"],["ちょ","cho"],
+      ["にゃ","nya"],["にゅ","nyu"],["にょ","nyo"],
+      ["ひゃ","hya"],["ひゅ","hyu"],["ひょ","hyo"],
+      ["みゃ","mya"],["みゅ","myu"],["みょ","myo"],
+      ["りゃ","rya"],["りゅ","ryu"],["りょ","ryo"],
+      ["ぎゃ","gya"],["ぎゅ","gyu"],["ぎょ","gyo"],
+      ["じゃ","ja"],["じゅ","ju"],["じょ","jo"],
+      ["びゃ","bya"],["びゅ","byu"],["びょ","byo"],
+      ["ぴゃ","pya"],["ぴゅ","pyu"],["ぴょ","pyo"]
+    ]
+  },
+  katakana: {
+    dakuten: [
+      ["ガ","ga"],["ギ","gi"],["グ","gu"],["ゲ","ge"],["ゴ","go"],
+      ["ザ","za"],["ジ","ji"],["ズ","zu"],["ゼ","ze"],["ゾ","zo"],
+      ["ダ","da"],["ヂ","ji"],["ヅ","zu"],["デ","de"],["ド","do"],
+      ["バ","ba"],["ビ","bi"],["ブ","bu"],["ベ","be"],["ボ","bo"]
+    ],
+    handakuten: [
+      ["パ","pa"],["ピ","pi"],["プ","pu"],["ペ","pe"],["ポ","po"]
+    ],
+    extra: [["ヴ","vu"]],
+    youon: [
+      ["キャ","kya"],["キュ","kyu"],["キョ","kyo"],
+      ["シャ","sha"],["シュ","shu"],["ショ","sho"],
+      ["チャ","cha"],["チュ","chu"],["チョ","cho"],
+      ["ニャ","nya"],["ニュ","nyu"],["ニョ","nyo"],
+      ["ヒャ","hya"],["ヒュ","hyu"],["ヒョ","hyo"],
+      ["ミャ","mya"],["ミュ","myu"],["ミョ","myo"],
+      ["リャ","rya"],["リュ","ryu"],["リョ","ryo"],
+      ["ギャ","gya"],["ギュ","gyu"],["ギョ","gyo"],
+      ["ジャ","ja"],["ジュ","ju"],["ジョ","jo"],
+      ["ビャ","bya"],["ビュ","byu"],["ビョ","byo"],
+      ["ピャ","pya"],["ピュ","pyu"],["ピョ","pyo"]
+    ]
+  }
+};
+
+const SECTION_LABELS = {
+  dakuten: "داكوتن",
+  handakuten: "هانداكوتن",
+  extra: "إضافي",
+  youon: "يوؤون"
+};
+
+// نفس مفتاح تخزين النقاط المستخدم في باقي التطبيق (اختياري، محلي فقط)
+const STORAGE_KEY = "nihongo_kana_table_mastered";
+
+function getMastered(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  catch(e){ return []; }
+}
+function toggleMastered(kana){
+  let list = getMastered();
+  if(list.includes(kana)) list = list.filter(k => k !== kana);
+  else list.push(kana);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  render(currentTab);
+}
+
+let currentTab = "hiragana";
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+  document.getElementById("pageTitle").textContent =
+    tab === "hiragana" ? "جدول الهيراغانا الموسّع" : "جدول الكاتاكانا الموسّع";
+  render(tab);
+}
+
+function render(tab){
+  const container = document.getElementById("tableContent");
+  container.innerHTML = "";
+  const sections = DATA[tab];
+  const mastered = getMastered();
+  let total = 0, done = 0;
+
+  Object.keys(sections).forEach(key => {
+    const title = document.createElement("div");
+    title.className = "section-title";
+    title.textContent = SECTION_LABELS[key];
+    container.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "grid" + (key === "youon" ? " youon" : "");
+
+    sections[key].forEach(([glyph, romaji]) => {
+      total++;
+      const isDone = mastered.includes(glyph);
+      if(isDone) done++;
+      const card = document.createElement("div");
+      card.className = "kana-card" + (isDone ? " done" : "");
+      card.innerHTML = `<div class="glyph">${glyph}</div><div class="romaji">${romaji}</div>`;
+      card.onclick = () => toggleMastered(glyph);
+      grid.appendChild(card);
+    });
+
+    container.appendChild(grid);
+  });
+
+  document.getElementById("progressCount").textContent = done;
+  document.getElementById("progressTotal").textContent = total;
+}
+
+render(currentTab);
+</script>
+
+</body>
+</html>
