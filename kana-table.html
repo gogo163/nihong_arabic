@@ -92,6 +92,29 @@
     border-radius:12px;
     padding:12px 4px 10px;
     text-align:center;
+    position:relative;
+  }
+  .speaker-mini{
+    position:absolute;
+    top:4px;
+    left:4px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    border:none;
+    background:rgba(233,30,140,0.1);
+    color:var(--pink);
+    font-size:10px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    transition:.2s;
+  }
+  .speaker-mini.speaking{
+    background:var(--pink);
+    color:#fff;
   }
   .kana-card .glyph{
     font-size:26px;
@@ -232,6 +255,61 @@ const SECTION_LABELS = {
   youon: "يوؤون"
 };
 
+// ⭐ نطق الحروف: نفس منطق SpeakBtn في index.html وkana-quiz.html بالظبط —
+// أول حاجة يحاول ملف صوت مسجّل من KANA_TABLE_AUDIO_MAP، ولو مش موجود يرجع
+// لـ Web Speech API بصوت ياباني. الملفات دلوقتي متولدة بسكريبت
+// generate-kana-table-audio.ps1 باسم الحرف نفسه: audio/kana/{الحرف}.wav
+const KANA_TABLE_AUDIO_MAP = {};
+["が","ぎ","ぐ","げ","ご","ざ","じ","ず","ぜ","ぞ","だ","ぢ","づ","で","ど","ば","び","ぶ","べ","ぼ",
+ "ぱ","ぴ","ぷ","ぺ","ぽ",
+ "きゃ","きゅ","きょ","しゃ","しゅ","しょ","ちゃ","ちゅ","ちょ","にゃ","にゅ","にょ","ひゃ","ひゅ","ひょ",
+ "みゃ","みゅ","みょ","りゃ","りゅ","りょ","ぎゃ","ぎゅ","ぎょ","じゃ","じゅ","じょ","びゃ","びゅ","びょ","ぴゃ","ぴゅ","ぴょ",
+ "ガ","ギ","グ","ゲ","ゴ","ザ","ジ","ズ","ゼ","ゾ","ダ","ヂ","ヅ","デ","ド","バ","ビ","ブ","ベ","ボ",
+ "パ","ピ","プ","ペ","ポ",
+ "キャ","キュ","キョ","シャ","シュ","ショ","チャ","チュ","チョ","ニャ","ニュ","ニョ","ヒャ","ヒュ","ヒョ",
+ "ミャ","ミュ","ミョ","リャ","リュ","リョ","ギャ","ギュ","ギョ","ジャ","ジュ","ジョ","ビャ","ビュ","ビョ","ピャ","ピュ","ピョ"
+].forEach(ch => { KANA_TABLE_AUDIO_MAP[ch] = `audio/kana/${ch}.wav`; });
+
+function playKana(glyph, btnEl){
+  if(btnEl){
+    btnEl.classList.add("speaking");
+  }
+  const doneSpeaking = () => { if(btnEl) btnEl.classList.remove("speaking"); };
+
+  const audioPath = KANA_TABLE_AUDIO_MAP[glyph];
+  if(audioPath){
+    const audio = new Audio(audioPath);
+    audio.onended = doneSpeaking;
+    audio.onerror = () => speakWithWebSpeech(glyph, doneSpeaking);
+    audio.play().catch(() => speakWithWebSpeech(glyph, doneSpeaking));
+    return;
+  }
+  speakWithWebSpeech(glyph, doneSpeaking);
+}
+
+function speakWithWebSpeech(word, onEnd){
+  if(!("speechSynthesis" in window)){ if(onEnd) onEnd(); return; }
+  try{
+    speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = "ja-JP";
+    utter.rate = 0.85;
+    utter.pitch = 1.1;
+    const trySpeak = () => {
+      const voices = speechSynthesis.getVoices();
+      const jaVoice = voices.find(v => v.lang && v.lang.startsWith("ja"));
+      if(jaVoice) utter.voice = jaVoice;
+      utter.onend = onEnd;
+      utter.onerror = onEnd;
+      speechSynthesis.speak(utter);
+    };
+    speechSynthesis.getVoices().length > 0 ? trySpeak() : (speechSynthesis.onvoiceschanged = trySpeak);
+  }catch(e){
+    console.warn("Web Speech API غير متاح:", e);
+    if(onEnd) onEnd();
+  }
+}
+
 // نفس مفتاح تخزين النقاط المستخدم في باقي التطبيق (اختياري، محلي فقط)
 const STORAGE_KEY = "nihongo_kana_table_mastered";
 
@@ -279,8 +357,14 @@ function render(tab){
       if(isDone) done++;
       const card = document.createElement("div");
       card.className = "kana-card" + (isDone ? " done" : "");
-      card.innerHTML = `<div class="glyph">${glyph}</div><div class="romaji">${romaji}</div>`;
+      card.innerHTML = `
+        <button class="speaker-mini" title="اسمع النطق">🔈</button>
+        <div class="glyph">${glyph}</div>
+        <div class="romaji">${romaji}</div>
+      `;
       card.onclick = () => toggleMastered(glyph);
+      const speakerBtn = card.querySelector(".speaker-mini");
+      speakerBtn.onclick = (e) => { e.stopPropagation(); playKana(glyph, speakerBtn); };
       grid.appendChild(card);
     });
 
