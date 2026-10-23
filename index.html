@@ -59,6 +59,14 @@
       position: absolute; top: 8px; left: 8px; width: 10px; height: 10px;
       border-radius: 50%; background: #e91e8c; box-shadow: 0 0 0 2px #fff;
     }
+    .manga-hero{position:relative;display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;
+      border:3px solid #17131a;color:#17131a;background-color:#fff0f7;
+      background-image:radial-gradient(rgba(233,30,140,0.22) 1.2px,transparent 1.5px);background-size:8px 8px;
+      box-shadow:4px 4px 0 #e91e8c;cursor:pointer;}
+    .manga-hero .manga-art{width:52px;height:52px;border:2px solid #17131a;border-radius:8px;background:#ffd9ec;
+      display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+    .manga-badge{position:absolute;top:-11px;left:14px;background:#ffd84d;color:#17131a;border:2px solid #17131a;
+      font-size:11px;font-weight:900;padding:1px 10px;border-radius:6px;transform:rotate(-4deg);}
   </style>
 </head>
 <body>
@@ -807,6 +815,7 @@
       const [wotdClaimed, setWotdClaimed] = useState(true);
       const [dueReviewCount, setDueReviewCount] = useState(0);
       const [lockToast, setLockToast] = useState("");
+      const [showAllTools, setShowAllTools] = useState(false);
 
       useEffect(() => {
         setThemeMode(loadTheme());
@@ -978,6 +987,19 @@
           setAiLoading(false);
         }
       };
+
+      const TOOLS = [
+        {href:"lessons.html", icon:"📚", title:"دروس جديدة!", sub:"مفردات • جمل • قواعد", cat:"#7c5cff", featured:true},
+        {href:"quiz-timed.html", icon:"⏱️", title:"اختبار الوقت", sub:"سباق ضد الساعة • أسئلة كتابة وسماع", cat:"#e91e8c"},
+        {href:"pronunciation-check.html", icon:"🎤", title:"تدرّب على النطق", sub:"سجّل صوتك وقارنه بالأصل", cat:"#e91e8c", featured:true},
+        {href:"Lessons/review.html", icon:"🔄", title:"مراجعة الكلمات", sub:dueReviewCount>0 ? `عندك ${dueReviewCount} كلمة مستحقة اليوم` : "راجع كلماتك القديمة", cat:"#e91e8c"},
+        {href:"kanji.html", icon:"🀄", title:"حروف الكانجي", sub:"ترتيب الكتابة • القراءات • ١٢٣ حرف", cat:"#B84A3E", featured:true},
+        {href:"jlpt_n5.html", icon:"📝", title:"اختبار JLPT N5", sub:"مفردات • قواعد • قراءة • نتيجة فورية", cat:"#7c5cff"},
+        {href:"anime-japanese.html", icon:"🎌", title:"اليابانية من الأنمي", sub:"أشهر التعبيرات • بطاقات • نقاط", cat:"#e08a2f", featured:true},
+        {href:"writing.html", icon:"✍️", title:"تدريب الكتابة", sub:"هيراغانا • كاتاكانا • ارسمي بإصبعك", cat:"#2fae8b"},
+        {href:"conversations.html", icon:"💬", title:"محادثات يومية", sub:"مطعم • فندق • مطار • تسوق", cat:"#0ea5b8"},
+        {href:"japan.html", icon:"⛩️", title:"اكتشف اليابان", sub:"عادات • حقائق • مطبخ • أنيمي", cat:"#e08a2f"},
+      ];
 
       const lesson = lessons.find(l=>l.id===activeLesson);
 
@@ -1212,25 +1234,48 @@
                   ✨ استكشاف وأدوات إضافية
                 </div>
 
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:22}}>
+                  {TOOLS.filter(c=>c.featured).map((card,i)=>(
+                    <a key={card.href} href={card.href} style={{textDecoration:"none",display:"flex"}}>
+                      <button className="lesson-btn" style={{width:"100%",minHeight:128,border:`1px solid ${theme.cardBorder}`,
+                        borderRadius:20,padding:14,display:"flex",flexDirection:"column",alignItems:"flex-start",gap:8,
+                        background:theme.cardBg,boxShadow:theme.statsShadow,fontFamily:"inherit",textAlign:"right",
+                        animation:`fadeUp 0.4s ${i*0.05}s ease forwards`,opacity:0}}>
+                        <div style={{width:44,height:44,borderRadius:13,background:card.cat,color:"#fff",
+                          display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{card.icon}</div>
+                        <div style={{textAlign:"right",fontSize:15,fontWeight:800,color:theme.textMain}}>{card.title}</div>
+                        <div style={{textAlign:"right",fontSize:11,color:theme.textSub,lineHeight:1.5}}>{card.sub}</div>
+                      </button>
+                    </a>
+                  ))}
+                </div>
+
+                <a href="manga.html" style={{textDecoration:"none",display:"block",marginBottom:14}}>
+                  <div className="lesson-btn manga-hero">
+                    <span className="manga-badge">جديد</span>
+                    <div className="manga-art">📖</div>
+                    <div style={{flex:1,textAlign:"right"}}>
+                      <div style={{fontSize:16,fontWeight:900}}>قصص مانجا</div>
+                      <div style={{fontSize:12,color:"#5a4a55"}}>١١ قصة قصيرة • اضغط على أي كلمة لمعناها</div>
+                    </div>
+                    <span style={{fontSize:18,color:"#e91e8c",fontWeight:900}}>←</span>
+                  </div>
+                </a>
+
+                <button onClick={()=>setShowAllTools(v=>!v)}
+                  style={{width:"100%",minHeight:44,borderRadius:16,border:`1px dashed ${theme.cardBorder}`,background:"transparent",
+                    color:theme.textMain,fontWeight:800,fontSize:14,cursor:"pointer",fontFamily:"inherit",marginBottom:12}}>
+                  {showAllTools ? "إخفاء الأدوات الإضافية ▲" : (dueReviewCount>0 ? `عرض كل الأدوات ▼ • 🔄 ${dueReviewCount} كلمة للمراجعة` : "عرض كل الأدوات ▼")}
+                </button>
+
+                {showAllTools && (
                 <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                  {[
-                    {href:"lessons.html", icon:"📚", title:"دروس جديدة!", sub:"مفردات • جمل • قواعد • اختبار", cat:"#7c5cff"},
-                    {href:"quiz-timed.html", icon:"⏱️", title:"اختبار الوقت", sub:"سباق ضد الساعة • أسئلة كتابة وسماع", cat:"#e91e8c"},
-                    {href:"pronunciation-check.html", icon:"🎤", title:"تدرّب على النطق", sub:"سجّل صوتك وقارنه بالنطق الأصلي", cat:"#e91e8c"},
-                    {href:"Lessons/review.html", icon:"🔄", title:"مراجعة الكلمات", sub:dueReviewCount>0 ? `عندك ${dueReviewCount} كلمة مستحقة اليوم` : "راجع كلماتك القديمة", cat:"#e91e8c"},
-                    {href:"kanji.html", icon:"🀄", title:"حروف الكانجي", sub:"ترتيب الكتابة • القراءات • أمثلة • ١٢٣ حرف N5", cat:"#B84A3E"},
-                    {href:"jlpt_n5.html", icon:"📝", title:"اختبار JLPT N5", sub:"مفردات • قواعد • قراءة • نتيجة فورية", cat:"#7c5cff"},
-                    {href:"anime-japanese.html", icon:"🎌", title:"تعلم اليابانية من الأنمي", sub:"أشهر التعبيرات • بطاقات تفاعلية • نقاط", cat:"#e08a2f"},
-                    {href:"writing.html", icon:"✍️", title:"تدريب الكتابة", sub:"هيراغانا • كاتاكانا • ارسمي بإصبعك", cat:"#2fae8b"},
-                    {href:"conversations.html", icon:"💬", title:"محادثات يومية", sub:"مطعم • فندق • مطار • تسوق", cat:"#0ea5b8"},
-                    {href:"japan.html", icon:"⛩️", title:"اكتشف اليابان", sub:"عادات • حقائق • مطبخ • أنيمي", cat:"#e08a2f"},
-                  ].map((card,i)=>(
+                  {TOOLS.filter(c=>!c.featured).map((card,i)=>(
                     <a key={card.href} href={card.href} style={{textDecoration:"none"}}>
                       <button className="lesson-btn" style={{width:"100%",border:`1px solid ${theme.cardBorder}`,
                         borderRadius:16,padding:"12px 16px",display:"flex",flexDirection:"row",
                         justifyContent:"flex-start",alignItems:"center",gap:14,position:"relative",
-                        background:theme.cardBg,boxShadow:theme.statsShadow,
-                        animation:`fadeUp 0.4s ${i*0.05}s ease forwards`,opacity:0}}>
+                        background:theme.cardBg,boxShadow:theme.statsShadow,fontFamily:"inherit"}}>
                         {card.href==="Lessons/review.html" && dueReviewCount>0 && (
                           <span className="review-badge-dot"></span>
                         )}
@@ -1238,27 +1283,26 @@
                           display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{card.icon}</div>
                         <div style={{textAlign:"right",flex:1}}>
                           <div style={{fontSize:14.5,fontWeight:800,color:theme.textMain}}>{card.title}</div>
-                          <div style={{fontSize:11.5,color:theme.textSub}}>{card.sub}</div>
+                          <div style={{fontSize:12,color:theme.textSub}}>{card.sub}</div>
                         </div>
                         <span style={{fontSize:16,color:card.cat}}>←</span>
                       </button>
                     </a>
                   ))}
-
                   <button className="lesson-btn" onClick={()=>setShowAI(true)}
                     style={{width:"100%",border:`1px solid ${theme.cardBorder}`,borderRadius:16,padding:"12px 16px",
                       display:"flex",flexDirection:"row",justifyContent:"flex-start",alignItems:"center",gap:14,
-                      background:theme.cardBg,boxShadow:theme.statsShadow,
-                      animation:"fadeUp 0.4s 0.3s ease forwards",opacity:0}}>
+                      background:theme.cardBg,boxShadow:theme.statsShadow,fontFamily:"inherit"}}>
                     <div style={{width:44,height:44,borderRadius:13,background:"#7c5cff",color:"#fff",
                       display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>🤖</div>
                     <div style={{textAlign:"right",flex:1}}>
                       <div style={{fontSize:14.5,fontWeight:800,color:theme.textMain}}>المساعد الذكي</div>
-                      <div style={{fontSize:11.5,color:theme.textSub}}>اسألني أي سؤال عن اليابانية</div>
+                      <div style={{fontSize:12,color:theme.textSub}}>اسألني أي سؤال عن اليابانية</div>
                     </div>
                     <span style={{fontSize:16,color:"#7c5cff"}}>←</span>
                   </button>
                 </div>
+                )}
               </div>
             )}
 
