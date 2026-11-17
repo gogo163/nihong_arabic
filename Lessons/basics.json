@@ -1,0 +1,552 @@
+[
+ {
+  "id": 55,
+  "title": "الفعل المستمر: 〜ています",
+  "japanese": "〜て います",
+  "romaji": "~te imasu",
+  "vocabulary": [
+   {
+    "arabic": "بيقرا",
+    "romaji": "yonde imasu",
+    "japanese": "よんで います"
+   },
+   {
+    "arabic": "بياكل",
+    "romaji": "tabete imasu",
+    "japanese": "たべて います"
+   },
+   {
+    "arabic": "بيشتغل",
+    "romaji": "hataraite imasu",
+    "japanese": "はたらいて います"
+   },
+   {
+    "arabic": "ساكن",
+    "romaji": "sunde imasu",
+    "japanese": "すんで います"
+   },
+   {
+    "arabic": "متجوّز",
+    "romaji": "kekkon shite imasu",
+    "japanese": "けっこんして います"
+   },
+   {
+    "arabic": "معاه / بيملك",
+    "romaji": "motte imasu",
+    "japanese": "もって います"
+   },
+   {
+    "arabic": "يعرف",
+    "romaji": "shitte imasu",
+    "japanese": "しって います"
+   },
+   {
+    "arabic": "لابس",
+    "romaji": "kite imasu",
+    "japanese": "きて います"
+   },
+   {
+    "arabic": "نايم",
+    "romaji": "nete imasu",
+    "japanese": "ねて います"
+   }
+  ],
+  "grammar": [
+   {
+    "pattern": "[صيغة て] + います: بيعمل ... دلوقتي",
+    "meaning": "ほんを よんで います (بيقرا كتاب) ، あめが ふって います (بتمطر)"
+   },
+   {
+    "pattern": "حالة مستمرة (نتيجة فعل حصل قبل كده)",
+    "meaning": "けっこんして います (متجوّز) ، すんで います (ساكن في) ، もって います (معاه)"
+   },
+   {
+    "pattern": "عادة أو مهنة",
+    "meaning": "ぎんこうで はたらいて います (بيشتغل في بنك) ، まいにち はしって います (بيجري كل يوم)"
+   },
+   {
+    "pattern": "النفي: 〜て いません",
+    "meaning": "まだ たべて いません (لسه ما أكلتش)"
+   },
+   {
+    "pattern": "فخ: しっています / しりません",
+    "meaning": "はい، しって います (أعرف) — لكن النفي: いいえ، しりません (مش しっていません)"
+   },
+   {
+    "pattern": "الملابس: きて います",
+    "meaning": "あかい シャツを きて います (لابس قميص أحمر)"
+   }
+  ],
+  "dialogue": [
+   {
+    "speaker": "يوكو",
+    "japanese": "いま なにを して いますか。",
+    "romaji": "Ima nani o shite imasu ka.",
+    "arabic": "بتعمل إيه دلوقتي؟"
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "テレビを みて います。",
+    "romaji": "Terebi o mite imasu.",
+    "arabic": "بتفرّج على التلفزيون."
+   },
+   {
+    "speaker": "يوكو",
+    "japanese": "ごはんは もう たべましたか。",
+    "romaji": "Gohan wa mou tabemashita ka.",
+    "arabic": "اتغدّيت خلاص؟"
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "いいえ、まだ たべて いません。",
+    "romaji": "Iie, mada tabete imasen.",
+    "arabic": "لأ، لسه ما أكلتش."
+   }
+  ],
+  "exercises": [
+   "حوّل: たべる → _____ います (بياكل)",
+   "ترجم: هو متجوّز → かれは けっこん_____ 。",
+   "اشرح الفرق: しって います و しりません"
+  ]
+ },
+ {
+  "id": 56,
+  "title": "الحروف الأساسية",
+  "japanese": "じょし",
+  "romaji": "joshi",
+  "vocabulary": [
+   {
+    "arabic": "مع صاحبي",
+    "romaji": "tomodachi to",
+    "japanese": "ともだちと"
+   },
+   {
+    "arabic": "بالأتوبيس",
+    "romaji": "basu de",
+    "japanese": "バスで"
+   },
+   {
+    "arabic": "في المدرسة (مكان الحدث)",
+    "romaji": "gakkou de",
+    "japanese": "がっこうで"
+   },
+   {
+    "arabic": "إلى اليابان",
+    "romaji": "nihon e",
+    "japanese": "にほんへ"
+   },
+   {
+    "arabic": "لحد المحطة",
+    "romaji": "eki made",
+    "japanese": "えきまで"
+   },
+   {
+    "arabic": "من الساعة تسعة",
+    "romaji": "kuji kara",
+    "japanese": "くじから"
+   },
+   {
+    "arabic": "بتاعي",
+    "romaji": "watashi no",
+    "japanese": "わたしの"
+   },
+   {
+    "arabic": "كتاب (مفعول)",
+    "romaji": "hon o",
+    "japanese": "ほんを"
+   },
+   {
+    "arabic": "بكرة",
+    "romaji": "ashita",
+    "japanese": "あした"
+   }
+  ],
+  "grammar": [
+   {
+    "pattern": "は = الموضوع / が = الفاعل (معلومة جديدة أو تركيز)",
+    "meaning": "わたしは がくせいです ، ねこが います"
+   },
+   {
+    "pattern": "を = المفعول به",
+    "meaning": "ほんを よみます"
+   },
+   {
+    "pattern": "に = زمن محدد / وجهة / مكان الوجود",
+    "meaning": "ろくじに おきます ، がっこうに いきます ، つくえの うえに あります"
+   },
+   {
+    "pattern": "で = مكان حدوث الفعل / وسيلة",
+    "meaning": "がっこうで べんきょうします ، バスで いきます"
+   },
+   {
+    "pattern": "へ = اتجاه (قريب من に)",
+    "meaning": "にほんへ いきます"
+   },
+   {
+    "pattern": "と = مع / و",
+    "meaning": "ともだちと いきます ، りんごと みかん"
+   },
+   {
+    "pattern": "から / まで = من / لحد",
+    "meaning": "くじから ごじまで ، えきまで あるきます"
+   },
+   {
+    "pattern": "の = ملكية / وصف الاسم",
+    "meaning": "わたしの ほん ، にほんごの せんせい"
+   },
+   {
+    "pattern": "も = كمان",
+    "meaning": "わたしも がくせいです"
+   }
+  ],
+  "dialogue": [
+   {
+    "speaker": "يوكو",
+    "japanese": "あした どこへ いきますか。",
+    "romaji": "Ashita doko e ikimasu ka.",
+    "arabic": "بكرة رايح فين؟"
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "ともだちと こうえんへ いきます。",
+    "romaji": "Tomodachi to kouen e ikimasu.",
+    "arabic": "رايح الحديقة مع صاحبي."
+   },
+   {
+    "speaker": "يوكو",
+    "japanese": "なにで いきますか。",
+    "romaji": "Nani de ikimasu ka.",
+    "arabic": "هتروحوا بإيه؟"
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "バスで いきます。くじから ごじまで あそびます。",
+    "romaji": "Basu de ikimasu. Kuji kara goji made asobimasu.",
+    "arabic": "بالأتوبيس. هنلعب من الساعة تسعة لحد خمسة."
+   }
+  ],
+  "exercises": [
+   "املأ الفراغ: わたしは がっこう_____ いきます。",
+   "املأ الفراغ: ともだち_____ えいがを みました。",
+   "املأ الفراغ: バス_____ いきます。(بالأتوبيس)"
+  ]
+ },
+ {
+  "id": 57,
+  "title": "العدّادات",
+  "japanese": "じょすうし",
+  "romaji": "josuushi",
+  "vocabulary": [
+   {
+    "arabic": "واحد (قطعة)",
+    "romaji": "hitotsu",
+    "japanese": "ひとつ"
+   },
+   {
+    "arabic": "اتنين (قطعتين)",
+    "romaji": "futatsu",
+    "japanese": "ふたつ"
+   },
+   {
+    "arabic": "شخص واحد",
+    "romaji": "hitori",
+    "japanese": "ひとり"
+   },
+   {
+    "arabic": "شخصين",
+    "romaji": "futari",
+    "japanese": "ふたり"
+   },
+   {
+    "arabic": "تلات أشخاص",
+    "romaji": "sannin",
+    "japanese": "さんにん"
+   },
+   {
+    "arabic": "واحدة (ورقة / شيء مسطّح)",
+    "romaji": "ichimai",
+    "japanese": "いちまい"
+   },
+   {
+    "arabic": "اتنين (أشياء طويلة)",
+    "romaji": "nihon",
+    "japanese": "にほん"
+   },
+   {
+    "arabic": "كتابين",
+    "romaji": "nisatsu",
+    "japanese": "にさつ"
+   },
+   {
+    "arabic": "تلات حيوانات صغيرة",
+    "romaji": "sanbiki",
+    "japanese": "さんびき"
+   }
+  ],
+  "grammar": [
+   {
+    "pattern": "つ: عدّاد عام للأشياء (من 1 لـ 10)",
+    "meaning": "ひとつ ، ふたつ ، みっつ ، よっつ ، いつつ ، むっつ ، ななつ ، やっつ ، ここのつ ، とお"
+   },
+   {
+    "pattern": "にん: للأشخاص (واحد واتنين استثناء)",
+    "meaning": "ひとり ، ふたり ، さんにん ، よにん ، ごにん"
+   },
+   {
+    "pattern": "まい: للأشياء المسطّحة (ورق، تذاكر، قمصان)",
+    "meaning": "いちまい ، にまい ، さんまい"
+   },
+   {
+    "pattern": "ほん: للأشياء الطويلة (أقلام، زجاجات)",
+    "meaning": "いっぽん ، にほん ، さんぼん (النطق بيتغيّر!)"
+   },
+   {
+    "pattern": "さつ للكتب / ひき للحيوانات الصغيرة / だい للأجهزة والعربيات",
+    "meaning": "ほんを にさつ ، ねこが さんびき ، くるまが いちだい"
+   },
+   {
+    "pattern": "ترتيب الجملة: [اسم] を [رقم + عدّاد] + فعل",
+    "meaning": "りんごを みっつ かいます ، ともだちが ふたり きました"
+   }
+  ],
+  "dialogue": [
+   {
+    "speaker": "أحمد",
+    "japanese": "ペンを にほん ください。",
+    "romaji": "Pen o nihon kudasai.",
+    "arabic": "قلمين من فضلك."
+   },
+   {
+    "speaker": "يوكو",
+    "japanese": "はい、ほかに なにか？",
+    "romaji": "Hai, hoka ni nanika?",
+    "arabic": "حاضر، فيه حاجة تانية؟"
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "ノートを にさつ ください。",
+    "romaji": "Nooto o nisatsu kudasai.",
+    "arabic": "وكراستين من فضلك."
+   },
+   {
+    "speaker": "يوكو",
+    "japanese": "ぜんぶで ななひゃくえんです。",
+    "romaji": "Zenbu de nanahyaku en desu.",
+    "arabic": "الإجمالي سبعمية ين."
+   }
+  ],
+  "exercises": [
+   "اختر العدّاد: ペンを 2_____ ください。(ほん / まい / さつ)",
+   "اختر العدّاد: ともだちが 3_____ きました。(にん / ひき / だい)",
+   "اختر العدّاد: ねこが 2_____ います。(ほん / ひき / にん)"
+  ]
+ },
+ {
+  "id": 58,
+  "title": "المقارنة والتفضيل",
+  "japanese": "くらべる",
+  "romaji": "kuraberu",
+  "vocabulary": [
+   {
+    "arabic": "من (في المقارنة)",
+    "romaji": "yori",
+    "japanese": "より"
+   },
+   {
+    "arabic": "أيهما",
+    "romaji": "dochira",
+    "japanese": "どちら"
+   },
+   {
+    "arabic": "الأكتر / رقم واحد",
+    "romaji": "ichiban",
+    "japanese": "いちばん"
+   },
+   {
+    "arabic": "ناحية / الجانب (الأفضل)",
+    "romaji": "hou",
+    "japanese": "ほう"
+   },
+   {
+    "arabic": "سريع",
+    "romaji": "hayai",
+    "japanese": "はやい"
+   },
+   {
+    "arabic": "بطيء",
+    "romaji": "osoi",
+    "japanese": "おそい"
+   },
+   {
+    "arabic": "غالي / عالي",
+    "romaji": "takai",
+    "japanese": "たかい"
+   },
+   {
+    "arabic": "رخيص",
+    "romaji": "yasui",
+    "japanese": "やすい"
+   },
+   {
+    "arabic": "بنفس القدر",
+    "romaji": "onaji kurai",
+    "japanese": "おなじくらい"
+   }
+  ],
+  "grammar": [
+   {
+    "pattern": "A は B より [صفة]",
+    "meaning": "でんしゃは バスより はやいです (القطر أسرع من الأتوبيس)"
+   },
+   {
+    "pattern": "A と B と どちらが [صفة] ですか",
+    "meaning": "でんしゃと バスと どちらが はやいですか → でんしゃの ほうが はやいです"
+   },
+   {
+    "pattern": "[مجموعة] で なにが いちばん [صفة]",
+    "meaning": "くだもので なにが いちばん すきですか (أكتر فاكهة بتحبها إيه؟)"
+   },
+   {
+    "pattern": "おなじくらい / 〜ほど 〜ない",
+    "meaning": "あれと おなじくらいです ، これは あれほど たかくないです"
+   },
+   {
+    "pattern": "B より A の ほうが [صفة]",
+    "meaning": "バスより でんしゃの ほうが はやいです"
+   }
+  ],
+  "dialogue": [
+   {
+    "speaker": "يوكو",
+    "japanese": "バスと でんしゃと どちらが はやいですか。",
+    "romaji": "Basu to densha to dochira ga hayai desu ka.",
+    "arabic": "الأتوبيس والقطر أيهما أسرع؟"
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "でんしゃの ほうが はやいです。",
+    "romaji": "Densha no hou ga hayai desu.",
+    "arabic": "القطر أسرع."
+   },
+   {
+    "speaker": "يوكو",
+    "japanese": "でも バスは でんしゃより やすいですね。",
+    "romaji": "Demo basu wa densha yori yasui desu ne.",
+    "arabic": "بس الأتوبيس أرخص من القطر."
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "はい、やすいですが、おそいです。",
+    "romaji": "Hai, yasui desu ga, osoi desu.",
+    "arabic": "أيوه، رخيص بس بطيء."
+   }
+  ],
+  "exercises": [
+   "ترجم: القطر أسرع من الأتوبيس → でんしゃは バス_____ はやいです。",
+   "املأ الفراغ: にほんごと えいごと _____ が むずかしいですか。",
+   "ترجم: أكتر فاكهة بحبها إيه؟ → くだもので なにが _____ すきですか。"
+  ]
+ },
+ {
+  "id": 59,
+  "title": "التكرار والتوقيت",
+  "japanese": "ふくし",
+  "romaji": "fukushi",
+  "vocabulary": [
+   {
+    "arabic": "دايماً",
+    "romaji": "itsumo",
+    "japanese": "いつも"
+   },
+   {
+    "arabic": "غالباً",
+    "romaji": "taitei",
+    "japanese": "たいてい"
+   },
+   {
+    "arabic": "كتير",
+    "romaji": "yoku",
+    "japanese": "よく"
+   },
+   {
+    "arabic": "أحياناً",
+    "romaji": "tokidoki",
+    "japanese": "ときどき"
+   },
+   {
+    "arabic": "مش كتير (مع النفي)",
+    "romaji": "amari",
+    "japanese": "あまり"
+   },
+   {
+    "arabic": "أبداً (مع النفي)",
+    "romaji": "zenzen",
+    "japanese": "ぜんぜん"
+   },
+   {
+    "arabic": "خلاص / بالفعل",
+    "romaji": "mou",
+    "japanese": "もう"
+   },
+   {
+    "arabic": "لسه",
+    "romaji": "mada",
+    "japanese": "まだ"
+   },
+   {
+    "arabic": "على طول / حالاً",
+    "romaji": "sugu",
+    "japanese": "すぐ"
+   }
+  ],
+  "grammar": [
+   {
+    "pattern": "いつも / たいてい / よく / ときどき",
+    "meaning": "いつも (دايماً) ، たいてい (غالباً) ، よく (كتير) ، ときどき (أحياناً)"
+   },
+   {
+    "pattern": "あまり / ぜんぜん + نفي",
+    "meaning": "あまり たべません (مش كتير) ، ぜんぜん のみません (أبداً)"
+   },
+   {
+    "pattern": "もう 〜ました = خلاص ...",
+    "meaning": "もう たべました (خلاص أكلت)"
+   },
+   {
+    "pattern": "まだ 〜て いません = لسه ما ...",
+    "meaning": "まだ たべて いません (لسه ما أكلتش)"
+   }
+  ],
+  "dialogue": [
+   {
+    "speaker": "يوكو",
+    "japanese": "あさごはんは もう たべましたか。",
+    "romaji": "Asagohan wa mou tabemashita ka.",
+    "arabic": "فطرت خلاص؟"
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "いいえ、まだ たべて いません。",
+    "romaji": "Iie, mada tabete imasen.",
+    "arabic": "لأ، لسه."
+   },
+   {
+    "speaker": "يوكو",
+    "japanese": "いつも あさごはんを たべませんか。",
+    "romaji": "Itsumo asagohan o tabemasen ka.",
+    "arabic": "دايماً ما بتفطرش؟"
+   },
+   {
+    "speaker": "أحمد",
+    "japanese": "ときどき たべます。でも、よく コーヒーだけ のみます。",
+    "romaji": "Tokidoki tabemasu. Demo, yoku koohii dake nomimasu.",
+    "arabic": "أحياناً باكل. بس كتير بشرب قهوة بس."
+   }
+  ],
+  "exercises": [
+   "ترجم: أبداً ما بشربش قهوة → ぜんぜん コーヒーを _____ 。",
+   "املأ الفراغ: もう たべましたか。→ いいえ、_____ たべて いません。",
+   "رتّب من الأكتر للأقل: ときどき / いつも / ぜんぜん / よく"
+  ]
+ }
+]
