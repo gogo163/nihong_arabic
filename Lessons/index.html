@@ -116,8 +116,8 @@
 <div class="lessons-grid" id="lessons-grid"></div>
 <a class="verbs-banner" href="#" onclick="openVerbs(); return false;">
   <div class="vb-ico">🔑</div>
-  <div><div class="vb-t">تأسيس القواعد</div><div class="vb-s">٩ دروس قصيرة: تصريف الأفعال (て، ない، た)، ている، الحروف، العدّادات، المقارنة. ارجع لها لو في قاعدة مش واضحة</div></div>
-  <div class="vb-p" id="verbsProg">٠/٩</div>
+  <div><div class="vb-t">تأسيس القواعد</div><div class="vb-s">١٥ درس قصير: تصريف الأفعال، ている، الحروف، العدّادات، المقارنة، الربط، وصف الاسم، ても. ارجع لها لو في قاعدة مش واضحة</div></div>
+  <div class="vb-p" id="verbsProg">٠/١٥</div>
 </a>
 
 <div class="lessons-lock-toast" id="lessonsLockToast">
@@ -215,7 +215,7 @@
   });
 
   // ==================== دروس التأسيس (51-59): مسار منفصل ومفتوح دايماً ====================
-  const VERBS_FIRST_ID = 51, VERBS_LAST_ID = 59;
+  const VERBS_FIRST_ID = 51, VERBS_LAST_ID = 65;
   let verbsDone = [];
   try { verbsDone = JSON.parse(localStorage.getItem("completedLessonsVerbs") || "[]"); } catch(e){}
   function renderVerbsBanner() {
